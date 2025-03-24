@@ -9,7 +9,13 @@ description = "A framework for generative multi-agent systems"
 authors = [{ name = "Matúš Konig", email = "matuskonig@gmail.com" }]
 readme = "README.md"
 license = { text = "MIT" }
-dependencies = ["numpy>=2.2.0", "pydantic>=2.10.0", "openai>=1.68.0"]
+dependencies = [
+    "numpy>=2.2.0",
+    "pydantic>=2.10.0",
+    "openai>=1.68.0",
+    'cachetools>=5.5.0',
+    'asyncache>=0.3.1'
+]
 
 [project.optional-dependencies]
 dev = [

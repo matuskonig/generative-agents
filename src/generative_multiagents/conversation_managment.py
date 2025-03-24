@@ -7,9 +7,6 @@ import numpy as np
 
 
 class ConversationSelectorABC(abc.ABC):
-    @abc.abstractmethod
-    def should_generate_next_epoch(self) -> bool:
-        pass
 
     @abc.abstractmethod
     def generate_epoch_pairs(self) -> Iterable[list[tuple[LLMAgent, LLMAgent]]]:
@@ -33,19 +30,14 @@ class SequentialConversationSelector(ConversationSelectorABC):
 
     def __init__(
         self,
-        epochs: int,
         structure: nx.Graph,  # must be working with nodes of type LLMAgent
         seed: np.random.Generator | None = None,
         initial_conversation: list[tuple[LLMAgent, LLMAgent]] = [],
     ):
-        self.__epochs = epochs
         self.__generated_epochs = 0
         self.__structure = structure
         self.__initial_conversation = initial_conversation
         self.seed = seed or np.random.default_rng()
-
-    def should_generate_next_epoch(self):
-        return self.__generated_epochs < self.__epochs
 
     def generate_epoch_pairs(self):
         initialization = (
@@ -59,9 +51,10 @@ class SequentialConversationSelector(ConversationSelectorABC):
             self.__structure.edges
         )
         self.seed.shuffle(conversation_pairs)
-
-        for edge in conversation_pairs:
-            self.seed.shuffle(edge)
+        conversation_pairs = [
+            (first, second) if self.seed.random() < 0.5 else (second, first)
+            for (first, second) in conversation_pairs
+        ]
 
         total_pairs = initialization + [
             pair for pair in conversation_pairs if pair not in initialization_set
@@ -92,7 +85,7 @@ class ConversationManager:
             if len(conversation) == 0:
                 message = await agent1.start_conversation(agent2)
                 conversation.append(
-                    (agent1, Utterance(message, is_ending_conversation=False))
+                    (agent1, Utterance(message=message, is_ending_conversation=False))
                 )
             else:
                 next_utterance = await agent1.generate_next_turn(agent2, conversation)
@@ -112,11 +105,10 @@ class ConversationManager:
 
     async def run_simulation(self):
         self.conversation_selector.reset()
-        while self.conversation_selector.should_generate_next_epoch():
-            for pairs in self.conversation_selector.generate_epoch_pairs():
-                await asyncio.gather(
-                    *[self.__process_conversation_pair(*pair) for pair in pairs]
-                )
+        for pairs in self.conversation_selector.generate_epoch_pairs():
+            await asyncio.gather(
+                *[self.__process_conversation_pair(*pair) for pair in pairs]
+            )
 
 
 # TODO: some sort of logger

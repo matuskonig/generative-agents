@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import asyncio
 import abc
 from .llm_backend import LLMBackend, ResponseFormatType
-from .async_helpers import cached_async_getter
+from .async_helpers import memoized_async_function_argless, cached_async_property
 
 
 class AgentModelBase(BaseModel, abc.ABC):
@@ -19,8 +19,9 @@ class AgentModelBase(BaseModel, abc.ABC):
 
 # TODO: create a RAG-like memory and memory abstraction
 class SimpleMemory:
-    __agent_memory: list[str] = []
-    __other_agents_knowledge: dict[str, list[str]] = {}
+    def __init__(self):
+        self.__agent_memory: list[str] = []
+        self.__other_agents_knowledge: dict[str, list[str]] = {}
 
     def get_agent_memory(self):
         return "\n".join(self.__agent_memory)
@@ -64,8 +65,8 @@ class LLMAgent:
         self.context = context
         self.memory = SimpleMemory()
 
-    @cached_async_getter
-    async def introduce_yourself(self):
+    @cached_async_property
+    async def agent_greeting_message(self):
         prompt = f"Generate a short introduction for {self.data.agent_characteristics}. Start with 'I am ...'. You can inject any greeting if it matches character persona."
         return await self.context.get_text_response(prompt)
 
@@ -81,7 +82,7 @@ class LLMAgent:
             else None
         )
         prompt_template = [
-            await self.introduce_yourself(),
+            await self.agent_greeting_message,
             memory_prompt,
             knowledge_prompt or "I have not met this person before.",
             f"Imagine, I want to start conversation with {second_agent.data.full_name}. What would be the best way to start?",
@@ -104,12 +105,13 @@ class LLMAgent:
             else None
         )
         prompt_template = [
-            await self.introduce_yourself(),
+            await self.agent_greeting_message,
             memory_prompt,
             knowledge_prompt or "I have not met this person before.",
             "We are currently engaged in a conversation. This is the content of the conversation so far:",
             conversation_to_text(conversation),
             "What should I say next?",
+            f"Please follow this JSON schema in your response: {Utterance.model_json_schema()}.",
         ]
         return await self.context.get_structued_response(
             "\n".join([prompt for prompt in prompt_template if prompt]), Utterance
@@ -123,9 +125,9 @@ class LLMAgent:
         )
 
         prompt_template = [
-            await self.introduce_yourself(),
+            await self.agent_greeting_message,
             memory_prompt,
-            "Answer a question based on the provided information:",
+            "Answer a following question based on the provided information:",
             question,
         ]
         return await self.context.get_text_response(
@@ -142,7 +144,7 @@ class LLMAgent:
         )
 
         prompt_template = [
-            await self.introduce_yourself(),
+            await self.agent_greeting_message,
             memory_prompt,
             "Answer a question based on the provided information:",
             question,
@@ -160,7 +162,7 @@ class LLMAgent:
         )
 
         prompt_template = [
-            await self.introduce_yourself(),
+            await self.agent_greeting_message,
             memory_prompt,
             "You have just finished a conversation. Summarize the conversation in a few sentences, with the upper limit of 3 sentences. Be brief, select the information only relevant to you. You will have access to those information in the following conversations, so select carefully.",
             conversation_to_text(conversation),
@@ -180,7 +182,7 @@ class LLMAgent:
         )
 
         prompt_template = [
-            await self.introduce_yourself(),
+            await self.agent_greeting_message,
             memory_prompt,
             f"You have just finished a conversation. Summarize the facts learned from {other.data.full_name} relevant to you. Be brief, use at most 3 sentences. You will have access to those information in the following conversations, so select carefully.",
             conversation_to_text(conversation),
