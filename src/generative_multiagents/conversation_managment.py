@@ -71,6 +71,9 @@ class SequentialConversationSelector(ConversationSelectorABC):
 
         self.__generated_epochs += 1
 
+    def reset(self):
+        self.__generated_epochs = 0
+
 
 class ConversationManager:
     def __init__(

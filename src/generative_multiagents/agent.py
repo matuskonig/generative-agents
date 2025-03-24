@@ -6,12 +6,15 @@ from .llm_backend import LLMBackend, ResponseFormatType
 from .async_helpers import cached_async_getter
 
 
-# TODO: adjust AgentModel to more generic agent
 class AgentModelBase(BaseModel, abc.ABC):
     @property
     @abc.abstractmethod
     def full_name(self) -> str:
         pass
+
+    @property
+    def agent_characteristics(self) -> str:
+        return self.model_dump_json()
 
 
 # TODO: create a RAG-like memory and memory abstraction
@@ -63,7 +66,7 @@ class LLMAgent:
 
     @cached_async_getter
     async def introduce_yourself(self):
-        prompt = f"Generate a short introduction for {self.data.model_dump_json()}. Start with 'I am ...'. You can inject any greeting if it matches character persona."
+        prompt = f"Generate a short introduction for {self.data.agent_characteristics}. Start with 'I am ...'. You can inject any greeting if it matches character persona."
         return await self.context.get_text_response(prompt)
 
     async def start_conversation(self, second_agent: "LLMAgent"):

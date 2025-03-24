@@ -19,10 +19,7 @@ class LLMBackend:
         self.__chat_model = model
         self.__throttle = Throtler(RPS) if RPS else None
 
-    async def get_text_response(
-        self,
-        prompt: str,
-    ):
+    async def get_text_response(self, prompt: str):
         if self.__throttle:
             await self.__throttle()
 

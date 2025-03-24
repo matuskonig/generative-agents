@@ -11,7 +11,7 @@ class Throtler:
         self.lock = asyncio.Lock()
 
     async def throttle(self):
-        with await self.lock:
+        async with self.lock:
             now = time.time()
             # Clear the heap of requests older than 1 second
             while len(self.heap) and now - self.heap[0] > 1:
@@ -33,7 +33,7 @@ class Throtler:
 
 def cached_async_getter[**P, R](func: Callable[P, Awaitable[R]]):
     lock = asyncio.Lock()
-    value: R | None
+    value: R | None = None
 
     async def inner(*args: P.args, **kwargs: P.kwargs):
         nonlocal value
