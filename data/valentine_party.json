@@ -1,0 +1,29 @@
+{
+  "agents": [
+    {
+      "first_name": "Isabella",
+      "last_name": "Rodriguez",
+      "sex": "F",
+      "age": 34,
+      "description": "Isabella Rodriguez is a cafe owner of Hobbs Cafe who loves to make people feel welcome. She is always looking for ways to make the cafe a place where people can come to relax and enjoy themselves. Isabella Rodriguez is planning on having a Valentine's Day party at Hobbs Cafe with her customers on February 14th, 2023 at 5pm. She is gathering party material, and is telling everyone to join the party at Hobbs Cafe on February 14th, 2023, from 5pm to 7pm."
+    },
+    {
+      "first_name": "Maria",
+      "last_name": "Lopez",
+      "sex": "F",
+      "age": 21,
+      "description": "Maria Lopez is a student at Oak Hill College studying physics and a part time Twitch game streamer who loves to connect with people and explore new ideas. Maria Lopez is working on her physics degree and streaming games on Twitch to make some extra money. She visits Hobbs Cafe for studying and eating just about everyday."
+    },
+    {
+      "first_name": "Klaus",
+      "last_name": "Mueller",
+      "sex": "M",
+      "age": 20,
+      "description": "Klaus Mueller is a student at Oak Hill College studying sociology. He is passionate about social justice and loves to explore different perspectives. Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities."
+    }
+  ],
+  "edges": [
+    [0, 1],
+    [1, 2]
+  ]
+}
