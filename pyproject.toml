@@ -6,21 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "generative-multiagents"
 version = "1.0.0"
 description = "A framework for generative multi-agent systems"
-authors = [
-    { name="Matúš Konig", email="matuskonig@gmail.com" }
-]
+authors = [{ name = "Matúš Konig", email = "matuskonig@gmail.com" }]
 readme = "README.md"
-license = { text="MIT" }
-dependencies = [
-    "numpy>=2.2.0",
-    "pydantic>=2.10.0",
-    "openai>=1.68.0",
-    "pandas>=2.0.0",
-    "matplotlib>=3.7.0",
-    "scipy>=1.10.0",
-    "networkx>=3.1.0",
-    "ipykernel>=6.21.0",
-]
+license = { text = "MIT" }
+dependencies = ["numpy>=2.2.0", "pydantic>=2.10.0", "openai>=1.68.0"]
 
 [project.optional-dependencies]
 dev = [
@@ -30,6 +19,12 @@ dev = [
     "mypy>=1.3.0",
     "flake8>=6.0.0",
     "pre-commit>=3.3.2",
+    "ipykernel>=6.21.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "scipy>=1.10.0",
+    "networkx>=3.1.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [tool.setuptools]
