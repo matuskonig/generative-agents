@@ -4,6 +4,15 @@ import heapq
 from typing import Callable, Awaitable, Union, overload, TypeVar, Generic, Type
 
 
+def current_formated_date():
+    import datetime
+    import time
+
+    return datetime.datetime.fromtimestamp(time.time()).isoformat(
+        " ", timespec="milliseconds"
+    )
+
+
 class Throttler:
     def __init__(self, requests_per_second: int | float):
         self.requests_per_second = requests_per_second

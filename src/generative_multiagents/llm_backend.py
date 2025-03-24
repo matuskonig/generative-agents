@@ -1,6 +1,7 @@
-from openai import AsyncClient
+from openai import AsyncClient, RateLimitError
 from typing import TypeVar, Type
 from pydantic import BaseModel
+import asyncio
 from .async_helpers import Throttler
 
 
@@ -22,6 +23,13 @@ class LLMBackend:
         self.__throttle = Throttler(RPS) if RPS else None
 
     async def get_text_response(self, prompt: str):
+        while True:
+            try:
+                return await self.__get_text_response_impl(prompt)
+            except RateLimitError as e:
+                continue
+
+    async def __get_text_response_impl(self, prompt: str):
         if self.__throttle:
             await self.__throttle()
 
@@ -36,6 +44,15 @@ class LLMBackend:
         return response.choices[0].message.content
 
     async def get_structued_response(
+        self, prompt: str, response_format: Type[ResponseFormatType]
+    ) -> ResponseFormatType | str | None:
+        while True:
+            try:
+                return await self.__get_structued_response_impl(prompt, response_format)
+            except RateLimitError as e:
+                continue
+
+    async def __get_structued_response_impl(
         self, prompt: str, response_format: Type[ResponseFormatType]
     ) -> ResponseFormatType | str | None:
         if self.__throttle:
