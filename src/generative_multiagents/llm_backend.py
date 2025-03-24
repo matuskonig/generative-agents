@@ -1,7 +1,7 @@
 from openai import AsyncClient
 from typing import TypeVar, Type
 from pydantic import BaseModel
-from .async_helpers import Throtler
+from .async_helpers import Throttler
 
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
@@ -17,7 +17,7 @@ class LLMBackend:
     ) -> None:
         self.__client = client
         self.__chat_model = model
-        self.__throttle = Throtler(RPS) if RPS else None
+        self.__throttle = Throttler(RPS) if RPS else None
 
     async def get_text_response(self, prompt: str):
         if self.__throttle:
@@ -29,7 +29,7 @@ class LLMBackend:
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.7,
+            temperature=0.5,
         )
         return response.choices[0].message.content
 
@@ -42,9 +42,8 @@ class LLMBackend:
         response = await self.__client.beta.chat.completions.parse(
             model=self.__chat_model,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
+            temperature=0.5,
             response_format=response_format,
-            n=1,
         )
         message = response.choices[0].message
         return message.parsed or message.refusal

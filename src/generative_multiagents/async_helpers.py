@@ -4,7 +4,7 @@ import heapq
 from typing import Callable, Awaitable, Union, overload, TypeVar, Generic, Type
 
 
-class Throtler:
+class Throttler:
     def __init__(self, requests_per_second: int | float):
         self.requests_per_second = requests_per_second
         self.heap: list[float] = []
@@ -12,23 +12,23 @@ class Throtler:
 
     async def throttle(self):
         async with self.lock:
-            now = time.time()
+            now = time.monotonic()
             # Clear the heap of requests older than 1 second
-            while len(self.heap) and now - self.heap[0] > 1:
+            while len(self.heap) and (now - self.heap[0] > 1):
                 heapq.heappop(self.heap)
 
-            heapq.heappush(self.heap, now)
+            if len(self.heap):
+                oldest_request = self.heap[0]
+                # there are at least requests_per_second requests in the last second, thus we need to throttle
+                if len(self.heap) >= self.requests_per_second:
+                    time_to_expire = 1 - (now - oldest_request)
+                    assert 0 <= time_to_expire <= 1
+                    await asyncio.sleep(time_to_expire)
 
-            oldest_request = self.heap[0]
+            heapq.heappush(self.heap, time.monotonic())
 
-            # adding the new request to the heap hit the throttle
-            if len(self.heap) > self.requests_per_second:
-                time_to_expire = 1 - (now - oldest_request)
-                assert 0 <= time_to_expire <= 1
-                await asyncio.sleep(time_to_expire)
-
-    def __call__(self):
-        return self.throttle()
+    async def __call__(self):
+        await self.throttle()
 
 
 def memoized_async_function_argless[**P, R](func: Callable[P, Awaitable[R]]):
