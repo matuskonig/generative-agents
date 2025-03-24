@@ -26,6 +26,7 @@ class ExperimentAgent(AgentModelBase):
     sex: Literal["F", "M"] = Field(..., description="Sex")
     description: str = Field(..., description="Agent characteristics and description")
 
+    @property
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
@@ -67,12 +68,18 @@ async def main():
     structure_graph.add_edges_from(
         (id_mapping[first], id_mapping[second]) for (first, second) in raw_data.edges
     )
-    start = time.time()
+
     await asyncio.gather(*[agent.agent_greeting_message for agent in agents])
-    print("isabella", await isabella.agent_greeting_message)
-    print("maria", await maria.agent_greeting_message)
-    print("klaus", await klaus.agent_greeting_message)
-    print(time.time() - start)
+    print("maria")
+    print(await maria.agent_greeting_message)
+    print()
+    print("isabella")
+    print(await isabella.agent_greeting_message)
+    print()
+    print("klaus")
+    print(await klaus.agent_greeting_message)
+    print()
+
     conversation_selector = SequentialConversationSelector(
         structure=structure_graph,
         seed=np.random.default_rng(42),
@@ -80,12 +87,25 @@ async def main():
     )
     manager = ConversationManager(
         conversation_selector=conversation_selector,
-        max_conversation_utterances=10,
+        max_conversation_utterances=6,
     )
-    await manager.run_simulation()
-    print(await klaus.ask_agent("Do you know about the party ? Respond either yes or no and provide the exact date and time of the party"))
-    print("total time: ", f"{time.time() - start}")
+    for i in range(4):
+        await manager.run_simulation()
 
+    question = "When is the party happening ? Did you hear about the party ?"
+    results = asyncio.gather(*[agent.ask_agent(question) for agent in agents])
+    for agent, answer in zip(agents, await results):
+        print(f"{agent.data.full_name}: {answer}")
+
+    # print("isabella")
+    # isabella.print_memory()
+    # print("maria")
+    # maria.print_memory()
+    # print("klaus")
+    # klaus.print_memory()
+
+
+# TODO: memory compression
 
 if __name__ == "__main__":
     dotenv.load_dotenv()

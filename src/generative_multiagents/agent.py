@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import asyncio
 import abc
 from .llm_backend import LLMBackend, ResponseFormatType
-from .async_helpers import memoized_async_function_argless, cached_async_property
+from .async_helpers import cached_async_property
 
 
 class AgentModelBase(BaseModel, abc.ABC):
@@ -32,14 +32,22 @@ class SimpleMemory:
             return "\n".join(memory)
         return ""
 
-    def add_to_memory(self, text: str):
-        self.__agent_memory.append(text)
+    def add_to_memory(self, facts: list[str]):
+        self.__agent_memory.extend(facts)
 
-    def add_to_other_agent_knowledge(self, other: "LLMAgent", text: str):
+    def add_to_other_agent_knowledge(self, other: "LLMAgent", text: list[str]):
         if other.data.full_name not in self.__other_agents_knowledge:
             self.__other_agents_knowledge[other.data.full_name] = []
 
-        self.__other_agents_knowledge[other.data.full_name].append(text)
+        self.__other_agents_knowledge[other.data.full_name].extend(text)
+
+    def dump_agents_knowledge(self):
+        return "\n".join(
+            [
+                f"{name} {'.'.join(knowledge)}"
+                for (name, knowledge) in self.__other_agents_knowledge.items()
+            ]
+        )
 
 
 class Utterance(BaseModel):
@@ -59,6 +67,14 @@ def conversation_to_text(conversation: Conversation):
     )
 
 
+class Fact(BaseModel):
+    text: str
+
+
+class FactResponse(BaseModel):
+    facts: list[Fact]
+
+
 class LLMAgent:
     def __init__(self, data: AgentModelBase, context: LLMBackend):
         self.data = data
@@ -72,64 +88,85 @@ class LLMAgent:
 
     async def start_conversation(self, second_agent: "LLMAgent"):
         memory_prompt = (
-            f"I have remembered this things from my past conversations:\n{memory}"
+            f"I have remembered this things from my past conversations:\n<memory>\n{memory}\n</memory>"
             if (memory := self.memory.get_agent_memory())
             else None
         )
         knowledge_prompt = (
-            f"I have following information about {second_agent.data.full_name} from out past conversations: \n{knowledge}"
+            f"I have following information about {second_agent.data.full_name} from out past conversations: \n<knowledge>\n{knowledge}\n</knowledge>"
             if (knowledge := self.memory.get_other_agent_knowledge(second_agent))
             else None
         )
         prompt_template = [
+            f"I am {self.data.full_name}. I have this greeting message:",
             await self.agent_greeting_message,
             memory_prompt,
-            knowledge_prompt or "I have not met this person before.",
+            knowledge_prompt,
             f"Imagine, I want to start conversation with {second_agent.data.full_name}. What would be the best way to start?",
+            (
+                "I have met this person before."
+                if knowledge_prompt
+                else "I have not met this person before."
+            ),
+            "Do not copy anything mentioned here into the reply.",
         ]
-        return await self.context.get_text_response(
+        response = await self.context.get_text_response(
             "\n".join([prompt for prompt in prompt_template if prompt])
         )
+        return response
 
     async def generate_next_turn(
         self, second_agent: "LLMAgent", conversation: Conversation
     ):
         memory_prompt = (
-            f"I have remembered this things from my past conversations:\n{memory}"
+            f"I have remembered this things from my past conversations:\n<memory>\n{memory}\n</memory>"
             if (memory := self.memory.get_agent_memory())
             else None
         )
         knowledge_prompt = (
-            f"I have following information about {second_agent.data.full_name} from out past conversations:\n{knowledge}"
+            f"I have following information about {second_agent.data.full_name} from out past conversations: \n<knowledge>\n{knowledge}\n</knowledge>"
             if (knowledge := self.memory.get_other_agent_knowledge(second_agent))
             else None
         )
         prompt_template = [
+            f"I am {self.data.full_name}. I have this greeting message:",
             await self.agent_greeting_message,
             memory_prompt,
-            knowledge_prompt or "I have not met this person before.",
+            knowledge_prompt,
             "We are currently engaged in a conversation. This is the content of the conversation so far:",
-            conversation_to_text(conversation),
-            "What should I say next?",
-            f"Please follow this JSON schema in your response: {Utterance.model_json_schema()}.",
+            f"<conversation>\n{conversation_to_text(conversation)}\n</conversation>",
+            "What should I say next? Focus on the conversation content and the person I am talking to. Make sure to keep the conversation going. You can also end the conversation.",
+            "Please focus on the latest message from the other person and respond to it.",
+            (
+                "I have met this person before."
+                if knowledge_prompt
+                else "I have not met this person before."
+            ),
+            f"Respond in JSON following this schema: {Utterance.model_json_schema()}",
+            "Do not copy anything mentioned here into the reply.",
         ]
-        return await self.context.get_structued_response(
+        response = await self.context.get_structued_response(
             "\n".join([prompt for prompt in prompt_template if prompt]), Utterance
         )
+        return response
 
     async def ask_agent(self, question: str):
         memory_prompt = (
-            f"I have remembered this things from my past conversations:\n{memory}"
+            f"I have remembered this things from my past conversations:\n<memory>\n{memory}\n</memory>"
             if (memory := self.memory.get_agent_memory())
             else None
         )
 
         prompt_template = [
+            f"I am {self.data.full_name}. I have this greeting message:",
             await self.agent_greeting_message,
             memory_prompt,
+            "I have also the following notes about every person I had conversation with:",
+            self.memory.dump_agents_knowledge(),
             "Answer a following question based on the provided information:",
             question,
         ]
+
         return await self.context.get_text_response(
             "\n".join([prompt for prompt in prompt_template if prompt])
         )
@@ -138,16 +175,18 @@ class LLMAgent:
         self, question: str, response_format: Type[ResponseFormatType]
     ):
         memory_prompt = (
-            f"I have remembered this things from my past conversations:\n{memory}"
+            f"I have remembered this things from my past conversations:\n<memory>\n{memory}\n</memory>"
             if (memory := self.memory.get_agent_memory())
             else None
         )
 
         prompt_template = [
+            f"I am {self.data.full_name}. I have this greeting message:",
             await self.agent_greeting_message,
             memory_prompt,
             "Answer a question based on the provided information:",
             question,
+            f"Respond in JSON following this schema: {response_format.model_json_schema()}",
         ]
         return await self.context.get_structued_response(
             "\n".join([prompt for prompt in prompt_template if prompt]),
@@ -156,40 +195,58 @@ class LLMAgent:
 
     async def __summarize_conversation(self, conversation: Conversation):
         memory_prompt = (
-            f"I have remembered this things from my past conversations:\n{memory}"
+            f"I have remembered this things from my past conversations:\n<memory>\n{memory}\n</memory>"
             if (memory := self.memory.get_agent_memory())
             else None
         )
 
         prompt_template = [
+            f"I am {self.data.full_name}. I have this greeting message:",
             await self.agent_greeting_message,
             memory_prompt,
-            "You have just finished a conversation. Summarize the conversation in a few sentences, with the upper limit of 3 sentences. Be brief, select the information only relevant to you. You will have access to those information in the following conversations, so select carefully.",
-            conversation_to_text(conversation),
+            f"You have just finished a conversation. Summarize the facts learned from this conversation.",
+            "Select the relevant facts only, select up to 3 facts. Select the facts in biggest detail possible, try to capture everything.",
+            "You will have access to those information in the following conversations, so select carefully only the information you can build your future conversations on.",
+            "Extract data not present in the memory yet",
+            f"<conversation>\n{conversation_to_text(conversation)}\n</conversation>",
+            f"Respond in JSON following this schema: {FactResponse.model_json_schema()}",
         ]
-        return await self.context.get_text_response(
-            "\n".join([prompt for prompt in prompt_template if prompt])
+
+        result = await self.context.get_structued_response(
+            "\n".join([prompt for prompt in prompt_template if prompt]), FactResponse
         )
-        pass
+        return [fact.text for fact in result.facts]
 
     async def __extract_agent_knowledge(
         self, other: "LLMAgent", conversation: Conversation
     ):
         memory_prompt = (
-            f"I have remembered this things from my past conversations:\n{memory}"
+            f"I have remembered this things from my past conversations:\n<memory>\n{memory}\n</memory>"
             if (memory := self.memory.get_agent_memory())
+            else None
+        )
+        knowledge_prompt = (
+            f"I have following information about {other.data.full_name} from out past conversations: \n<knowledge>\n{knowledge}\n</knowledge>"
+            if (knowledge := self.memory.get_other_agent_knowledge(other))
             else None
         )
 
         prompt_template = [
             await self.agent_greeting_message,
             memory_prompt,
-            f"You have just finished a conversation. Summarize the facts learned from {other.data.full_name} relevant to you. Be brief, use at most 3 sentences. You will have access to those information in the following conversations, so select carefully.",
-            conversation_to_text(conversation),
+            knowledge_prompt,
+            f"You have just finished a conversation. Summarize the facts learned about {other.data.full_name} from this conversation.",
+            "Select the relevant facts only, select up to 3 facts. Select the facts in biggest detail possible, try to capture everything.",
+            "You will have access to those information in the following conversations, so select carefully only the information you can build your future conversations on.",
+            "Extract data not present in the memory yet. ",
+            f"<conversation>\n{conversation_to_text(conversation)}\n</conversation>",
+            f"Respond in JSON following this schema: {FactResponse.model_json_schema()}",
         ]
-        return await self.context.get_text_response(
-            "\n".join([prompt for prompt in prompt_template if prompt])
+
+        result = await self.context.get_structued_response(
+            "\n".join([prompt for prompt in prompt_template if prompt]), FactResponse
         )
+        return [fact.text for fact in result.facts]
 
     async def adjust_memory_after_conversation(
         self, other: "LLMAgent", conversation: Conversation
@@ -198,6 +255,7 @@ class LLMAgent:
             self.__summarize_conversation(conversation),
             self.__extract_agent_knowledge(other, conversation),
         )
+        # TODO> compact memory after some time
 
         self.memory.add_to_memory(memory_update)
         self.memory.add_to_other_agent_knowledge(other, agent_knowledge_update)

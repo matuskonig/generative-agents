@@ -10,6 +10,8 @@ SYSTEM_PROMPT = """You are a helpful assistant used in a society simulation. You
 Please respond to the propmts directly, using your given persona, without adding any text not related to the prompt. 
 """
 
+TEMPERATURE = 1.2
+
 
 class LLMBackend:
     def __init__(
@@ -29,7 +31,7 @@ class LLMBackend:
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.5,
+            temperature=TEMPERATURE,
         )
         return response.choices[0].message.content
 
@@ -42,7 +44,7 @@ class LLMBackend:
         response = await self.__client.beta.chat.completions.parse(
             model=self.__chat_model,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.5,
+            temperature=TEMPERATURE,
             response_format=response_format,
         )
         message = response.choices[0].message

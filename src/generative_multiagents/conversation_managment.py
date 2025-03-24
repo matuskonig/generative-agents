@@ -2,7 +2,7 @@ from typing import Iterable
 import asyncio
 import networkx as nx
 import abc
-from .agent import LLMAgent, Utterance, Conversation
+from .agent import LLMAgent, Utterance, Conversation, conversation_to_text
 import numpy as np
 
 
@@ -98,6 +98,11 @@ class ConversationManager:
 
     async def __process_conversation_pair(self, agent1: LLMAgent, agent2: LLMAgent):
         conversation = await self.__generate_conversation(agent1, agent2)
+        # print()
+        # print(
+        #     "conversation between agents:", agent1.data.full_name, agent2.data.full_name
+        # )
+        # print(conversation_to_text(conversation))
         await asyncio.gather(
             agent1.adjust_memory_after_conversation(agent2, conversation),
             agent2.adjust_memory_after_conversation(agent1, conversation),
