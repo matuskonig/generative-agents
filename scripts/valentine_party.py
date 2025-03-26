@@ -8,7 +8,7 @@ import numpy as np
 import asyncio
 import logging
 
-from generative_multiagents import (
+from generative_agents import (
     AgentModelBase,
     ConversationManager,
     LLMBackend,

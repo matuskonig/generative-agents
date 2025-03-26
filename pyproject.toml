@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "generative-agents"
 version = "1.0.0"
-description = "A framework for generative multi-agent systems"
+description = "A framework for generative multi-agent systems for social behavior simulation."
 authors = [{ name = "Matúš Konig", email = "matuskonig@gmail.com" }]
 readme = "README.md"
 license = { text = "MIT" }
@@ -33,7 +33,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["generative_multiagents"]
+packages = ["generative_agents"]
 
 [tool.setuptools.package-dir]
 "" = "src"
