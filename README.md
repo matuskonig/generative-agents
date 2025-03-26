@@ -12,7 +12,7 @@ This library provides tools and frameworks for using generative agents to simula
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.12 or higher
 - Virtual environment tool (e.g., `virtualenv`, `venv`)
 
 ### Steps
