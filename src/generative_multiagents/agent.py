@@ -2,8 +2,9 @@ from typing import Type
 from pydantic import BaseModel
 import asyncio
 import abc
+import logging
 from .llm_backend import LLMBackend, ResponseFormatType
-from .async_helpers import cached_async_property
+from .async_helpers import cached_async_method
 
 
 class AgentModelBase(BaseModel, abc.ABC):
@@ -44,8 +45,9 @@ class SimpleMemory:
     def dump_agents_knowledge(self):
         return "\n".join(
             [
-                f"{name} {'.'.join(knowledge)}"
+                f"[{name}]: {fact}"
                 for (name, knowledge) in self.__other_agents_knowledge.items()
+                for fact in knowledge
             ]
         )
 
@@ -61,7 +63,7 @@ Conversation = list[tuple["LLMAgent", Utterance]]
 def conversation_to_text(conversation: Conversation):
     return "\n".join(
         [
-            f"{agent.data.full_name}: {utterance.message}"
+            f"[{agent.data.full_name}]: {utterance.message}"
             for agent, utterance in conversation
         ]
     )
@@ -81,8 +83,8 @@ class LLMAgent:
         self.context = context
         self.memory = SimpleMemory()
 
-    @cached_async_property
-    async def agent_greeting_message(self):
+    @cached_async_method(max_cache_size=1)
+    async def get_agent_introduction_message(self):
         prompt = f"Generate a short introduction for {self.data.agent_characteristics}. Start with 'I am ...'. You can inject any greeting if it matches character persona."
         return await self.context.get_text_response(prompt)
 
@@ -99,7 +101,7 @@ class LLMAgent:
         )
         prompt_template = [
             f"I am {self.data.full_name}. I have this greeting message:",
-            await self.agent_greeting_message,
+            await self.get_agent_introduction_message(),
             memory_prompt,
             knowledge_prompt,
             f"Imagine, I want to start conversation with {second_agent.data.full_name}. What would be the best way to start?",
@@ -124,17 +126,20 @@ class LLMAgent:
             else None
         )
         knowledge_prompt = (
-            f"I have following information about {second_agent.data.full_name} from out past conversations: \n<knowledge>\n{knowledge}\n</knowledge>"
+            f"I have following information about {second_agent.data.full_name} from out past conversations:\n<knowledge>\n{knowledge}\n</knowledge>"
             if (knowledge := self.memory.get_other_agent_knowledge(second_agent))
             else None
         )
         prompt_template = [
             f"I am {self.data.full_name}. I have this greeting message:",
-            await self.agent_greeting_message,
+            await self.get_agent_introduction_message(),
             memory_prompt,
             knowledge_prompt,
             "We are currently engaged in a conversation. This is the content of the conversation so far:",
-            f"<conversation>\n{conversation_to_text(conversation)}\n</conversation>",
+            "<conversation>",
+            conversation_to_text(conversation),
+            f"[{self.data.full_name}]: [FILL IN HERE]",
+            "</conversation>",
             "What should I say next? Focus on the conversation content and the person I am talking to. Make sure to keep the conversation going. You can also end the conversation.",
             "Please focus on the latest message from the other person and respond to it.",
             (
@@ -159,7 +164,7 @@ class LLMAgent:
 
         prompt_template = [
             f"I am {self.data.full_name}. I have this greeting message:",
-            await self.agent_greeting_message,
+            await self.get_agent_introduction_message(),
             memory_prompt,
             "I have also the following notes about every person I had conversation with:",
             self.memory.dump_agents_knowledge(),
@@ -182,7 +187,7 @@ class LLMAgent:
 
         prompt_template = [
             f"I am {self.data.full_name}. I have this greeting message:",
-            await self.agent_greeting_message,
+            await self.get_agent_introduction_message(),
             memory_prompt,
             "Answer a question based on the provided information:",
             question,
@@ -202,7 +207,7 @@ class LLMAgent:
 
         prompt_template = [
             f"I am {self.data.full_name}. I have this greeting message:",
-            await self.agent_greeting_message,
+            await self.get_agent_introduction_message(),
             memory_prompt,
             f"You have just finished a conversation. Summarize the facts learned from this conversation.",
             "Select the relevant facts only, select up to 3 facts. Select the facts in biggest detail possible, try to capture everything.",
@@ -232,7 +237,7 @@ class LLMAgent:
         )
 
         prompt_template = [
-            await self.agent_greeting_message,
+            await self.get_agent_introduction_message(),
             memory_prompt,
             knowledge_prompt,
             f"You have just finished a conversation. Summarize the facts learned about {other.data.full_name} from this conversation.",
@@ -249,7 +254,10 @@ class LLMAgent:
         return [fact.text for fact in result.facts]
 
     async def adjust_memory_after_conversation(
-        self, other: "LLMAgent", conversation: Conversation
+        self,
+        other: "LLMAgent",
+        conversation: Conversation,
+        logger: logging.Logger | None = None,
     ):
         (memory_update, agent_knowledge_update) = await asyncio.gather(
             self.__summarize_conversation(conversation),
@@ -257,5 +265,15 @@ class LLMAgent:
         )
         # TODO> compact memory after some time
 
+        if logger:
+            logger.debug(
+                f"Memory and knowledge update on {self.data.full_name} about {other.data.full_name}",
+                extra={
+                    "memory_update": "\n".join(memory_update),
+                    "knowledge_update": "\n".join(agent_knowledge_update),
+                },
+            )
         self.memory.add_to_memory(memory_update)
         self.memory.add_to_other_agent_knowledge(other, agent_knowledge_update)
+
+# TODO: ask questions with followups (continuous questions)

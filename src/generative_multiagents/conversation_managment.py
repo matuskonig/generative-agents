@@ -4,6 +4,7 @@ import networkx as nx
 import abc
 from .agent import LLMAgent, Utterance, Conversation, conversation_to_text
 import numpy as np
+import logging
 
 
 class ConversationSelectorABC(abc.ABC):
@@ -73,10 +74,12 @@ class ConversationManager:
         self,
         conversation_selector: ConversationSelectorABC,
         max_conversation_utterances: int,
+        logger: logging.Logger | None = None,
     ):
         """Structure should be a graph on Agent"""
         self.max_conversation_utterances = max_conversation_utterances
         self.conversation_selector = conversation_selector
+        self._logger = logger
 
     async def __generate_conversation(self, agent1: LLMAgent, agent2: LLMAgent):
         conversation: Conversation = []
@@ -98,22 +101,23 @@ class ConversationManager:
 
     async def __process_conversation_pair(self, agent1: LLMAgent, agent2: LLMAgent):
         conversation = await self.__generate_conversation(agent1, agent2)
-        # print()
-        # print(
-        #     "conversation between agents:", agent1.data.full_name, agent2.data.full_name
-        # )
-        # print(conversation_to_text(conversation))
+        if self._logger:
+            self._logger.debug(
+                f"Conversation between agents {agent1.data.full_name} - {agent2.data.full_name}",
+                extra={"conversation": conversation_to_text(conversation)},
+            )
         await asyncio.gather(
-            agent1.adjust_memory_after_conversation(agent2, conversation),
-            agent2.adjust_memory_after_conversation(agent1, conversation),
+            agent1.adjust_memory_after_conversation(
+                agent2, conversation, logger=self._logger
+            ),
+            agent2.adjust_memory_after_conversation(
+                agent1, conversation, logger=self._logger
+            ),
         )
 
-    async def run_simulation(self):
+    async def run_simulation_epoch(self):
         self.conversation_selector.reset()
         for pairs in self.conversation_selector.generate_epoch_pairs():
             await asyncio.gather(
                 *[self.__process_conversation_pair(*pair) for pair in pairs]
             )
-
-
-# TODO: some sort of logger

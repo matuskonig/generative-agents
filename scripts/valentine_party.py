@@ -43,13 +43,11 @@ class ExperimentData(BaseModel):
 
 async def main():
     api_key = os.getenv("OPENAI_API_KEY") or None
-    client = AsyncOpenAI(
-        base_url=os.getenv("OPENAI_BASE_URL"),
-        api_key=api_key,
-    )
+    client = AsyncOpenAI(base_url=os.getenv("OPENAI_BASE_URL"), api_key=api_key)
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),
+        temperature=1.5,
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),
     )
 
@@ -58,9 +56,6 @@ async def main():
 
     agents = [LLMAgent(data, context=context) for data in raw_data.agents]
     [isabella, maria, klaus] = agents
-    # print(isabella.data.agent_characteristics)
-    # print(maria.data.agent_characteristics)
-    # print(klaus.data.agent_characteristics)
 
     id_mapping = {i: agent for i, agent in enumerate(agents)}
 
@@ -69,15 +64,15 @@ async def main():
         (id_mapping[first], id_mapping[second]) for (first, second) in raw_data.edges
     )
 
-    await asyncio.gather(*[agent.agent_greeting_message for agent in agents])
-    print("maria")
-    print(await maria.agent_greeting_message)
-    print()
+    await asyncio.gather(*[agent.get_agent_introduction_message() for agent in agents])
     print("isabella")
-    print(await isabella.agent_greeting_message)
+    print(await isabella.get_agent_introduction_message())
+    print()
+    print("maria")
+    print(await maria.get_agent_introduction_message())
     print()
     print("klaus")
-    print(await klaus.agent_greeting_message)
+    print(await klaus.get_agent_introduction_message())
     print()
 
     conversation_selector = SequentialConversationSelector(
@@ -86,10 +81,9 @@ async def main():
         initial_conversation=[(isabella, maria)],
     )
     manager = ConversationManager(
-        conversation_selector=conversation_selector,
-        max_conversation_utterances=6,
+        conversation_selector=conversation_selector, max_conversation_utterances=12
     )
-    for i in range(4):
+    for i in range(6):
         await manager.run_simulation()
 
     question = "When is the party happening ? Did you hear about the party ?"
@@ -106,6 +100,8 @@ async def main():
 
 
 # TODO: memory compression
+
+# TODO: private naming, _ for private, __ for stronger private, mangled on runtime
 
 if __name__ == "__main__":
     dotenv.load_dotenv()
