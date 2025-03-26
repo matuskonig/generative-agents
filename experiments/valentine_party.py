@@ -7,6 +7,8 @@ from openai import AsyncOpenAI
 import numpy as np
 import asyncio
 import logging
+import os
+
 
 from generative_agents import (
     AgentModelBase,
@@ -36,6 +38,7 @@ def get_logger(file_name: str, level) -> logging.Logger:
     formatter = logging.Formatter(
         "[%(asctime)s][%(levelname)s]: %(message)s%(content)s"
     )
+    
     file_handler = logging.FileHandler(file_name, mode="w")
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
@@ -66,6 +69,8 @@ class ExperimentData(BaseModel):
 
 
 async def main():
+    if not os.path.exists("logs"):
+        os.makedirs('logs')
     logger = get_logger("logs/valentine_party.log", level=logging.DEBUG)
 
     api_key = os.getenv("OPENAI_API_KEY") or None
