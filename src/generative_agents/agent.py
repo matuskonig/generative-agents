@@ -85,7 +85,7 @@ class LLMAgent:
 
     @cached_async_method(max_cache_size=1)
     async def get_agent_introduction_message(self):
-        prompt = f"Generate a short introduction for {self.data.agent_characteristics}. Start with 'I am ...'. You can inject any greeting if it matches character persona."
+        prompt = f"Introduce {self.data.full_name}. Based on their agent characteristics ({self.data.agent_characteristics}), write a brief introduction that establishes their persona."
         return await self.context.get_text_response(prompt)
 
     async def start_conversation(self, second_agent: "LLMAgent"):

@@ -76,7 +76,6 @@ class ConversationManager:
         max_conversation_utterances: int,
         logger: logging.Logger | None = None,
     ):
-        """Structure should be a graph on Agent"""
         self.max_conversation_utterances = max_conversation_utterances
         self.conversation_selector = conversation_selector
         self._logger = logger

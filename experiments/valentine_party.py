@@ -78,7 +78,7 @@ async def main():
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),
-        temperature=1.2,
+        temperature=0.7,
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),
     )
 

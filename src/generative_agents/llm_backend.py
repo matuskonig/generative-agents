@@ -7,9 +7,7 @@ from .async_helpers import Throttler
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
 
-SYSTEM_PROMPT = """You are a helpful assistant used in a society simulation. You will be given a persona you are supposed to act as.  
-Please respond to the propmts directly, using your given persona, without adding any text not related to the prompt. 
-"""
+SYSTEM_PROMPT = """You are an agent in a society simulation. You will be given a persona you are supposed to act as."""
 
 
 class LLMBackend:
@@ -33,7 +31,6 @@ class LLMBackend:
             try:
                 return await self.__get_text_response_impl(prompt)
             except RateLimitError as e:
-                print(e)
                 continue
 
     async def __get_text_response_impl(self, prompt: str):
