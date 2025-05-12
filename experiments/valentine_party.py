@@ -38,7 +38,7 @@ def get_logger(file_name: str, level) -> logging.Logger:
     formatter = logging.Formatter(
         "[%(asctime)s][%(levelname)s]: %(message)s%(content)s"
     )
-    
+
     file_handler = logging.FileHandler(file_name, mode="w")
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
@@ -70,7 +70,7 @@ class ExperimentData(BaseModel):
 
 async def main():
     if not os.path.exists("logs"):
-        os.makedirs('logs')
+        os.makedirs("logs")
     logger = get_logger("logs/valentine_party.log", level=logging.DEBUG)
 
     api_key = os.getenv("OPENAI_API_KEY") or None
@@ -80,6 +80,7 @@ async def main():
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),
         temperature=0.7,
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),
+        embedding_model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),
     )
 
     with open("./data/valentine_party.json", "r") as f:
@@ -147,5 +148,4 @@ async def main():
 
 if __name__ == "__main__":
     dotenv.load_dotenv()
-
     asyncio.run(main())

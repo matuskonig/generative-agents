@@ -1,13 +1,25 @@
 from openai import AsyncClient, RateLimitError
-from typing import TypeVar, Type
+from typing import TypeVar, Type, overload, Callable, Awaitable
 from pydantic import BaseModel
 import time
 from .async_helpers import Throttler
+import numpy as np
 
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
 
 SYSTEM_PROMPT = """You are an agent in a society simulation. You will be given a persona you are supposed to act as."""
+
+
+def rate_limit_repeated[**P, R](func: Callable[P, Awaitable[R]]):
+    async def inner(*args: P.args, **kwargs: P.kwargs):
+        while True:
+            try:
+                return await func(*args, **kwargs)
+            except RateLimitError as e:
+                continue
+
+    return inner
 
 
 class LLMBackend:
@@ -17,23 +29,19 @@ class LLMBackend:
         model: str,
         temperature: float,
         RPS: int | float | None,
+        embedding_model: str | None = None,
     ) -> None:
         self.__client = client
         self.__chat_model = model
+        self.__embedding_model = embedding_model
         self.__temperature = temperature
         self.__throttle = Throttler(RPS) if RPS else None
         self.completion_tokens = 0
         self.prompt_tokens = 0
         self.total_time = 0
 
+    @rate_limit_repeated
     async def get_text_response(self, prompt: str):
-        while True:
-            try:
-                return await self.__get_text_response_impl(prompt)
-            except RateLimitError as e:
-                continue
-
-    async def __get_text_response_impl(self, prompt: str):
         if self.__throttle:
             await self.__throttle()
 
@@ -52,16 +60,8 @@ class LLMBackend:
 
         return response.choices[0].message.content
 
+    @rate_limit_repeated
     async def get_structued_response(
-        self, prompt: str, response_format: Type[ResponseFormatType]
-    ) -> ResponseFormatType | str | None:
-        while True:
-            try:
-                return await self.__get_structued_response_impl(prompt, response_format)
-            except RateLimitError as e:
-                continue
-
-    async def __get_structued_response_impl(
         self, prompt: str, response_format: Type[ResponseFormatType]
     ) -> ResponseFormatType | str | None:
         if self.__throttle:
@@ -80,3 +80,29 @@ class LLMBackend:
 
         message = response.choices[0].message
         return message.parsed or message.refusal
+
+    @overload
+    async def embed_text(self, input: str) -> np.ndarray: ...
+    @overload
+    async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
+    @rate_limit_repeated
+    async def embed_text(self, input: str | list[str]):
+        if not self.__embedding_model:
+            raise ValueError(
+                "Embedding model is not set, however embedding action is requested."
+            )
+        if self.__throttle:
+            await self.__throttle()
+
+        response = await self.__client.embeddings.create(
+            model=self.__embedding_model,
+            input=input,
+        )
+  
+        if type(input) == str:
+            return np.array(response.data[0].embedding)
+
+        return [
+            np.array(embedding_response.embedding)
+            for embedding_response in response.data
+        ]
