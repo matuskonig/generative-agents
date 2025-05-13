@@ -67,7 +67,6 @@ class ExperimentData(BaseModel):
     # use implicit agent ordering, 0-indexed
     edges: list[tuple[int, int]]
 
-
 async def main():
     if not os.path.exists("logs"):
         os.makedirs("logs")
@@ -78,7 +77,7 @@ async def main():
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),
-        temperature=0.7,
+        temperature=1,
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),
         embedding_model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),
     )
@@ -114,7 +113,7 @@ async def main():
         max_conversation_utterances=12,
         logger=logger,
     )
-    for i in range(4):
+    for i in range(3):
         await manager.run_simulation_epoch()
 
     question = "When is the party happening ? Did you hear about the party ?"
@@ -129,17 +128,11 @@ async def main():
     print(f"Prompt tokens: {context.prompt_tokens}")
     print(f"Tokens per second: {context.completion_tokens / context.total_time:.2f}")
 
-    def get_memory(agent: LLMAgent):
-        return "\n".join(
-            [
-                agent.memory.get_agent_memory(),
-                "Facts about others:",
-                agent.memory.dump_agents_knowledge(),
-            ]
-        )
-
     for agent in agents:
-        logger.debug(agent.data.full_name, extra={"memory": get_memory(agent)})
+        logger.debug(
+            agent.data.full_name,
+            extra={"memory": await agent.memory_manager.get_tagged_full_memory()},
+        )
 
 
 # TODO: memory compression

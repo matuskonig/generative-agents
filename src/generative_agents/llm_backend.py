@@ -8,8 +8,6 @@ import numpy as np
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
 
-SYSTEM_PROMPT = """You are an agent in a society simulation. You will be given a persona you are supposed to act as."""
-
 
 def rate_limit_repeated[**P, R](func: Callable[P, Awaitable[R]]):
     async def inner(*args: P.args, **kwargs: P.kwargs):
@@ -23,6 +21,7 @@ def rate_limit_repeated[**P, R](func: Callable[P, Awaitable[R]]):
 
 
 class LLMBackend:
+
     def __init__(
         self,
         client: AsyncClient,
@@ -31,6 +30,9 @@ class LLMBackend:
         RPS: int | float | None,
         embedding_model: str | None = None,
     ) -> None:
+
+        from .agent import default_builder
+
         self.__client = client
         self.__chat_model = model
         self.__embedding_model = embedding_model
@@ -39,6 +41,7 @@ class LLMBackend:
         self.completion_tokens = 0
         self.prompt_tokens = 0
         self.total_time = 0
+        self.system_prompt = default_builder().get_system_prompt()
 
     @rate_limit_repeated
     async def get_text_response(self, prompt: str):
@@ -49,7 +52,7 @@ class LLMBackend:
         response = await self.__client.chat.completions.create(
             model=self.__chat_model,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": self.system_prompt},
                 {"role": "user", "content": prompt},
             ],
             temperature=self.__temperature,
@@ -70,7 +73,10 @@ class LLMBackend:
         start = time.time()
         response = await self.__client.beta.chat.completions.parse(
             model=self.__chat_model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": self.system_prompt},
+                {"role": "user", "content": prompt},
+            ],
             temperature=self.__temperature,
             response_format=response_format,
         )
@@ -98,7 +104,7 @@ class LLMBackend:
             model=self.__embedding_model,
             input=input,
         )
-  
+
         if type(input) == str:
             return np.array(response.data[0].embedding)
 

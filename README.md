@@ -60,6 +60,20 @@ python experiments/valentine_party.py
 
 Sample experiments are located in the `experiments` directory.
 
+### Overriding the prompts
+You can override the default provided prompts from the model by subclassing the `DefaultPromptBuilder`, replacing the methods 
+and overriding the config by provided decorator.
+
+```
+@default_builder.override(DefaultPromptBuilder())
+async def main():
+   ...
+
+with default_builder.override(DefaultPromptBuilder()):
+   ...
+```
+
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

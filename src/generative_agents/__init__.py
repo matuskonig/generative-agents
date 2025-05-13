@@ -1,4 +1,4 @@
-from .agent import LLMAgent, AgentModelBase
+from .agent import LLMAgent, AgentModelBase, default_builder, DefaultPromptBuilder
 from .llm_backend import LLMBackend
 from .conversation_managment import (
     ConversationManager,
@@ -13,5 +13,7 @@ __all__ = [
     "ConversationManager",
     "SequentialConversationSelector",
     "ConversationSelectorABC",
+    DefaultPromptBuilder,
+    default_builder
 ]
 PACKAGE_VERSION = "1.0.0"

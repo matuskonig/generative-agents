@@ -2,7 +2,7 @@ from typing import Iterable
 import asyncio
 import networkx as nx
 import abc
-from .agent import LLMAgent, Utterance, Conversation, conversation_to_text
+from .agent import LLMAgent, Utterance, Conversation, default_builder
 import numpy as np
 import logging
 
@@ -87,12 +87,14 @@ class ConversationManager:
             if len(conversation) == 0:
                 message = await agent1.start_conversation(agent2)
                 conversation.append(
-                    (agent1, Utterance(message=message, is_ending_conversation=False))
+                    (agent1, Utterance(message=message, is_conversation_finished=False))
                 )
             else:
-                next_utterance = await agent1.generate_next_turn(agent2, conversation)
+                next_utterance = await agent1.generate_next_turn(
+                    agent2, list(conversation)
+                )
                 conversation.append((agent1, next_utterance))
-                if next_utterance.is_ending_conversation:
+                if next_utterance.is_conversation_finished:
                     break
             agent2, agent1 = agent1, agent2
 
@@ -103,7 +105,9 @@ class ConversationManager:
         if self._logger:
             self._logger.debug(
                 f"Conversation between agents {agent1.data.full_name} - {agent2.data.full_name}",
-                extra={"conversation": conversation_to_text(conversation)},
+                extra={
+                    "conversation": default_builder().conversation_to_text(conversation)
+                },
             )
         await asyncio.gather(
             agent1.adjust_memory_after_conversation(
