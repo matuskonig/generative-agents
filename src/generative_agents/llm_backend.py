@@ -41,6 +41,7 @@ class LLMBackend:
         self.completion_tokens = 0
         self.prompt_tokens = 0
         self.total_time = 0
+        self.total_requests = 0
         self.system_prompt = default_builder().get_system_prompt()
 
     @rate_limit_repeated
@@ -60,6 +61,7 @@ class LLMBackend:
         self.total_time += time.time() - start
         self.completion_tokens += response.usage.completion_tokens
         self.prompt_tokens += response.usage.prompt_tokens
+        self.total_requests += 1
 
         return response.choices[0].message.content
 
@@ -83,6 +85,7 @@ class LLMBackend:
         self.total_time += time.time() - start
         self.completion_tokens += response.usage.completion_tokens
         self.prompt_tokens += response.usage.prompt_tokens
+        self.total_requests += 1
 
         message = response.choices[0].message
         return message.parsed or message.refusal

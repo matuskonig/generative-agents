@@ -67,6 +67,7 @@ class ExperimentData(BaseModel):
     # use implicit agent ordering, 0-indexed
     edges: list[tuple[int, int]]
 
+
 async def main():
     if not os.path.exists("logs"):
         os.makedirs("logs")
@@ -113,7 +114,7 @@ async def main():
         max_conversation_utterances=12,
         logger=logger,
     )
-    for i in range(3):
+    for i in range(2):
         await manager.run_simulation_epoch()
 
     question = "When is the party happening ? Did you hear about the party ?"
@@ -127,6 +128,10 @@ async def main():
     print(f"Completion tokens: {context.completion_tokens}")
     print(f"Prompt tokens: {context.prompt_tokens}")
     print(f"Tokens per second: {context.completion_tokens / context.total_time:.2f}")
+    print(
+        f"Total requests: {context.total_requests}, avg input: {context.prompt_tokens/context.total_requests}, avt output: {context.completion_tokens/context.total_requests}"
+    )
+    print(f"Avg time per request: {context.total_time/context.total_requests}")
 
     for agent in agents:
         logger.debug(
