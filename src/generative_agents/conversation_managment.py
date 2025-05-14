@@ -87,7 +87,14 @@ class ConversationManager:
             if len(conversation) == 0:
                 message = await agent1.start_conversation(agent2)
                 conversation.append(
-                    (agent1, Utterance(message=message, is_conversation_finished=False))
+                    (
+                        agent1,
+                        Utterance(
+                            actions=["initial greeting"],
+                            message=message,
+                            is_conversation_finished=False,
+                        ),
+                    )
                 )
             else:
                 next_utterance = await agent1.generate_next_turn(

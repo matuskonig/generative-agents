@@ -1,5 +1,5 @@
 from typing import Type
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import abc
 import logging
 from .llm_backend import LLMBackend, ResponseFormatType
@@ -65,14 +65,13 @@ class DefaultPromptBuilder:
             f"We are currently engaged in a conversation with {second_agent.data.full_name}. This is the content of the conversation so far:",
             "<conversation>",
             self.conversation_to_text(conversation),
-            f"[{agent.data.full_name}]: [FILL-IN]",
+            f"[{agent.data.full_name}]: [MASK]",
             "</conversation>",
             "What should I say next? Focus on the conversation content and the person I am talking to.",
             "If you get bored, the conversation got repetitive or the topic has been exhausted, switch the topic.",
             "The conversation will be limited to fixed number of utterances.",
-            "Use the communication style of the given persona, stick to the conversation style as well. Dont be too formal, omit the formal phrases.",
+            "Use the communication style of the given persona, stick to the conversation style as well. Dont be too formal, keep the conversation natural.",
             "You can end the conversation at any time, just say your goodbyes and set the respective property in the response. Prefer this option if you feel the conversation is not going anywhere.",
-            "Dont be repetitive, prefer the variety of the conversation.",
             (
                 f"Respond in JSON following this schema: {response_format}"
                 if response_format
@@ -121,10 +120,10 @@ class DefaultPromptBuilder:
             await agent.get_agent_introduction_message(),
             memory_prompt,
             f"I have just finished a conversation with {other_agent.data.full_name}. Summarize the information learned from this conversation.",
-            "Select the relevant and new information only. Select the facts in biggest detail possible, try to capture everything.",
+            "Select the relevant and new information only. Select the facts in biggest detail possible.",
             "You will have access to those information in the following conversations, so select carefully only the information you can build your future conversations on.",
             "Extract data not present in the memory yet. Focus on the topics, information and news mentioned in the conversation and not on the world knowledge.",
-            "Use this memory as a sticky note, remember any important information and thoughts that might be consumed later.",
+            "Use this memory as a sticky note, remember any important information and thoughts that might be consumed later, you can memorize important topics as well.",
             "Try to keep the number of selected facts restricted, but you are free to compress the information as you wish.",
             conversation_string,
             (
@@ -249,8 +248,15 @@ class BDIMemoryManager(MemoryManagerBase): ...
 
 
 class Utterance(BaseModel):
-    message: str
-    is_conversation_finished: bool
+    actions: list[str] = Field(
+        description="Exhaustive list of possible actions of the agent in the conversation. For example, you can change topic, continue or end the conversation."
+    )
+    message: str = Field(
+        description="The utterance of the agent in the conversation based on the single action from the list."
+    )
+    is_conversation_finished: bool = Field(
+        description="Mark this utterance as the last one in the conversation."
+    )
 
 
 Conversation = list[tuple["LLMAgent", Utterance]]
