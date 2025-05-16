@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field
 import abc
 import logging
 from .llm_backend import LLMBackend, ResponseFormatType
-from .async_helpers import cached_async_method
 from .utils import OverridableContextVar
 
 
@@ -38,7 +37,7 @@ class DefaultPromptBuilder:
         self, memory_content: str, agent: "LLMAgent", second_agent: "LLMAgent"
     ):
         memory_prompt = self.memory_prompt(memory_content)
-
+        agent.get_agent_introduction_message
         prompt_template = [
             f"I am {agent.data.full_name}. I have this greeting message:",
             await agent.get_agent_introduction_message(),
@@ -231,7 +230,7 @@ class SimpleMemoryManager(MemoryManagerBase):
                 conversation
             ),
             memory_string=await self.get_tagged_full_memory(),
-            response_format=FactResponse.model_json_schema(),
+            response_format=str(FactResponse.model_json_schema()),
         )
 
         result = await self._agent.context.get_structued_response(
@@ -276,11 +275,16 @@ class LLMAgent:
         self.data = data
         self.context = context
         self.memory_manager = SimpleMemoryManager(SimpleMemory(), self)
+        self.__intro_message: str | None = None
 
-    @cached_async_method(max_cache_size=1)
     async def get_agent_introduction_message(self):
+        if self.__intro_message:
+            return self.__intro_message
+
         prompt = default_builder().get_introduction_prompt(self.data)
-        return await self.context.get_text_response(prompt)
+        response = await self.context.get_text_response(prompt) or ""
+        self.__intro_message = response
+        return response
 
     async def start_conversation(self, second_agent: "LLMAgent"):
         prompt = await default_builder().start_conversation_prompt(
@@ -292,7 +296,7 @@ class LLMAgent:
 
     async def generate_next_turn(
         self, second_agent: "LLMAgent", conversation: Conversation
-    ):
+    ) -> Utterance:
 
         response = await self.context.get_structued_response(
             await default_builder().generate_next_turn_prompt(
@@ -300,7 +304,7 @@ class LLMAgent:
                 self,
                 second_agent,
                 conversation,
-                response_format=Utterance.model_json_schema(),
+                response_format=str(Utterance.model_json_schema()),
             ),
             Utterance,
         )
@@ -320,7 +324,7 @@ class LLMAgent:
             await self.memory_manager.get_tagged_full_memory(),
             self,
             question,
-            response_format=response_format.model_json_schema(),
+            response_format=str(response_format.model_json_schema()),
         )
         return await self.context.get_structued_response(
             prompt, response_format=response_format

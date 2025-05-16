@@ -59,8 +59,10 @@ class LLMBackend:
             temperature=self.__temperature,
         )
         self.total_time += time.time() - start
-        self.completion_tokens += response.usage.completion_tokens
-        self.prompt_tokens += response.usage.prompt_tokens
+        self.completion_tokens += (
+            response.usage.completion_tokens if response.usage else 0
+        )
+        self.prompt_tokens += response.usage.prompt_tokens if response.usage else 0
         self.total_requests += 1
 
         return response.choices[0].message.content
@@ -68,7 +70,7 @@ class LLMBackend:
     @rate_limit_repeated
     async def get_structued_response(
         self, prompt: str, response_format: Type[ResponseFormatType]
-    ) -> ResponseFormatType | str | None:
+    ) -> ResponseFormatType:
         if self.__throttle:
             await self.__throttle()
 
@@ -83,12 +85,16 @@ class LLMBackend:
             response_format=response_format,
         )
         self.total_time += time.time() - start
-        self.completion_tokens += response.usage.completion_tokens
-        self.prompt_tokens += response.usage.prompt_tokens
+        self.completion_tokens += (
+            response.usage.completion_tokens if response.usage else 0
+        )
+        self.prompt_tokens += response.usage.prompt_tokens if response.usage else 0
         self.total_requests += 1
 
         message = response.choices[0].message
-        return message.parsed or message.refusal
+        if not message.parsed:
+            raise ValueError("Model refused to parse the response")
+        return message.parsed
 
     @overload
     async def embed_text(self, input: str) -> np.ndarray: ...

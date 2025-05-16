@@ -51,7 +51,7 @@ class SequentialConversationSelector(ConversationSelectorABC):
         conversation_pairs: list[tuple[LLMAgent, LLMAgent]] = list(
             self.__structure.edges
         )
-        self.seed.shuffle(conversation_pairs)
+        self.seed.shuffle(conversation_pairs)  # type: ignore numpy is defined on number arrays only, but this works for all
         conversation_pairs = [
             (first, second) if self.seed.random() < 0.5 else (second, first)
             for (first, second) in conversation_pairs
@@ -85,7 +85,7 @@ class ConversationManager:
 
         for _ in range(self.max_conversation_utterances):
             if len(conversation) == 0:
-                message = await agent1.start_conversation(agent2)
+                message = await agent1.start_conversation(agent2) or ""
                 conversation.append(
                     (
                         agent1,
