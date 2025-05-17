@@ -1,9 +1,11 @@
-from typing import Type
-from pydantic import BaseModel, Field
+from typing import Type, Annotated
+from pydantic import BaseModel, Field, ConfigDict, PlainSerializer, BeforeValidator
 import abc
 import logging
 from .llm_backend import LLMBackend, ResponseFormatType
 from .utils import OverridableContextVar
+import numpy as np
+from numpydantic import NDArray
 
 
 class DefaultPromptBuilder:
@@ -124,6 +126,7 @@ class DefaultPromptBuilder:
             "Extract data not present in the memory yet. Focus on the topics, information and news mentioned in the conversation and not on the world knowledge.",
             "Use this memory as a sticky note, remember any important information and thoughts that might be consumed later, you can memorize important topics as well.",
             "Try to keep the number of selected facts restricted, but you are free to compress the information as you wish.",
+            "You can select the relevance score as a number between 0 and 1, highlighting the most important information. Please mark not important information on the lower scale.",
             conversation_string,
             (
                 f"Respond in JSON following this format: {response_format}"
@@ -148,50 +151,79 @@ class AgentModelBase(BaseModel, abc.ABC):
         return self.model_dump_json()
 
 
+class MemoryRecordResponse(BaseModel):
+    text: str
+    relevance: float
+
+
+class MemoryRecord(MemoryRecordResponse):
+    timestamp: int
+
+
+class MemoryRecordWithEmbedding(MemoryRecord):
+    embedding: NDArray
+
+
 class MemoryBase(abc.ABC):
     @abc.abstractmethod
-    async def full_retrieval(self) -> list[str]:
+    def full_retrieval(self) -> list[MemoryRecord]:
         """Return all facts in the memory as a list of strings."""
         pass
 
     @abc.abstractmethod
-    async def query_retrieval(self, query: str) -> list[str]:
+    async def query_retrieval(self, query: str) -> list[MemoryRecord]:
         """Return a list of facts that match the query."""
         pass
 
     @abc.abstractmethod
-    async def store_facts(self, facts: list[str]):
+    async def store_facts(self, facts: list[MemoryRecordResponse]):
         """Append new facts to the memory."""
-        pass
 
     # TODO fact removal API
+    @abc.abstractmethod
+    async def remove_facts(self):
+        pass
 
 
 class SimpleMemory(MemoryBase):
     def __init__(self):
-        self.__memory: list[str] = []
+        self.__timestamp = 0
+        self.__memory: list[MemoryRecord] = []
 
-    async def full_retrieval(self) -> list[str]:
+    def full_retrieval(self) -> list[MemoryRecord]:
         return self.__memory
 
-    async def query_retrieval(self, query: str) -> list[str]:
+    async def query_retrieval(self, query: str) -> list[MemoryRecord]:
         return self.__memory
 
-    async def store_facts(self, facts: list[str]):
-        self.__memory.extend(facts)
+    def __get_next_timestamp(self):
+        self.__timestamp += 1
+        return self.__timestamp
+
+    async def store_facts(self, facts: list[MemoryRecordResponse]):
+        self.__memory.extend(
+            [
+                MemoryRecord(timestamp=self.__get_next_timestamp(), **fact.model_dump())
+                for fact in facts
+            ]
+        )
+
+    async def remove_facts(self):
+        self.__memory = []
 
 
 class ExtendedMemory(MemoryBase):
-    def __init__(self, context: LLMBackend): ...
+    def __init__(self, context: LLMBackend):
+        self.__context = context
 
-    async def full_retrieval(self) -> list[str]: ...
-    async def query_retrieval(self, query: str) -> list[str]: ...
-    async def store_facts(self, facts: list[str]): ...
+    def full_retrieval(self) -> list[MemoryRecord]: ...
+    async def query_retrieval(self, query: str) -> list[MemoryRecord]: ...
+    async def store_facts(self, facts: list[MemoryRecordResponse]): ...
 
 
 class MemoryManagerBase(abc.ABC):
     @abc.abstractmethod
-    async def get_tagged_full_memory(self) -> str:
+    def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
         pass
 
     @abc.abstractmethod
@@ -210,13 +242,24 @@ class SimpleMemoryManager(MemoryManagerBase):
         self.memory = memory
         self._agent = agent
 
-    async def get_tagged_full_memory(self) -> str:
-        return "<memory>" + "\n".join(await self.memory.full_retrieval()) + "</memory>"
+    def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
+        return (
+            "<memory>"
+            + "\n".join(
+                [
+                    record.model_dump_json() if with_full_memory_record else record.text
+                    for record in self.memory.full_retrieval()
+                ]
+            )
+            + "</memory>"
+        )
 
     async def get_tagged_memory_by_query(self, query: str) -> str:
         return (
             "<memory>"
-            + "\n".join(await self.memory.query_retrieval(query))
+            + "\n".join(
+                [record.text for record in await self.memory.query_retrieval(query)]
+            )
             + "</memory>"
         )
 
@@ -229,14 +272,14 @@ class SimpleMemoryManager(MemoryManagerBase):
             conversation_string=default_builder().conversation_to_tagged_text(
                 conversation
             ),
-            memory_string=await self.get_tagged_full_memory(),
+            memory_string=self.get_tagged_full_memory(with_full_memory_record=True),
             response_format=str(FactResponse.model_json_schema()),
         )
 
         result = await self._agent.context.get_structued_response(
             prompt, response_format=FactResponse
         )
-        await self.memory.store_facts([fact.text for fact in result.facts])
+        await self.memory.store_facts(result.facts)
 
 
 class BDIMemoryManager(MemoryManagerBase): ...
@@ -261,12 +304,8 @@ class Utterance(BaseModel):
 Conversation = list[tuple["LLMAgent", Utterance]]
 
 
-class Fact(BaseModel):
-    text: str
-
-
 class FactResponse(BaseModel):
-    facts: list[Fact]
+    facts: list[MemoryRecordResponse]
 
 
 # TODO: query-scoped memory access
@@ -288,7 +327,7 @@ class LLMAgent:
 
     async def start_conversation(self, second_agent: "LLMAgent"):
         prompt = await default_builder().start_conversation_prompt(
-            await self.memory_manager.get_tagged_full_memory(), self, second_agent
+            self.memory_manager.get_tagged_full_memory(), self, second_agent
         )
 
         response = await self.context.get_text_response(prompt)
@@ -300,7 +339,9 @@ class LLMAgent:
 
         response = await self.context.get_structued_response(
             await default_builder().generate_next_turn_prompt(
-                await self.memory_manager.get_tagged_full_memory(),
+                await self.memory_manager.get_tagged_memory_by_query(
+                    default_builder().conversation_to_tagged_text(conversation)
+                ),
                 self,
                 second_agent,
                 conversation,
@@ -310,18 +351,31 @@ class LLMAgent:
         )
         return response
 
-    async def ask_agent(self, question: str):
+    async def ask_agent(self, question: str, use_full_memory: bool = True):
         prompt = await default_builder().ask_agent_prompt(
-            await self.memory_manager.get_tagged_full_memory(), self, question
+            (
+                self.memory_manager.get_tagged_full_memory()
+                if use_full_memory
+                else await self.memory_manager.get_tagged_memory_by_query(question)
+            ),
+            self,
+            question,
         )
         return await self.context.get_text_response(prompt)
 
     async def ask_agent_structured(
-        self, question: str, response_format: Type[ResponseFormatType]
+        self,
+        question: str,
+        response_format: Type[ResponseFormatType],
+        use_full_memory: bool = True,
     ):
 
         prompt = await default_builder().ask_agent_prompt(
-            await self.memory_manager.get_tagged_full_memory(),
+            (
+                self.memory_manager.get_tagged_full_memory()
+                if use_full_memory
+                else await self.memory_manager.get_tagged_memory_by_query(question)
+            ),
             self,
             question,
             response_format=str(response_format.model_json_schema()),
@@ -340,3 +394,4 @@ class LLMAgent:
 
 
 # TODO: ask questions with followups (continuous questions)
+# TODO: logger for new memory model
