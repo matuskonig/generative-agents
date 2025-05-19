@@ -43,7 +43,7 @@ def get_logger(file_name: str, level) -> logging.Logger:
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
-    return XMLExtraAdapter(logger)
+    return XMLExtraAdapter(logger)  # type: ignore
 
 
 # TODO: characteristiscs as description ?
@@ -77,9 +77,9 @@ async def main():
     client = AsyncOpenAI(base_url=os.getenv("OPENAI_BASE_URL"), api_key=api_key)
     context = LLMBackend(
         client=client,
-        model=os.getenv("OPENAI_COMPLETIONS_MODEL"),
+        model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
         temperature=1,
-        RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),
+        RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
         embedding_model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),
     )
 
@@ -136,7 +136,7 @@ async def main():
     for agent in agents:
         logger.debug(
             agent.data.full_name,
-            extra={"memory": await agent.memory_manager.get_tagged_full_memory()},
+            extra={"memory": agent.memory_manager.get_tagged_full_memory()},
         )
 
 

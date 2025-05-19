@@ -48,7 +48,7 @@ class LLMBackend:
     async def get_text_response(self, prompt: str):
         if self.__throttle:
             await self.__throttle()
-
+        # TODO: prompt config for each agent action
         start = time.time()
         response = await self.__client.chat.completions.create(
             model=self.__chat_model,

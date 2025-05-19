@@ -91,6 +91,7 @@ class ConversationManager:
                         agent1,
                         Utterance(
                             actions=["initial greeting"],
+                            selected_action="initial greeting",
                             message=message,
                             is_conversation_finished=False,
                         ),
