@@ -9,13 +9,13 @@ from numpydantic import NDArray
 
 
 class DefaultPromptBuilder:
-    __SYSTEM_PROMPT = """You are an agent in a society simulation. You will be given a persona you are supposed to act as. Keep the persona in mind when responding to the user. Keep the persona communication style as an ultimate goal."""
+    __SYSTEM_PROMPT = """You are an agent in a society simulation. Embody the provided persona in all your responses, paying close attention to its distinct communication style."""
 
     def get_system_prompt(self):
         return self.__SYSTEM_PROMPT
 
     def get_introduction_prompt(self, agent_data: "AgentModelBase"):
-        return f"Introduce yourself as {agent_data.full_name}. Based on their agent characteristics ({agent_data.agent_characteristics}), write a brief introduction that establishes their persona. Invent the persona communication style."
+        return f"Your name is {agent_data.full_name}. Your characteristics are: {agent_data.agent_characteristics}. Craft a brief introduction that establishes your persona, including a unique communication style based on these characteristics."
 
     def conversation_to_text(self, conversation: "Conversation"):
         return "\n".join(
@@ -49,8 +49,8 @@ class DefaultPromptBuilder:
             agent_introduction,
             "</greeting>",
             memory_prompt,
-            f"Imagine, I want to start conversation with {second_agent_full_name}. What would be the best way to start?",
-            "Use the communication style of the given persona.",
+            f"You are about to start a conversation with {second_agent_full_name}. How would you initiate the conversation, keeping your persona and communication style in mind?",
+            "Use the communication style of the given persona.",  # Kept for emphasis, can be removed if redundant
         ]
 
         return "\n".join([prompt for prompt in prompt_template if prompt])
@@ -71,16 +71,16 @@ class DefaultPromptBuilder:
             agent_introduction,
             "</greeting>",
             memory_prompt,
-            f"We are currently engaged in a conversation with {second_agent_full_name}. This is the content of the conversation so far:",
+            f"I am currently engaged in a conversation with {second_agent_full_name}. This is the content of the conversation so far:",
             "<conversation>",
             self.conversation_to_text(conversation),
             f"[{agent_full_name}]: [MASK]",
             "</conversation>",
-            "What should I say next? Focus on the conversation content and the person I am talking to.",
-            "If you get bored, the conversation got repetitive or the topic has been exhausted, switch the topic.",
+            f"What is your next response? Consider the ongoing conversation, your persona, and {second_agent_full_name}.",
+            "If the conversation becomes repetitive, the topic is exhausted, or you (as your persona) would realistically get bored, gracefully switch the topic.",
             "The conversation might be limited to fixed number of utterances.",
-            "Use the communication style of the given persona, stick to the conversation style as well. Dont be too formal, keep the conversation natural.",
-            "You can end the conversation at any time, just say your goodbyes and set the respective property in the response. Prefer this option if you feel the conversation is not going anywhere.",
+            "Maintain your persona's communication style. Keep the conversation natural and engaging. Address any questions asked.",
+            "If the conversation is not progressing, or if it's a natural point to conclude, end the conversation by saying goodbye and setting the appropriate response property.",
             (
                 f"Respond in JSON following this schema: {response_format}"
                 if response_format
@@ -106,9 +106,9 @@ class DefaultPromptBuilder:
             agent_introduction,
             "</greeting>",
             memory_prompt,
-            "Answer a following question based on the provided information:",
+            "Based on your persona and available information (greeting message and memory), answer the following question:",
             question,
-            "Stick to the question, respond according to your memory. Do not append additional information, do not hallucinate.",
+            "Answer concisely and accurately based *only* on the information provided in your greeting and memory. Do not add information not present in your context or invent details.",
             (
                 f"Respond in JSON following this schema: {response_format}"
                 if response_format
@@ -134,13 +134,13 @@ class DefaultPromptBuilder:
             agent_introduction,
             "</greeting>",
             memory_prompt,
-            f"I have just finished a conversation with {other_agent_full_name}. Summarize the information learned from this conversation.",
-            "Select the relevant and new information only. Select the facts in biggest detail possible.",
-            "You will have access to those information in the following conversations, so select carefully only the information you can build your future conversations on.",
-            "Extract data not present in the memory yet. Focus on the topics, information and news mentioned in the conversation and not on the world knowledge.",
-            "Use this memory as a sticky note, remember any important information and thoughts that might be consumed later, you can memorize important topics as well.",
-            "Try to keep the number of selected facts restricted, but you are free to compress the information as you wish.",
-            "Select the relevance score as a number between 0 and 1, highlighting the most important information. Please mark not important information on the lower scale.",
+            f"You have just finished a conversation with {other_agent_full_name}. Summarize the key information you learned from this interaction.",
+            "Identify relevant and new facts from the conversation. Capture these facts with as much detail as possible, focusing on information not already in your memory.",
+            "This summary will be added to your memory for future conversations. Prioritize information that will be useful for future interactions.",
+            "Focus on extracting new topics, specific information, and news shared during the conversation. Avoid including general world knowledge.",
+            "Treat this summary as a set of important notes for your future self. Include key topics, insights, and any information that might be valuable later.",
+            "Be concise, but ensure all crucial new information is captured. You can compress information where appropriate.",
+            "Assign a relevance score (0.0 to 1.0) to each fact. Higher scores indicate greater importance for future recall. Use lower scores for less critical information.",
             conversation_string,
             (
                 f"Respond in JSON following this format: {response_format}"
