@@ -1,4 +1,4 @@
-from typing import Type, Sequence, Iterable, Callable
+from typing import Type, Sequence, Iterable, Callable, Union, Literal
 from pydantic import BaseModel, Field
 import abc
 import logging
@@ -141,6 +141,65 @@ class DefaultPromptBuilder:
             "Treat this summary as a set of important notes for your future self. Include key topics, insights, and any information that might be valuable later.",
             "Be concise, but ensure all crucial new information is captured. You can compress information where appropriate.",
             "Assign a relevance score (0.0 to 1.0) to each fact. Higher scores indicate greater importance for future recall. Use lower scores for less critical information.",
+            conversation_string,
+            (
+                f"Respond in JSON following this format: {response_format}"
+                if response_format
+                else None
+            ),
+        ]
+        return "\n".join([prompt for prompt in prompt_template if prompt])
+
+    def get_bdi_init_prompt(
+        self,
+        agent_full_name: str,
+        agent_introduction: str,
+        memory_string: str | None = None,
+        response_format: str | None = None,
+    ):
+        memory_prompt = self.memory_prompt(memory_string) if memory_string else None
+        prompt_template = [
+            f"I am {agent_full_name}. I have this greeting message:",
+            "<greeting>",
+            agent_introduction,
+            "</greeting>",
+            memory_prompt,
+            "Firstly, you have select desires from your current beliefs, goals you can consider to achieve in the future conversations. You can select multiple desires.",
+            f"Secondly, you have to select intention, the goal you are actively pursuing in the future conversations.",
+            "You will have access to the intention in the future conversations, however your desires are accessible only now.",
+            "You can change your intention only if you think the current intention is considered done, no longer relevant or achievable and only after finishing the conversation.",
+            (
+                f"Respond in JSON following this format: {response_format}"
+                if response_format
+                else None
+            ),
+        ]
+        return "\n".join([prompt for prompt in prompt_template if prompt])
+
+    def get_bdi_update_prompt(
+        self,
+        agent_full_name: str,
+        agent_introduction: str,
+        other_agent_full_name: str,
+        conversation_string: str,
+        memory_string: str | None = None,
+        response_format: str | None = None,
+    ):
+        memory_prompt = self.memory_prompt(memory_string) if memory_string else None
+        prompt_template = [
+            f"I am {agent_full_name}. I have this greeting message:",
+            "<greeting>",
+            agent_introduction,
+            "</greeting>",
+            memory_prompt,
+            f"You have just finished a conversation with {other_agent_full_name}.",
+            "You have selected beliefs, desires and intentions previously.",
+            "You have a chance to reconsider your desires and intentions from your beliefs based on the conversation.",
+            "You can leave the desires and intentions unchanged, or you can pick intention from the desires. You can also select a new set of desires, together with the intention.",
+            "Desires are the goals you can consider to achieve in the future conversations. You can select multiple desires.",
+            "Intention is the goal you are actively pursuing in the future conversations.",
+            "You will have access to the intention in the future conversations, however your desires are accessible only now.",
+            "You can change your intention only if you think the current intention is considered done, no longer relevant or achievable and only after finishing the conversation.",
             conversation_string,
             (
                 f"Respond in JSON following this format: {response_format}"
@@ -352,16 +411,22 @@ class MemoryManagerBase(abc.ABC):
     ):
         pass
 
+    @abc.abstractmethod
+    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+        pass
+
 
 class SimpleMemoryManager(MemoryManagerBase):
     def __init__(self, memory: MemoryBase, agent: "LLMAgent"):
         self.memory = memory
         self._agent = agent
 
+    def _get_memory_tag(self, memory_string: str):
+        return f"<memory>{memory_string}</memory>"
+
     def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
-        return (
-            "<memory>"
-            + "\n".join(
+        return self._get_memory_tag(
+            "\n".join(
                 [
                     (
                         record.model_dump_json(include=set(MemoryRecord.model_fields))
@@ -371,17 +436,17 @@ class SimpleMemoryManager(MemoryManagerBase):
                     for record in self.memory.full_retrieval()
                 ]
             )
-            + "</memory>"
         )
 
     async def get_tagged_memory_by_query(self, query: str) -> str:
-        return (
-            "<memory>"
-            + "\n".join(
-                [record.text for record in await self.memory.query_retrieval(query)]
+        return self._get_memory_tag(
+            "\n".join(
+                ([record.text for record in await self.memory.query_retrieval(query)])
             )
-            + "</memory>"
         )
+
+    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+        pass
 
     async def post_conversation_hook(
         self, other_agent: "LLMAgent", conversation: "Conversation"
@@ -402,11 +467,141 @@ class SimpleMemoryManager(MemoryManagerBase):
         await self.memory.store_facts(result.facts)
 
 
-class BDIMemoryManager(MemoryManagerBase): ...
+class BDIData(BaseModel):
+    desires: list[str]
+    intention: str
 
 
-# RAG for memory retrieval
-# BDI architecture for light conversation planning
+class BDINoChanges(BaseModel):
+    tag: Literal["no_change"]
+
+
+class BDIChangeIntention(BaseModel):
+    tag: Literal["change_intention"]
+    intention: str
+
+
+class BDIFullChange(BDIData):
+    tag: Literal["full_change"]
+
+
+class BDIResponse(BaseModel):
+    data: Union[BDINoChanges, BDIChangeIntention, BDIFullChange] = Field(
+        discriminator="tag"
+    )
+
+
+class BDIMemoryManager(MemoryManagerBase):
+    """Simple memory manager elevating Belief-Desire-Intention (BDI) architecture."""
+
+    def __init__(
+        self, memory: MemoryBase, agent: "LLMAgent", prune_old_memory: bool = True
+    ):
+        self.memory = memory
+        self._agent = agent
+        self.__bdi_data: BDIData | None = None
+        self.prune_old_memory = prune_old_memory
+
+    def _get_memory_tag(
+        self, memory_string: str, with_desires=False, with_intention: bool = True
+    ):
+        memory = f"<memory>{memory_string}</memory>"
+        desires = (
+            f'<desires>{"\n".join(self.__bdi_data.desires)}</desires>'
+            if with_desires and self.__bdi_data
+            else ""
+        )
+        intention = (
+            f"<intention>{self.__bdi_data.intention}</intention>"
+            if with_intention and self.__bdi_data
+            else ""
+        )
+        return f"{memory}{desires}{intention}"
+
+    def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
+        return self._get_memory_tag(
+            "\n".join(
+                [
+                    (
+                        record.model_dump_json(include=set(MemoryRecord.model_fields))
+                        if with_full_memory_record
+                        else record.text
+                    )
+                    for record in self.memory.full_retrieval()
+                ],
+            )
+        )
+
+    async def get_tagged_memory_by_query(self, query: str) -> str:
+        return self._get_memory_tag(
+            "\n".join(
+                ([record.text for record in await self.memory.query_retrieval(query)])
+            )
+        )
+
+    async def _initialize_bdi(self):
+        prompt = default_builder().get_bdi_init_prompt(
+            self._agent.data.full_name,
+            await self._agent.get_agent_introduction_message(),
+            self.get_tagged_full_memory(with_full_memory_record=True),
+            response_format=str(BDIData.model_json_schema()),
+        )
+        result = await self._agent.context.get_structued_response(prompt, BDIData)
+        self.__bdi_data = result
+
+    async def _update_bdi(self, second_agent: "LLMAgent", conversation: "Conversation"):
+        prompt = default_builder().get_bdi_update_prompt(
+            self._agent.data.full_name,
+            await self._agent.get_agent_introduction_message(),
+            second_agent.data.full_name,
+            default_builder().conversation_to_tagged_text(conversation),
+            self.get_tagged_full_memory(with_full_memory_record=True),
+            response_format=str(BDIResponse.model_json_schema()),
+        )
+        result = await self._agent.context.get_structued_response(
+            prompt, response_format=BDIResponse
+        )
+        if isinstance(result.data, BDINoChanges):
+            return
+        elif isinstance(result.data, BDIChangeIntention) and self.__bdi_data:
+            self.__bdi_data.intention = result.data.intention
+        elif isinstance(result.data, BDIFullChange):
+            self.__bdi_data = result.data
+
+    async def _prune_old_memory(self):
+
+        # TODO: remove some facts from memory
+        ...
+
+    async def _add_new_memory(
+        self, other_agent: "LLMAgent", conversation: "Conversation"
+    ):
+        prompt = default_builder().get_conversation_summary_prompt(
+            agent_full_name=self._agent.data.full_name,
+            agent_introduction=await self._agent.get_agent_introduction_message(),
+            other_agent_full_name=other_agent.data.full_name,
+            conversation_string=default_builder().conversation_to_tagged_text(
+                conversation
+            ),
+            memory_string=self.get_tagged_full_memory(with_full_memory_record=True),
+            response_format=str(FactResponse.model_json_schema()),
+        )
+        result = await self._agent.context.get_structued_response(
+            prompt, response_format=FactResponse
+        )
+        await self.memory.store_facts(result.facts)
+
+    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+        await self._initialize_bdi()
+
+    async def post_conversation_hook(
+        self, other_agent: "LLMAgent", conversation: "Conversation"
+    ):
+        await self._add_new_memory(other_agent, conversation)
+        if self.prune_old_memory:
+            await self._prune_old_memory()
+
+        await self._update_bdi(other_agent, conversation)
 
 
 class Utterance(BaseModel):
@@ -450,13 +645,14 @@ class LLMAgent:
         return response
 
     async def start_conversation(self, second_agent: "LLMAgent"):
+        introduction_message = await self.get_agent_introduction_message()
         prompt = default_builder().start_conversation_prompt(
             self.memory_manager.get_tagged_full_memory(),
             self.data.full_name,
-            await self.get_agent_introduction_message(),
+            introduction_message,
             second_agent.data.full_name,
         )
-
+        await self.memory_manager.pre_conversation_hook(second_agent)
         response = await self.context.get_text_response(prompt)
         return response
 
