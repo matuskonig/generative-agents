@@ -6,6 +6,7 @@ from .llm_backend import LLMBackend, ResponseFormatType
 from .utils import OverridableContextVar
 import numpy as np
 from numpydantic import NDArray
+import random
 
 
 class DefaultPromptBuilder:
@@ -209,6 +210,33 @@ class DefaultPromptBuilder:
         ]
         return "\n".join([prompt for prompt in prompt_template if prompt])
 
+    def get_memory_prune_prompt(
+        self,
+        agent_full_name: str,
+        agent_introduction: str,
+        memory_string: str | None = None,
+        response_format: str | None = None,
+    ):
+        memory_prompt = self.memory_prompt(memory_string) if memory_string else None
+        prompt_template = [
+            f"I am {agent_full_name}. I have this greeting message:",
+            "<greeting>",
+            agent_introduction,
+            "</greeting>",
+            "This is a selected content of your memory.",
+            memory_prompt,
+            "Respective facts are selected randomly from the whole memory, where the probability of selection is rising for older memories.",
+            "You can select memory facts, which you want to remove from your memory. Those memories will no longer be available in any further conversations.",
+            "You have your own judgement in regards of which memories to choose, but try to remove unimportant facts and duplicities.",
+            "Selection is indicated by passing timestamp of the memory to remove.",
+            (
+                f"Respond in JSON following this format: {response_format}"
+                if response_format
+                else None
+            ),
+        ]
+        return "\n".join([prompt for prompt in prompt_template if prompt])
+
 
 default_builder = OverridableContextVar("prompt_builder", DefaultPromptBuilder())
 
@@ -239,6 +267,10 @@ class MemoryRecordWithEmbedding(MemoryRecord):
 
 class MemoryBase(abc.ABC):
     @abc.abstractmethod
+    def current_timestamp(self) -> int:
+        pass
+
+    @abc.abstractmethod
     def full_retrieval(self) -> Sequence[MemoryRecord]:
         """Return all facts in the memory as a list of strings."""
         pass
@@ -261,6 +293,9 @@ class SimpleMemory(MemoryBase):
     def __init__(self):
         self.__timestamp = 0
         self.__memory: list[MemoryRecord] = []
+
+    def current_timestamp(self) -> int:
+        return self.__timestamp
 
     def full_retrieval(self) -> list[MemoryRecord]:
         return self.__memory
@@ -345,6 +380,9 @@ class EmbeddingMemory(MemoryBase):
 
     def __get_next_timestamp(self):
         self.__timestamp += 1
+        return self.__timestamp
+
+    def current_timestamp(self) -> int:
         return self.__timestamp
 
     def full_retrieval(self):
@@ -491,16 +529,31 @@ class BDIResponse(BaseModel):
     )
 
 
+def get_fact_removal_probability_factory(max_prob_coef: float):
+    def inner(current_timestamp: int, fact: MemoryRecord):
+        linear_prob = 1 - (fact.timestamp / current_timestamp)
+        return max_prob_coef * linear_prob
+
+    return inner
+
+
+class PruneFactsResponse(BaseModel):
+    timestamps_to_remove: list[int]
+
+
 class BDIMemoryManager(MemoryManagerBase):
     """Simple memory manager elevating Belief-Desire-Intention (BDI) architecture."""
 
     def __init__(
-        self, memory: MemoryBase, agent: "LLMAgent", prune_old_memory: bool = True
+        self,
+        memory: MemoryBase,
+        agent: "LLMAgent",
+        memory_removal_probability: Callable[[int, MemoryRecord], float] | None = None,
     ):
         self.memory = memory
         self._agent = agent
         self.__bdi_data: BDIData | None = None
-        self.prune_old_memory = prune_old_memory
+        self.memory_removal_probability = memory_removal_probability
 
     def _get_memory_tag(
         self, memory_string: str, with_desires=False, with_intention: bool = True
@@ -569,9 +622,41 @@ class BDIMemoryManager(MemoryManagerBase):
             self.__bdi_data = result.data
 
     async def _prune_old_memory(self):
+        if not self.memory_removal_probability:
+            return
 
-        # TODO: remove some facts from memory
-        ...
+        facts_to_prune = [
+            fact
+            for fact in self.memory.full_retrieval()
+            if random.random()
+            <= self.memory_removal_probability(self.memory.current_timestamp(), fact)
+        ]
+        timestamps = {fact.timestamp for fact in facts_to_prune}
+        if len(facts_to_prune) == 0:
+            return
+
+        memory = "\n".join(
+            [
+                fact.model_dump_json(include=set(MemoryRecord.model_fields))
+                for fact in facts_to_prune
+            ]
+        )
+        prompt = default_builder().get_memory_prune_prompt(
+            self._agent.data.full_name,
+            await self._agent.get_agent_introduction_message(),
+            memory,
+            str(PruneFactsResponse.model_json_schema()),
+        )
+        result = await self._agent.context.get_structued_response(
+            prompt, PruneFactsResponse
+        )
+        validated_timestamps = {
+            timestamp
+            for timestamp in result.timestamps_to_remove
+            if timestamp in timestamps
+        }
+        if len(validated_timestamps):
+            self.memory.remove_facts(list(validated_timestamps))
 
     async def _add_new_memory(
         self, other_agent: "LLMAgent", conversation: "Conversation"
@@ -598,9 +683,7 @@ class BDIMemoryManager(MemoryManagerBase):
         self, other_agent: "LLMAgent", conversation: "Conversation"
     ):
         await self._add_new_memory(other_agent, conversation)
-        if self.prune_old_memory:
-            await self._prune_old_memory()
-
+        await self._prune_old_memory()
         await self._update_bdi(other_agent, conversation)
 
 
