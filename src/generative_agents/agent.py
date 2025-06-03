@@ -2,15 +2,24 @@ from typing import Type, Sequence, Iterable, Callable, Union, Literal
 from pydantic import BaseModel, Field
 import abc
 import logging
-from .llm_backend import LLMBackend, ResponseFormatType
+from .llm_backend import LLMBackend, ResponseFormatType, create_completion_params
 from .utils import OverridableContextVar
 import numpy as np
 from numpydantic import NDArray
 import random
 
 
-class DefaultPromptBuilder:
+class DefaultConfig:
     __SYSTEM_PROMPT = """You are an agent in a society simulation. Embody the provided persona in all your responses, paying close attention to its distinct communication style."""
+
+    def get_factual_llm_params(self):
+        return create_completion_params(temperature=0.3)
+
+    def get_neutral_llm_params(self):
+        return create_completion_params()
+
+    def get_creative_llm_params(self):
+        return create_completion_params(temperature=1.3, frequency_penalty=1.0)
 
     def get_system_prompt(self):
         return self.__SYSTEM_PROMPT
@@ -238,7 +247,7 @@ class DefaultPromptBuilder:
         return "\n".join([prompt for prompt in prompt_template if prompt])
 
 
-default_builder = OverridableContextVar("prompt_builder", DefaultPromptBuilder())
+default_config = OverridableContextVar("default_config", DefaultConfig())
 
 
 class AgentModelBase(BaseModel, abc.ABC):
@@ -401,7 +410,10 @@ class EmbeddingMemory(MemoryBase):
             + self.__similarity_weight * cosine_similarity
         )
 
-    async def query_retrieval(self, query: str):
+    async def query_retrieval(self, query: str) -> list[MemoryRecordWithEmbedding]:
+        if len(self.__memory) == 0:
+            return []
+
         query_embedding = await self.__context.embed_text(query)
         scored_records = sorted(
             [
@@ -483,26 +495,33 @@ class SimpleMemoryManager(MemoryManagerBase):
             )
         )
 
-    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
-        pass
-
-    async def post_conversation_hook(
+    async def _add_new_memory(
         self, other_agent: "LLMAgent", conversation: "Conversation"
     ):
-        prompt = default_builder().get_conversation_summary_prompt(
+        prompt = default_config().get_conversation_summary_prompt(
             agent_full_name=self._agent.data.full_name,
             agent_introduction=await self._agent.get_agent_introduction_message(),
             other_agent_full_name=other_agent.data.full_name,
-            conversation_string=default_builder().conversation_to_tagged_text(
+            conversation_string=default_config().conversation_to_tagged_text(
                 conversation
             ),
             memory_string=self.get_tagged_full_memory(with_full_memory_record=True),
             response_format=str(FactResponse.model_json_schema()),
         )
         result = await self._agent.context.get_structued_response(
-            prompt, response_format=FactResponse
+            prompt,
+            response_format=FactResponse,
+            params=default_config().get_factual_llm_params(),
         )
         await self.memory.store_facts(result.facts)
+
+    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+        pass
+
+    async def post_conversation_hook(
+        self, other_agent: "LLMAgent", conversation: "Conversation"
+    ):
+        await self._add_new_memory(other_agent, conversation)
 
 
 class BDIData(BaseModel):
@@ -593,26 +612,30 @@ class BDIMemoryManager(MemoryManagerBase):
         )
 
     async def _initialize_bdi(self):
-        prompt = default_builder().get_bdi_init_prompt(
+        prompt = default_config().get_bdi_init_prompt(
             self._agent.data.full_name,
             await self._agent.get_agent_introduction_message(),
             self.get_tagged_full_memory(with_full_memory_record=True),
             response_format=str(BDIData.model_json_schema()),
         )
-        result = await self._agent.context.get_structued_response(prompt, BDIData)
+        result = await self._agent.context.get_structued_response(
+            prompt, BDIData, params=default_config().get_neutral_llm_params()
+        )
         self.__bdi_data = result
 
     async def _update_bdi(self, second_agent: "LLMAgent", conversation: "Conversation"):
-        prompt = default_builder().get_bdi_update_prompt(
+        prompt = default_config().get_bdi_update_prompt(
             self._agent.data.full_name,
             await self._agent.get_agent_introduction_message(),
             second_agent.data.full_name,
-            default_builder().conversation_to_tagged_text(conversation),
+            default_config().conversation_to_tagged_text(conversation),
             self.get_tagged_full_memory(with_full_memory_record=True),
             response_format=str(BDIResponse.model_json_schema()),
         )
         result = await self._agent.context.get_structued_response(
-            prompt, response_format=BDIResponse
+            prompt,
+            response_format=BDIResponse,
+            params=default_config().get_neutral_llm_params(),
         )
         if isinstance(result.data, BDINoChanges):
             return
@@ -641,14 +664,14 @@ class BDIMemoryManager(MemoryManagerBase):
                 for fact in facts_to_prune
             ]
         )
-        prompt = default_builder().get_memory_prune_prompt(
+        prompt = default_config().get_memory_prune_prompt(
             self._agent.data.full_name,
             await self._agent.get_agent_introduction_message(),
             memory,
             str(PruneFactsResponse.model_json_schema()),
         )
         result = await self._agent.context.get_structued_response(
-            prompt, PruneFactsResponse
+            prompt, PruneFactsResponse, params=default_config().get_neutral_llm_params()
         )
         validated_timestamps = {
             timestamp
@@ -661,18 +684,20 @@ class BDIMemoryManager(MemoryManagerBase):
     async def _add_new_memory(
         self, other_agent: "LLMAgent", conversation: "Conversation"
     ):
-        prompt = default_builder().get_conversation_summary_prompt(
+        prompt = default_config().get_conversation_summary_prompt(
             agent_full_name=self._agent.data.full_name,
             agent_introduction=await self._agent.get_agent_introduction_message(),
             other_agent_full_name=other_agent.data.full_name,
-            conversation_string=default_builder().conversation_to_tagged_text(
+            conversation_string=default_config().conversation_to_tagged_text(
                 conversation
             ),
             memory_string=self.get_tagged_full_memory(with_full_memory_record=True),
             response_format=str(FactResponse.model_json_schema()),
         )
         result = await self._agent.context.get_structued_response(
-            prompt, response_format=FactResponse
+            prompt,
+            response_format=FactResponse,
+            params=default_config().get_factual_llm_params(),
         )
         await self.memory.store_facts(result.facts)
 
@@ -696,7 +721,8 @@ class Utterance(BaseModel):
         description="The utterance of the agent in the conversation based on the single action from the list."
     )
     is_conversation_finished: bool = Field(
-        description="Mark this utterance as the last one in the conversation."
+        description="Mark this utterance as the last one in the conversation.",
+        default=False,
     )
 
 
@@ -708,44 +734,53 @@ class FactResponse(BaseModel):
 
 
 class LLMAgent:
-    def __init__(self, data: AgentModelBase, context: LLMBackend):
+    def __init__(
+        self,
+        data: AgentModelBase,
+        context: LLMBackend,
+        create_memory_manager: Callable[["LLMAgent"], MemoryManagerBase],
+    ):
         self.data = data
         self.context = context
-        # TODO: make this outside configurable
-        self.memory_manager = SimpleMemoryManager(
-            EmbeddingMemory(context, count_selector=mean_std_count_strategy_factory()),
-            self,
-        )
+        self.memory_manager = create_memory_manager(self)
+
         self.__intro_message: str | None = None
 
     async def get_agent_introduction_message(self):
         if self.__intro_message:
             return self.__intro_message
 
-        prompt = default_builder().get_introduction_prompt(self.data)
-        response = await self.context.get_text_response(prompt) or ""
+        prompt = default_config().get_introduction_prompt(self.data)
+        response = (
+            await self.context.get_text_response(
+                prompt, params=default_config().get_creative_llm_params()
+            )
+            or ""
+        )
         self.__intro_message = response
         return response
 
     async def start_conversation(self, second_agent: "LLMAgent"):
         introduction_message = await self.get_agent_introduction_message()
-        prompt = default_builder().start_conversation_prompt(
+        prompt = default_config().start_conversation_prompt(
             self.memory_manager.get_tagged_full_memory(),
             self.data.full_name,
             introduction_message,
             second_agent.data.full_name,
         )
         await self.memory_manager.pre_conversation_hook(second_agent)
-        response = await self.context.get_text_response(prompt)
+        response = await self.context.get_text_response(
+            prompt, params=default_config().get_creative_llm_params()
+        )
         return response
 
     async def generate_next_turn(
         self, second_agent: "LLMAgent", conversation: Conversation
     ) -> Utterance:
         memory_tag = await self.memory_manager.get_tagged_memory_by_query(
-            default_builder().conversation_to_tagged_text(conversation)
+            default_config().conversation_to_tagged_text(conversation)
         )
-        prompt = default_builder().generate_next_turn_prompt(
+        prompt = default_config().generate_next_turn_prompt(
             memory_tag,
             self.data.full_name,
             await self.get_agent_introduction_message(),
@@ -753,7 +788,9 @@ class LLMAgent:
             conversation,
             response_format=str(Utterance.model_json_schema()),
         )
-        return await self.context.get_structued_response(prompt, Utterance)
+        return await self.context.get_structued_response(
+            prompt, Utterance, params=default_config().get_creative_llm_params()
+        )
 
     async def ask_agent(self, question: str, use_full_memory: bool = True):
         memory = (
@@ -761,13 +798,15 @@ class LLMAgent:
             if use_full_memory
             else await self.memory_manager.get_tagged_memory_by_query(question)
         )
-        prompt = default_builder().ask_agent_prompt(
+        prompt = default_config().ask_agent_prompt(
             memory,
             self.data.full_name,
             await self.get_agent_introduction_message(),
             question,
         )
-        return await self.context.get_text_response(prompt)
+        return await self.context.get_text_response(
+            prompt, params=default_config().get_factual_llm_params()
+        )
 
     async def ask_agent_structured(
         self,
@@ -780,7 +819,7 @@ class LLMAgent:
             if use_full_memory
             else await self.memory_manager.get_tagged_memory_by_query(question)
         )
-        prompt = default_builder().ask_agent_prompt(
+        prompt = default_config().ask_agent_prompt(
             memory,
             self.data.full_name,
             await self.get_agent_introduction_message(),
@@ -788,7 +827,9 @@ class LLMAgent:
             response_format=str(response_format.model_json_schema()),
         )
         return await self.context.get_structued_response(
-            prompt, response_format=response_format
+            prompt,
+            response_format=response_format,
+            params=default_config().get_factual_llm_params(),
         )
 
     async def adjust_memory_after_conversation(
@@ -800,5 +841,4 @@ class LLMAgent:
         await self.memory_manager.post_conversation_hook(other, conversation)
 
 
-# TODO: ask questions with followups (continuous questions)
 # TODO: logger for new memory model

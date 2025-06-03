@@ -16,6 +16,12 @@ from generative_agents import (
     LLMBackend,
     SequentialConversationSelector,
     LLMAgent,
+    BDIMemoryManager,
+    SimpleMemory,
+    SimpleMemoryManager,
+    EmbeddingMemory,
+    get_fact_removal_probability_factory,
+    mean_std_count_strategy_factory,
 )
 
 
@@ -46,7 +52,6 @@ def get_logger(file_name: str, level) -> logging.Logger:
     return XMLExtraAdapter(logger)  # type: ignore
 
 
-# TODO: characteristiscs as description ?
 class ExperimentAgent(AgentModelBase):
     first_name: str = Field(..., description="First name")
     last_name: str = Field(..., description="Last name")
@@ -78,7 +83,6 @@ async def main():
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
-        temperature=1,
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
         embedding_model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),
     )
@@ -86,7 +90,20 @@ async def main():
     with open("./data/valentine_party.json", "r") as f:
         raw_data = ExperimentData.model_validate_json(f.read())
 
-    agents = [LLMAgent(data, context=context) for data in raw_data.agents]
+    agents = [
+        LLMAgent(
+            data,
+            context,
+            lambda agent: BDIMemoryManager(
+                EmbeddingMemory(
+                    context, count_selector=mean_std_count_strategy_factory(0.5)
+                ),
+                agent=agent,
+                memory_removal_probability=get_fact_removal_probability_factory(0.5),
+            ),
+        )
+        for data in raw_data.agents
+    ]
     [isabella, maria, klaus] = agents
 
     id_mapping = {i: agent for i, agent in enumerate(agents)}
@@ -139,10 +156,6 @@ async def main():
             extra={"memory": agent.memory_manager.get_tagged_full_memory()},
         )
 
-
-# TODO: memory compression
-
-# TODO: private naming, _ for private, __ for stronger private, mangled on runtime
 
 if __name__ == "__main__":
     dotenv.load_dotenv()

@@ -2,7 +2,7 @@ from typing import Iterable
 import asyncio
 import networkx as nx
 import abc
-from .agent import LLMAgent, Utterance, Conversation, default_builder
+from .agent import LLMAgent, Utterance, Conversation, default_config
 import numpy as np
 import logging
 
@@ -114,7 +114,7 @@ class ConversationManager:
             self._logger.debug(
                 f"Conversation between agents {agent1.data.full_name} - {agent2.data.full_name}",
                 extra={
-                    "conversation": default_builder().conversation_to_text(conversation)
+                    "conversation": default_config().conversation_to_text(conversation)
                 },
             )
         await asyncio.gather(
