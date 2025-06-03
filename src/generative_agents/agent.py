@@ -15,11 +15,11 @@ class DefaultConfig:
     def get_factual_llm_params(self):
         return create_completion_params(temperature=0.3)
 
-    def get_neutral_llm_params(self):
+    def get_neutral_default_llm_params(self):
         return create_completion_params()
 
     def get_creative_llm_params(self):
-        return create_completion_params(temperature=1.3, frequency_penalty=1.0)
+        return create_completion_params(temperature=1.3, frequency_penalty=0.8)
 
     def get_system_prompt(self):
         return self.__SYSTEM_PROMPT
@@ -175,8 +175,9 @@ class DefaultConfig:
             "</greeting>",
             memory_prompt,
             "Firstly, you have select desires from your current beliefs, goals you can consider to achieve in the future conversations. You can select multiple desires.",
-            f"Secondly, you have to select intention, the goal you are actively pursuing in the future conversations.",
+            f"Secondly, you have to select intention, the goal you are actively pursuing in the future conversations. The intention should be one of the desires.",
             "You will have access to the intention in the future conversations, however your desires are accessible only now.",
+            "Desires and intention should be based on your persona.",
             "You can change your intention only if you think the current intention is considered done, no longer relevant or achievable and only after finishing the conversation.",
             (
                 f"Respond in JSON following this format: {response_format}"
@@ -210,6 +211,7 @@ class DefaultConfig:
             "Intention is the goal you are actively pursuing in the future conversations.",
             "You will have access to the intention in the future conversations, however your desires are accessible only now.",
             "You can change your intention only if you think the current intention is considered done, no longer relevant or achievable and only after finishing the conversation.",
+            "Intention should be one of the desires. Desires and intention should be based on your persona.",
             conversation_string,
             (
                 f"Respond in JSON following this format: {response_format}"
@@ -525,8 +527,8 @@ class SimpleMemoryManager(MemoryManagerBase):
 
 
 class BDIData(BaseModel):
-    desires: list[str]
-    intention: str
+    desires: list[str] = Field(description="Enumeration of plans")
+    intention: str = Field(description="Selected plan")
 
 
 class BDINoChanges(BaseModel):
@@ -619,7 +621,7 @@ class BDIMemoryManager(MemoryManagerBase):
             response_format=str(BDIData.model_json_schema()),
         )
         result = await self._agent.context.get_structued_response(
-            prompt, BDIData, params=default_config().get_neutral_llm_params()
+            prompt, BDIData, params=default_config().get_neutral_default_llm_params()
         )
         self.__bdi_data = result
 
@@ -635,7 +637,7 @@ class BDIMemoryManager(MemoryManagerBase):
         result = await self._agent.context.get_structued_response(
             prompt,
             response_format=BDIResponse,
-            params=default_config().get_neutral_llm_params(),
+            params=default_config().get_neutral_default_llm_params(),
         )
         if isinstance(result.data, BDINoChanges):
             return
@@ -671,7 +673,9 @@ class BDIMemoryManager(MemoryManagerBase):
             str(PruneFactsResponse.model_json_schema()),
         )
         result = await self._agent.context.get_structued_response(
-            prompt, PruneFactsResponse, params=default_config().get_neutral_llm_params()
+            prompt,
+            PruneFactsResponse,
+            params=default_config().get_neutral_default_llm_params(),
         )
         validated_timestamps = {
             timestamp
