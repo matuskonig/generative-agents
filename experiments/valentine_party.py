@@ -23,6 +23,7 @@ from generative_agents import (
     get_fact_removal_probability_factory,
     mean_std_count_strategy_factory,
 )
+import httpx
 
 
 class XMLExtraAdapter(logging.LoggerAdapter):
@@ -79,7 +80,15 @@ async def main():
     logger = get_logger("logs/valentine_party.log", level=logging.DEBUG)
 
     api_key = os.getenv("OPENAI_API_KEY") or None
-    client = AsyncOpenAI(base_url=os.getenv("OPENAI_BASE_URL"), api_key=api_key)
+    client = AsyncOpenAI(
+        base_url=os.getenv("OPENAI_BASE_URL"),
+        api_key=api_key,
+        http_client=httpx.AsyncClient(
+            http2=True,
+            timeout=120.0,
+            limits=httpx.Limits(max_connections=1000, max_keepalive_connections=20),
+        ),
+    )
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
@@ -131,7 +140,7 @@ async def main():
         max_conversation_utterances=12,
         logger=logger,
     )
-    for i in range(2):
+    for i in range(4):
         await manager.run_simulation_epoch()
 
     question = "When is the party happening ? Did you hear about the party ?"

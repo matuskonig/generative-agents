@@ -10,7 +10,13 @@ import random
 
 
 class DefaultConfig:
-    __SYSTEM_PROMPT = """You are an agent in a society simulation. Embody the provided persona in all your responses, paying close attention to its distinct communication style."""
+    __SYSTEM_PROMPT = """You are an intelligent agent in a realistic society simulation. Your primary objective is to embody your assigned persona authentically while engaging in meaningful interactions.
+
+Core principles:
+- Stay true to your persona's characteristics, values, and communication style
+- Respond naturally and contextually to conversations
+- Be consistent with your established personality
+- Adapt your responses based on the relationship and conversation history"""
 
     def get_factual_llm_params(self):
         return create_completion_params(temperature=0.3)
@@ -25,7 +31,17 @@ class DefaultConfig:
         return self.__SYSTEM_PROMPT
 
     def get_introduction_prompt(self, agent_data: "AgentModelBase"):
-        return f"Your name is {agent_data.full_name}. Your characteristics are: {agent_data.agent_characteristics}. Craft a brief introduction that establishes your persona, including a unique communication style based on these characteristics."
+        return f"""Your name is {agent_data.full_name}. 
+
+Your characteristics: {agent_data.agent_characteristics}
+
+Create a personal introduction that:
+1. Establishes your unique personality and communication style
+2. Includes key aspects of your background and interests
+3. Shows how you typically interact with others
+4. Demonstrates your distinctive way of speaking
+
+Keep it authentic and conversational. This introduction will define how others perceive you."""
 
     def conversation_to_text(self, conversation: "Conversation"):
         return "\n".join(
@@ -43,7 +59,11 @@ class DefaultConfig:
         )
 
     def memory_prompt(self, memory_content: str):
-        return f"I have remembered this things from my past conversations: {memory_content}"
+        return f"""<memory_context>
+{memory_content}
+</memory_context>
+
+This is your accumulated knowledge from past interactions. Use this information to inform your responses and maintain consistency."""
 
     def start_conversation_prompt(
         self,
@@ -52,18 +72,24 @@ class DefaultConfig:
         agent_introduction: str,
         second_agent_full_name: str,
     ) -> str:
-        memory_prompt = self.memory_prompt(memory_content)
-        prompt_template = [
-            f"I am {agent_full_name}. I have this greeting message:",
-            "<greeting>",
-            agent_introduction,
-            "</greeting>",
-            memory_prompt,
-            f"You are about to start a conversation with {second_agent_full_name}. How would you initiate the conversation, keeping your persona and communication style in mind?",
-            "Use the communication style of the given persona.",  # Kept for emphasis, can be removed if redundant
-        ]
+        memory_section = self.memory_prompt(memory_content) if memory_content.strip() else ""
+        
+        return f"""You are {agent_full_name}.
 
-        return "\n".join([prompt for prompt in prompt_template if prompt])
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+You are about to meet {second_agent_full_name}. Based on your personality and any relevant memories:
+
+1. Consider your natural approach to meeting someone
+2. Think about what kind of conversation starter fits your character
+3. Be authentic to your communication style
+4. Make the greeting feel natural and engaging
+
+How would you initiate this conversation?"""
 
     def generate_next_turn_prompt(
         self,
@@ -74,31 +100,38 @@ class DefaultConfig:
         conversation: "Conversation",
         response_format: str | None = None,
     ) -> str:
-        memory_prompt = self.memory_prompt(memory_content)
-        prompt_template = [
-            f"I am {agent_full_name}. I have this greeting message:",
-            "<greeting>",
-            agent_introduction,
-            "</greeting>",
-            memory_prompt,
-            f"I am currently engaged in a conversation with {second_agent_full_name}. This is the content of the conversation so far:",
-            "<conversation>",
-            self.conversation_to_text(conversation),
-            f"[{agent_full_name}]: [MASK]",
-            "</conversation>",
-            f"What is your next response? Consider the ongoing conversation, your persona, and {second_agent_full_name}.",
-            "If the conversation becomes repetitive, the topic is exhausted, or you (as your persona) would realistically get bored, gracefully switch the topic.",
-            "The conversation might be limited to fixed number of utterances.",
-            "Maintain your persona's communication style. Keep the conversation natural and engaging. Address any questions asked.",
-            "If the conversation is not progressing, or if it's a natural point to conclude, end the conversation by saying goodbye and setting the appropriate response property.",
-            (
-                f"Respond in JSON following this schema: {response_format}"
-                if response_format
-                else None
-            ),
-        ]
+        memory_section = self.memory_prompt(memory_content) if memory_content.strip() else ""
+        
+        base_prompt = f"""You are {agent_full_name}.
 
-        return "\n".join([prompt for prompt in prompt_template if prompt])
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+Current conversation with {second_agent_full_name}:
+{self.conversation_to_tagged_text(conversation)}
+
+Your turn to respond. Consider:
+- The conversation's natural flow and context
+- Your relationship with {second_agent_full_name}
+- Your personality and communication style
+- Whether to continue the current topic, transition, or conclude
+
+Guidelines:
+- Stay true to your character
+- Respond appropriately to what was just said
+- If the conversation feels stagnant or complete, you may gracefully end it
+- Keep responses natural and engaging
+- Address any direct questions or comments"""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+        
+        return base_prompt
 
     def ask_agent_prompt(
         self,
@@ -108,25 +141,31 @@ class DefaultConfig:
         question: str,
         response_format: str | None = None,
     ) -> str:
-        memory_prompt = self.memory_prompt(memory_string)
+        memory_section = self.memory_prompt(memory_string) if memory_string.strip() else ""
+        
+        base_prompt = f"""You are {agent_full_name}.
 
-        prompt_template = [
-            f"I am {agent_full_name}. I have this greeting message:",
-            "<greeting>",
-            agent_introduction,
-            "</greeting>",
-            memory_prompt,
-            "Based on your persona and available information (greeting message and memory), answer the following question:",
-            question,
-            "Answer concisely and accurately based *only* on the information provided in your greeting and memory. Do not add information not present in your context or invent details.",
-            (
-                f"Respond in JSON following this schema: {response_format}"
-                if response_format
-                else None
-            ),
-        ]
+<persona>
+{agent_introduction}
+</persona>
 
-        return "\n".join([prompt for prompt in prompt_template if prompt])
+{memory_section}
+
+Question: {question}
+
+Answer this question based on:
+1. Your established personality and knowledge
+2. Information from your memory/past experiences
+3. Your natural way of communicating
+
+Important: Only reference information that you would realistically know based on your persona and memory. Do not invent facts or details not present in your context."""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+        
+        return base_prompt
 
     def get_conversation_summary_prompt(
         self,
@@ -137,28 +176,39 @@ class DefaultConfig:
         memory_string: str | None = None,
         response_format: str | None = None,
     ) -> str:
-        memory_prompt = self.memory_prompt(memory_string) if memory_string else None
-        prompt_template = [
-            f"I am {agent_full_name}. I have this greeting message:",
-            "<greeting>",
-            agent_introduction,
-            "</greeting>",
-            memory_prompt,
-            f"You have just finished a conversation with {other_agent_full_name}. Summarize the key information you learned from this interaction.",
-            "Identify relevant and new facts from the conversation. Capture these facts with as much detail as possible, focusing on information not already in your memory.",
-            "This summary will be added to your memory for future conversations. Prioritize information that will be useful for future interactions.",
-            "Focus on extracting new topics, specific information, and news shared during the conversation. Avoid including general world knowledge.",
-            "Treat this summary as a set of important notes for your future self. Include key topics, insights, and any information that might be valuable later.",
-            "Be concise, but ensure all crucial new information is captured. You can compress information where appropriate.",
-            "Assign a relevance score (0.0 to 1.0) to each fact. Higher scores indicate greater importance for future recall. Use lower scores for less critical information.",
-            conversation_string,
-            (
-                f"Respond in JSON following this format: {response_format}"
-                if response_format
-                else None
-            ),
-        ]
-        return "\n".join([prompt for prompt in prompt_template if prompt])
+        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
+        
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+You just completed this conversation with {other_agent_full_name}:
+{conversation_string}
+
+Extract meaningful information from this conversation that should be remembered:
+
+1. **New facts about {other_agent_full_name}** (interests, background, opinions, etc.)
+2. **Important topics discussed** (specific details, not general knowledge)
+3. **Relationship developments** (how your interaction evolved)
+4. **Future-relevant information** (plans, commitments, shared interests)
+
+Guidelines:
+- Focus on information that wasn't already in your memory
+- Prioritize details that could influence future interactions
+- Assign relevance scores (0.0-1.0) based on importance for future conversations
+- Be specific but concise
+- Avoid recording general world knowledge or obvious facts"""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+        
+        return base_prompt
 
     def get_bdi_init_prompt(
         self,
@@ -167,25 +217,37 @@ class DefaultConfig:
         memory_string: str | None = None,
         response_format: str | None = None,
     ):
-        memory_prompt = self.memory_prompt(memory_string) if memory_string else None
-        prompt_template = [
-            f"I am {agent_full_name}. I have this greeting message:",
-            "<greeting>",
-            agent_introduction,
-            "</greeting>",
-            memory_prompt,
-            "Firstly, you have select desires from your current beliefs, goals you can consider to achieve in the future conversations. You can select multiple desires.",
-            f"Secondly, you have to select intention, the goal you are actively pursuing in the future conversations. The intention should be one of the desires.",
-            "You will have access to the intention in the future conversations, however your desires are accessible only now.",
-            "Desires and intention should be based on your persona.",
-            "You can change your intention only if you think the current intention is considered done, no longer relevant or achievable and only after finishing the conversation.",
-            (
-                f"Respond in JSON following this format: {response_format}"
-                if response_format
-                else None
-            ),
-        ]
-        return "\n".join([prompt for prompt in prompt_template if prompt])
+        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
+        
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+Based on your personality and current situation, define your goals and intentions:
+
+**DESIRES** - Multiple goals you might pursue in future conversations:
+- Consider your personality traits and interests
+- Think about what would motivate someone like you
+- Include both short-term and longer-term aspirations
+- Make them specific and achievable through social interaction
+
+**INTENTION** - Choose ONE desire as your primary focus:
+- This will guide your behavior in upcoming conversations
+- Select the most important or urgent goal for now
+- You can change this later based on circumstances
+
+Remember: Your desires reflect who you are, and your intention drives what you'll actively work toward."""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+        
+        return base_prompt
 
     def get_bdi_update_prompt(
         self,
@@ -196,30 +258,40 @@ class DefaultConfig:
         memory_string: str | None = None,
         response_format: str | None = None,
     ):
-        memory_prompt = self.memory_prompt(memory_string) if memory_string else None
-        prompt_template = [
-            f"I am {agent_full_name}. I have this greeting message:",
-            "<greeting>",
-            agent_introduction,
-            "</greeting>",
-            memory_prompt,
-            f"You have just finished a conversation with {other_agent_full_name}.",
-            "You have selected beliefs, desires and intentions previously.",
-            "You have a chance to reconsider your desires and intentions from your beliefs based on the conversation.",
-            "You can leave the desires and intentions unchanged, or you can pick intention from the desires. You can also select a new set of desires, together with the intention.",
-            "Desires are the goals you can consider to achieve in the future conversations. You can select multiple desires.",
-            "Intention is the goal you are actively pursuing in the future conversations.",
-            "You will have access to the intention in the future conversations, however your desires are accessible only now.",
-            "You can change your intention only if you think the current intention is considered done, no longer relevant or achievable and only after finishing the conversation.",
-            "Intention should be one of the desires. Desires and intention should be based on your persona.",
-            conversation_string,
-            (
-                f"Respond in JSON following this format: {response_format}"
-                if response_format
-                else None
-            ),
-        ]
-        return "\n".join([prompt for prompt in prompt_template if prompt])
+        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
+        
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+You just finished this conversation with {other_agent_full_name}:
+{conversation_string}
+
+Review and update your goals based on this interaction:
+
+**OPTIONS:**
+1. **Keep current desires and intention unchanged** - if they're still relevant
+2. **Change intention only** - switch focus to a different existing desire
+3. **Update both desires and intention** - if circumstances have significantly changed
+
+**CONSIDERATIONS:**
+- Did this conversation reveal new opportunities or interests?
+- Are your current goals still relevant and achievable?
+- Has your relationship with {other_agent_full_name} opened new possibilities?
+- Do you need to adjust your priorities based on what happened?
+
+Choose the option that best reflects how this conversation has affected your goals."""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+        
+        return base_prompt
 
     def get_memory_prune_prompt(
         self,
@@ -228,25 +300,39 @@ class DefaultConfig:
         memory_string: str | None = None,
         response_format: str | None = None,
     ):
-        memory_prompt = self.memory_prompt(memory_string) if memory_string else None
-        prompt_template = [
-            f"I am {agent_full_name}. I have this greeting message:",
-            "<greeting>",
-            agent_introduction,
-            "</greeting>",
-            "This is a selected content of your memory.",
-            memory_prompt,
-            "Respective facts are selected randomly from the whole memory, where the probability of selection is rising for older memories.",
-            "You can select memory facts, which you want to remove from your memory. Those memories will no longer be available in any further conversations.",
-            "You have your own judgement in regards of which memories to choose, but try to remove unimportant facts and duplicities.",
-            "Selection is indicated by passing timestamp of the memory to remove.",
-            (
-                f"Respond in JSON following this format: {response_format}"
-                if response_format
-                else None
-            ),
-        ]
-        return "\n".join([prompt for prompt in prompt_template if prompt])
+        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
+        
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+You need to clean up your memory by removing less important facts:
+
+{memory_section}
+
+**REVIEW CRITERIA:**
+Select memories to remove based on:
+1. **Relevance** - How useful is this information for future interactions?
+2. **Uniqueness** - Is this information duplicated elsewhere?
+3. **Specificity** - Are these vague or overly general facts?
+4. **Personal importance** - Does this matter to someone with your personality?
+
+**GUIDELINES:**
+- Keep memories that define relationships or important personal details
+- Remove redundant or trivial information
+- Preserve memories that align with your interests and goals
+- Consider what you'd naturally remember vs. forget
+
+Provide the timestamps of memories you want to remove."""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+        
+        return base_prompt
 
 
 default_config = OverridableContextVar("default_config", DefaultConfig())
