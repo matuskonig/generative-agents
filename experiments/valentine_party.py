@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 import dotenv
 import os
-from typing import Literal, override
+from typing import Literal
 import networkx as nx
 from openai import AsyncOpenAI
 import numpy as np
@@ -9,7 +9,7 @@ import asyncio
 import logging
 import os
 
-
+from logger_utils import get_xml_file_logger
 from generative_agents import (
     AgentModelBase,
     ConversationManager,
@@ -24,33 +24,6 @@ from generative_agents import (
     mean_std_count_strategy_factory,
 )
 import httpx
-
-
-class XMLExtraAdapter(logging.LoggerAdapter):
-    @override
-    def process(self, msg, kwargs):
-        if "extra" in kwargs and len(kwargs["extra"]) > 0:
-            content = "\n".join(
-                f"<{key}>\n{value}\n</{key}>" for key, value in kwargs["extra"].items()
-            )
-            kwargs["extra"]["content"] = "\n" + content
-        else:
-            kwargs["extra"] = {"content": ""}
-        return msg, kwargs
-
-
-def get_logger(file_name: str, level) -> logging.Logger:
-    logger = logging.Logger(file_name, level)
-
-    formatter = logging.Formatter(
-        "[%(asctime)s][%(levelname)s]: %(message)s%(content)s"
-    )
-
-    file_handler = logging.FileHandler(file_name, mode="w")
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-
-    return XMLExtraAdapter(logger)  # type: ignore
 
 
 class ExperimentAgent(AgentModelBase):
@@ -77,7 +50,7 @@ class ExperimentData(BaseModel):
 async def main():
     if not os.path.exists("logs"):
         os.makedirs("logs")
-    logger = get_logger("logs/valentine_party.log", level=logging.DEBUG)
+    logger = get_xml_file_logger("logs/valentine_party.log", level=logging.DEBUG)
 
     api_key = os.getenv("OPENAI_API_KEY") or None
     client = AsyncOpenAI(
@@ -169,3 +142,6 @@ async def main():
 if __name__ == "__main__":
     dotenv.load_dotenv()
     asyncio.run(main())
+
+# TODO" comments
+# TODO: prekopat intro message aby to nebolo fixne definovane
