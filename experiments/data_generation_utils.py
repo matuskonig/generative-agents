@@ -206,12 +206,12 @@ Generate the updated agent and specify the injected information using this schem
 
 IMPORTANT: Format the injected information as a complete, clear sentence containing all relevant details. This exact phrasing will be used in future conversation experiments to track information spread."""
 
-    sth = await client.beta.chat.completions.parse(
+    llm_response = await client.beta.chat.completions.parse(
         model=model,
         messages=[{"role": "user", "content": prompt}],
         response_format=InformationSeedResponse,
     )
-    response = sth.choices[0].message.parsed
+    response = llm_response.choices[0].message.parsed
     assert response is not None, "Response parsing failed."
 
     new_seed_node = response.agent
