@@ -72,8 +72,10 @@ This is your accumulated knowledge from past interactions. Use this information 
         agent_introduction: str,
         second_agent_full_name: str,
     ) -> str:
-        memory_section = self.memory_prompt(memory_content) if memory_content.strip() else ""
-        
+        memory_section = (
+            self.memory_prompt(memory_content) if memory_content.strip() else ""
+        )
+
         return f"""You are {agent_full_name}.
 
 <persona>
@@ -100,8 +102,10 @@ How would you initiate this conversation?"""
         conversation: "Conversation",
         response_format: str | None = None,
     ) -> str:
-        memory_section = self.memory_prompt(memory_content) if memory_content.strip() else ""
-        
+        memory_section = (
+            self.memory_prompt(memory_content) if memory_content.strip() else ""
+        )
+
         base_prompt = f"""You are {agent_full_name}.
 
 <persona>
@@ -130,7 +134,7 @@ Guidelines:
             return f"""{base_prompt}
 
 Respond using this JSON format: {response_format}"""
-        
+
         return base_prompt
 
     def ask_agent_prompt(
@@ -141,8 +145,10 @@ Respond using this JSON format: {response_format}"""
         question: str,
         response_format: str | None = None,
     ) -> str:
-        memory_section = self.memory_prompt(memory_string) if memory_string.strip() else ""
-        
+        memory_section = (
+            self.memory_prompt(memory_string) if memory_string.strip() else ""
+        )
+
         base_prompt = f"""You are {agent_full_name}.
 
 <persona>
@@ -164,7 +170,7 @@ Important: Only reference information that you would realistically know based on
             return f"""{base_prompt}
 
 Respond using this JSON format: {response_format}"""
-        
+
         return base_prompt
 
     def get_conversation_summary_prompt(
@@ -176,8 +182,12 @@ Respond using this JSON format: {response_format}"""
         memory_string: str | None = None,
         response_format: str | None = None,
     ) -> str:
-        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
-        
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
         base_prompt = f"""You are {agent_full_name}.
 
 <persona>
@@ -207,7 +217,7 @@ Guidelines:
             return f"""{base_prompt}
 
 Respond using this JSON format: {response_format}"""
-        
+
         return base_prompt
 
     def get_bdi_init_prompt(
@@ -217,8 +227,12 @@ Respond using this JSON format: {response_format}"""
         memory_string: str | None = None,
         response_format: str | None = None,
     ):
-        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
-        
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
         base_prompt = f"""You are {agent_full_name}.
 
 <persona>
@@ -246,7 +260,7 @@ Remember: Your desires reflect who you are, and your intention drives what you'l
             return f"""{base_prompt}
 
 Respond using this JSON format: {response_format}"""
-        
+
         return base_prompt
 
     def get_bdi_update_prompt(
@@ -258,8 +272,12 @@ Respond using this JSON format: {response_format}"""
         memory_string: str | None = None,
         response_format: str | None = None,
     ):
-        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
-        
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
         base_prompt = f"""You are {agent_full_name}.
 
 <persona>
@@ -290,7 +308,7 @@ Choose the option that best reflects how this conversation has affected your goa
             return f"""{base_prompt}
 
 Respond using this JSON format: {response_format}"""
-        
+
         return base_prompt
 
     def get_memory_prune_prompt(
@@ -300,8 +318,12 @@ Respond using this JSON format: {response_format}"""
         memory_string: str | None = None,
         response_format: str | None = None,
     ):
-        memory_section = self.memory_prompt(memory_string) if memory_string and memory_string.strip() else ""
-        
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
         base_prompt = f"""You are {agent_full_name}.
 
 <persona>
@@ -331,7 +353,7 @@ Provide the timestamps of memories you want to remove."""
             return f"""{base_prompt}
 
 Respond using this JSON format: {response_format}"""
-        
+
         return base_prompt
 
 
@@ -545,7 +567,10 @@ class MemoryManagerBase(abc.ABC):
 
     @abc.abstractmethod
     async def post_conversation_hook(
-        self, other_agent: "LLMAgent", conversation: "Conversation"
+        self,
+        other_agent: "LLMAgent",
+        conversation: "Conversation",
+        logger: logging.Logger | None = None,
     ):
         pass
 
@@ -607,9 +632,21 @@ class SimpleMemoryManager(MemoryManagerBase):
         pass
 
     async def post_conversation_hook(
-        self, other_agent: "LLMAgent", conversation: "Conversation"
+        self, other_agent: "LLMAgent", conversation: "Conversation", logger=None
     ):
         await self._add_new_memory(other_agent, conversation)
+        if logger:
+            logger.debug(
+                f"Memory state of {self._agent.data.full_name} after conversation with {other_agent.data.full_name}",
+                extra={
+                    "memory": "\n".join(
+                        [
+                            fact.model_dump_json(include=set(MemoryRecord.model_fields))
+                            for fact in self.memory.full_retrieval()
+                        ]
+                    )
+                },
+            )
 
 
 class BDIData(BaseModel):
@@ -795,11 +832,23 @@ class BDIMemoryManager(MemoryManagerBase):
         await self._initialize_bdi()
 
     async def post_conversation_hook(
-        self, other_agent: "LLMAgent", conversation: "Conversation"
+        self, other_agent: "LLMAgent", conversation: "Conversation", logger=None
     ):
         await self._add_new_memory(other_agent, conversation)
         await self._prune_old_memory()
         await self._update_bdi(other_agent, conversation)
+        if logger:
+            logger.debug(
+                f"Memory state of {self._agent.data.full_name} after conversation with {other_agent.data.full_name}",
+                extra={
+                    "memory": "\n".join(
+                        [
+                            fact.model_dump_json(include=set(MemoryRecord.model_fields))
+                            for fact in self.memory.full_retrieval()
+                        ]
+                    )
+                },
+            )
 
 
 class Utterance(BaseModel):
@@ -928,7 +977,4 @@ class LLMAgent:
         conversation: Conversation,
         logger: logging.Logger | None = None,
     ):
-        await self.memory_manager.post_conversation_hook(other, conversation)
-
-
-# TODO: logger for new memory model
+        await self.memory_manager.post_conversation_hook(other, conversation, logger)
