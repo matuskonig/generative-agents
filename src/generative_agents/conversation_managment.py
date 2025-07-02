@@ -59,7 +59,7 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
         self,
         seed: np.random.Generator | None = None,
     ):
-        self.__generated_epochs = 0
+        self._generated_epochs = 0
         self.__seed = seed or np.random.default_rng()
 
     @abc.abstractmethod
@@ -78,6 +78,8 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
 
         while len(agents):
             agent1 = agents.pop()
+            if not structure.has_node(agent1):
+                continue
             neighbor_agents: list[LLMAgent] = list(structure.neighbors(agent1))
             if len(neighbor_agents) == 0:
                 continue
@@ -88,10 +90,10 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
             structure.remove_node(agent2)
 
         yield conversation_pairs
-        self.__generated_epochs += 1
+        self._generated_epochs += 1
 
     def reset(self):
-        self.__generated_epochs = 0
+        self._generated_epochs = 0
 
 
 class InformationSpreadConversationSelector(GeneralParallelSelectorBase):
@@ -111,7 +113,7 @@ class InformationSpreadConversationSelector(GeneralParallelSelectorBase):
         self.__bfs_frontier = BFSFrontierGraph(graph=structure, sources=seed_nodes)
 
     def _get_generator_structure(self) -> Graph:
-        return self.__bfs_frontier.get_frontier_extended_graph(self.__generated_epochs)
+        return self.__bfs_frontier.get_frontier_extended_graph(self._generated_epochs)
 
 
 class FullParallelConversationSelector(GeneralParallelSelectorBase):
@@ -262,8 +264,10 @@ class ConversationManager:
         )
 
     async def run_simulation_epoch(self):
-        self.conversation_selector.reset()
         for pairs in self.conversation_selector.generate_epoch_pairs():
             await asyncio.gather(
                 *[self.__process_conversation_pair(*pair) for pair in pairs]
             )
+
+    def reset_epochs(self):
+        self.conversation_selector.reset()
