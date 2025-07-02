@@ -20,6 +20,11 @@ from .conversation_managment import (
     ConversationManager,
     SequentialConversationSelector,
     ConversationSelectorABC,
+    GeneralParallelSelectorBase,
+    InformationSpreadConversationSelector,
+    FullParallelConversationSelector,
+    ConversationRandomRestrictionAdapter,
+    BFSFrontierGraph,
 )
 
 __all__ = [
@@ -41,5 +46,10 @@ __all__ = [
     "get_fact_removal_probability_factory",
     "create_completion_params",
     "CompletionParams",
+    "GeneralParallelSelectorBase",
+    "InformationSpreadConversationSelector",
+    "FullParallelConversationSelector",
+    "ConversationRandomRestrictionAdapter",
+    "BFSFrontierGraph",
 ]
 PACKAGE_VERSION = "1.0.0"
