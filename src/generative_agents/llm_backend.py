@@ -1,4 +1,4 @@
-from openai import AsyncClient, RateLimitError, NotGiven, NOT_GIVEN
+from openai import AsyncClient, RateLimitError, APITimeoutError, NotGiven, NOT_GIVEN
 from typing import TypeVar, Type, overload, Callable, Awaitable, TypedDict
 from pydantic import BaseModel
 import time
@@ -38,7 +38,7 @@ def rate_limit_repeated[**P, R](func: Callable[P, Awaitable[R]]):
         while True:
             try:
                 return await func(*args, **kwargs)
-            except RateLimitError as e:
+            except (RateLimitError, APITimeoutError) as e:
                 continue
 
     return inner
