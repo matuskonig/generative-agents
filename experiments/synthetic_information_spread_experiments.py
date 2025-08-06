@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 import dotenv
 import os
-from typing import Literal, override, TypedDict
+from typing import Literal, TypedDict
 import networkx as nx
 from openai import AsyncOpenAI
 import numpy as np
@@ -24,6 +24,9 @@ from generative_agents import (
     mean_std_count_strategy_factory,
     fixed_count_strategy_factory,
     top_std_count_strategy_factory,
+    default_config,
+    DefaultConfig,
+    AgentModelBase,
 )
 import httpx
 
@@ -69,6 +72,82 @@ class ExperimentResult(BaseModel):
     prompt_tokens: int
     total_requests: int
     epoch_agents_responses: list[list[QuestionAnswer]]
+
+
+class ReducedInformationSpreadConfig(DefaultConfig):
+
+    def start_conversation_prompt(
+        self,
+        memory_content: str,
+        agent_full_name: str,
+        agent_introduction: str,
+        second_agent_full_name: str,
+    ) -> str:
+        memory_section = (
+            self.memory_prompt(memory_content) if memory_content.strip() else ""
+        )
+
+        return f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+You are about to meet {second_agent_full_name}. Based on your personality and any relevant memories:
+
+1. Consider your natural approach to meeting someone
+2. Think about what kind of conversation starter fits your character
+3. Be authentic to your communication style
+4. Make the greeting feel natural and engaging
+
+How would you initiate this conversation?"""
+
+    def generate_next_turn_prompt(
+        self,
+        memory_content: str,
+        agent_full_name: str,
+        agent_introduction: str,
+        second_agent_full_name: str,
+        conversation,
+        response_format: str | None = None,
+    ) -> str:
+        memory_section = (
+            self.memory_prompt(memory_content) if memory_content.strip() else ""
+        )
+
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+Current conversation with {second_agent_full_name}:
+{self.conversation_to_tagged_text(conversation)}
+
+Your turn to respond. Consider:
+- The conversation's natural flow and context
+- Your relationship with {second_agent_full_name}
+- Your personality and communication style
+- Whether to continue the current topic, transition, or conclude
+
+Guidelines:
+- Stay true to your character
+- Respond appropriately to what was just said
+- If the conversation feels stagnant or complete, you may gracefully end it
+- Keep responses natural and engaging
+- Address any direct questions or comments
+"""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+
+        return base_prompt
 
 
 async def run_experiment(
@@ -167,13 +246,15 @@ async def run_experiment(
 
 The information in question is: "{dataset.injected_information}"
 
-Please review your memories and conversations to determine if you have encountered this information. Provide your reasoning based on what you remember, then give a definitive true/false answer about whether you received this information.""",
+Please review your memories and conversations to determine if you have encountered this information. Provide your reasoning based on what you remember, then give a definitive true/false answer about whether you received this information.
+Answer positively even if you have received this information partially or indirectly.
+""",
                     response_format=QuestionAnswer,
                 )
                 for agent in agents
             ]
         )
-        print(f'Epoch {epoch + 1} collected responses.')
+        print(f"Epoch {epoch + 1} collected responses.")
         epoch_responses.append(agent_responses)
 
     manager.reset_epochs()
@@ -255,26 +336,82 @@ async def main():
         EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
         conversation_selector_type="information_spread",
         seed=42,
-        max_utterances=8,
-        epochs=10,
+        max_utterances=16,
+        epochs=20,
     )
     with open("./results/synthetic_5_bdi_is.json", "w") as f:
         f.write(result5.model_dump_json(indent=1))
+
+    # Same as result5, but with half the utterances and epochs
+    result5_reduced = await run_experiment(
+        context,
+        dataset5,
+        get_xml_file_logger(
+            "./logs/synthetic_5_bdi_is_reduced.log", level=logging.DEBUG
+        ),
+        "synthetic_5_bdi_is_reduced",
+        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
+        EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
+        conversation_selector_type="information_spread",
+        seed=42,
+        max_utterances=8,  # Half of 16
+        epochs=10,  # Half of 20
+    )
+    with open("./results/synthetic_5_bdi_is_reduced.json", "w") as f:
+        f.write(result5_reduced.model_dump_json(indent=1))
+
+    # Same as result5, but with simple memory
+    result5_simple = await run_experiment(
+        context,
+        dataset5,
+        get_xml_file_logger(
+            "./logs/synthetic_5_bdi_is_simple.log", level=logging.DEBUG
+        ),
+        "synthetic_5_bdi_is_simple",
+        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
+        SimpleMemoryType(memory_type="simple"),
+        conversation_selector_type="information_spread",
+        seed=42,
+        max_utterances=16,
+        epochs=20,
+    )
+    with open("./results/synthetic_5_bdi_is_simple.json", "w") as f:
+        f.write(result5_simple.model_dump_json(indent=1))
+
+    # Same as result5, but with crippled prompt engineering
+    with default_config.override(ReducedInformationSpreadConfig()):
+        result5_reduced_prompt = await run_experiment(
+            context,
+            dataset5,
+            get_xml_file_logger(
+                "./logs/synthetic_5_bdi_is_reduced_prompt.log", level=logging.DEBUG
+            ),
+            "synthetic_5_bdi_is_reduced_prompt",
+            BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
+            EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
+            conversation_selector_type="information_spread",
+            seed=42,
+            max_utterances=16,
+            epochs=20,
+        )
+        with open("./results/synthetic_5_bdi_is_reduced_prompt.json", "w") as f:
+            f.write(result5_reduced_prompt.model_dump_json(indent=1))
 
     result10 = await run_experiment(
         context,
         dataset10,
         get_xml_file_logger("./logs/synthetic_10_bdi_is.log", level=logging.DEBUG),
         "synthetic_10_bdi_is",
-        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5, ),
+        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
         EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
         conversation_selector_type="information_spread",
         seed=42,
-        max_utterances=8,
-        epochs=20,
+        max_utterances=16,
+        epochs=30,
     )
     with open("./results/synthetic_10_bdi_is.json", "w") as f:
         f.write(result10.model_dump_json(indent=1))
+
 
 if __name__ == "__main__":
     dotenv.load_dotenv()
