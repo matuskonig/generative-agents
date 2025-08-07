@@ -412,6 +412,21 @@ async def main():
     with open("./results/synthetic_10_bdi_is.json", "w") as f:
         f.write(result10.model_dump_json(indent=1))
 
+    result25 = await run_experiment(
+        context,
+        dataset25,
+        get_xml_file_logger("./logs/synthetic_25_bdi_is.log", level=logging.DEBUG),
+        "synthetic_25_bdi_is",
+        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
+        EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
+        conversation_selector_type="information_spread",
+        seed=42,
+        max_utterances=8,
+        epochs=15,
+    )
+    with open("./results/synthetic_25_bdi_is.json", "w") as f:
+        f.write(result25.model_dump_json(indent=1))
+
 
 if __name__ == "__main__":
     dotenv.load_dotenv()
