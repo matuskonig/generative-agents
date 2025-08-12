@@ -75,6 +75,25 @@ class ExperimentResult(BaseModel):
 
 
 class ReducedInformationSpreadConfig(DefaultConfig):
+    def get_introduction_prompt(self, agent_data):
+        return f"""Your name is {agent_data.full_name}. 
+
+Your characteristics: {agent_data.agent_characteristics}
+
+Create a personal introduction that:
+1. Establishes your unique personality and communication style
+2. Includes key aspects of your background and interests
+3. Shows how you typically interact with others
+4. Demonstrates your distinctive way of speaking
+
+In this introduction include information about yourself such as:
+- interesting hobbies and current activities
+- events you are organizing or participating in
+- your personal projects and professional endeavors
+- recent news or developments in your life
+- topics you're passionate about discussing
+
+Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you."""
 
     def start_conversation_prompt(
         self,
@@ -139,8 +158,155 @@ Guidelines:
 - Respond appropriately to what was just said
 - If the conversation feels stagnant or complete, you may gracefully end it
 - Keep responses natural and engaging
-- Address any direct questions or comments
-"""
+- Address any direct questions or comments"""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+
+        return base_prompt
+
+    def get_conversation_summary_prompt(
+        self,
+        agent_full_name: str,
+        agent_introduction: str,
+        other_agent_full_name: str,
+        conversation_string: str,
+        memory_string: str | None = None,
+        response_format: str | None = None,
+    ) -> str:
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+You just completed this conversation with {other_agent_full_name}:
+{conversation_string}
+
+Extract meaningful information from this conversation that should be remembered:
+
+1. **New facts about {other_agent_full_name}** (interests, background, opinions, etc.)
+2. **Important topics discussed** (specific details, not general knowledge)
+3. **Relationship developments** (how your interaction evolved)
+4. **Future-relevant information** (plans, commitments, shared interests)
+
+Guidelines:
+- Focus on information that wasn't already in your memory
+- Prioritize details that could influence future interactions
+- Be specific but concise, especially with dates, locations, and key details
+- Avoid recording general world knowledge or obvious facts
+- Select only the most important facts to remember. Keep the number of remembered facts small (ideally 3-5 key points)."""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+
+        return base_prompt
+
+    def get_bdi_init_prompt(
+        self,
+        agent_full_name: str,
+        agent_introduction: str,
+        memory_string: str | None = None,
+        response_format: str | None = None,
+    ):
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+Based on your personality and current situation, define your goals and intentions:
+
+**DESIRES** - Multiple goals you might pursue in future conversations:
+- Consider your personality traits and interests
+- Think about what would motivate someone like you
+- Include both short-term and longer-term aspirations
+- Make them specific and achievable through social interaction
+
+**INTENTION** - Choose ONE desire as your primary focus:
+- This will guide your behavior in upcoming conversations
+- Select the most important or urgent goal for now
+- You can change this later based on circumstances
+
+Remember: Your desires reflect who you are, and your intention drives what you'll actively work toward."""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+
+        return base_prompt
+
+    def get_bdi_update_prompt(
+        self,
+        agent_full_name: str,
+        agent_introduction: str,
+        other_agent_full_name: str,
+        conversation_string: str,
+        memory_string: str | None = None,
+        response_format: str | None = None,
+    ):
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+{memory_section}
+
+You just finished this conversation with {other_agent_full_name}:
+{conversation_string}
+
+Review and update your goals based on this interaction:
+
+**OPTIONS:**
+1. **Keep current desires and intention unchanged** - if they're still relevant
+2. **Change intention only** - switch focus to a different existing desire
+3. **Update both desires and intention** - if circumstances have significantly changed
+
+**WHEN UPDATING DESIRES** - Consider multiple goals you might pursue in future conversations:
+- Your personality traits and interests
+- What would motivate someone like you based on this conversation
+- Both short-term and longer-term aspirations that emerged
+- Goals that are specific and achievable through social interaction
+
+**WHEN UPDATING INTENTION** - Choose ONE desire as your primary focus:
+- This will guide your behavior in upcoming conversations
+- Select the most important or urgent goal based on recent developments
+- Think about what this conversation revealed about opportunities or priorities
+
+**CONSIDERATIONS:**
+- Did this conversation reveal new opportunities for you?
+- Has your relationship with {other_agent_full_name} opened new possibilities?
+- Do you need to adjust your priorities based on what you learned?
+
+Remember: Your desires reflect who you are and what you've learned, and your intention drives what you'll actively work toward."""
 
         if response_format:
             return f"""{base_prompt}
