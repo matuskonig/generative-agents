@@ -4,11 +4,10 @@ from pydantic import BaseModel
 import time
 from .async_helpers import Throttler
 import numpy as np
-from dataclasses import dataclass
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
 
-
+# TODO: make embedding a solo thing not neccesary a part of the LLMBackend, add support for SentenceTransformers or other embedding models
 class CompletionParams(TypedDict):
     temperature: float | NotGiven | None
     max_completion_tokens: int | NotGiven | None
@@ -39,6 +38,7 @@ def rate_limit_repeated[**P, R](func: Callable[P, Awaitable[R]]):
             try:
                 return await func(*args, **kwargs)
             except (RateLimitError, APITimeoutError) as e:
+                # TODO add exponential backoff
                 continue
 
     return inner

@@ -623,6 +623,8 @@ class EmbeddingMemory(MemoryBase):
         ]
 
 
+# TODO: add composite memory manager which allows to combine multiple memory managers
+# TODO: make pruning optional
 class MemoryManagerBase(abc.ABC):
     @abc.abstractmethod
     def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
@@ -633,16 +635,16 @@ class MemoryManagerBase(abc.ABC):
         pass
 
     @abc.abstractmethod
+    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+        pass
+
+    @abc.abstractmethod
     async def post_conversation_hook(
         self,
         other_agent: "LLMAgent",
         conversation: "Conversation",
         logger: logging.Logger | None = None,
     ):
-        pass
-
-    @abc.abstractmethod
-    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
         pass
 
 
@@ -716,6 +718,8 @@ class SimpleMemoryManager(MemoryManagerBase):
             )
 
 
+# TODO: add some freetext field to the BDI to support model writing notes, planning and reasoning
+# TODO: add possibly something to extend the actions
 class BDIData(BaseModel):
     desires: list[str] = Field(description="Enumeration of plans")
     intention: str = Field(description="Selected plan")
@@ -739,6 +743,7 @@ class BDIResponse(BaseModel):
         discriminator="tag"
     )
 
+
 def get_fact_removal_probability_factory(max_prob_coef: float):
     def inner(current_timestamp: int, fact: MemoryRecord):
         linear_prob = 1 - (fact.timestamp / current_timestamp)
@@ -750,7 +755,7 @@ def get_fact_removal_probability_factory(max_prob_coef: float):
 class PruneFactsResponse(BaseModel):
     timestamps_to_remove: list[int]
 
-
+# TODO: make pruning a standalone configuration
 class BDIMemoryManager(MemoryManagerBase):
     """Simple memory manager elevating Belief-Desire-Intention (BDI) architecture."""
 
@@ -1054,3 +1059,9 @@ class LLMAgent:
         logger: logging.Logger | None = None,
     ):
         await self.memory_manager.post_conversation_hook(other, conversation, logger)
+
+# TODO: in additon to pruning, implement memory compression ?
+# TODO: consider adding what they did in Affordable Generative agents - where for every agent they hold some really short summary
+# TODO: how to potentially add support for the environment ?
+# TODO: how to make it more generic and supportive of expansion outside our control ?
+# TODO: switch to normal prompt template
