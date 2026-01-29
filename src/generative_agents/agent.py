@@ -904,7 +904,7 @@ class BDIMemoryManager(MemoryManagerBase):
             params=default_config().get_factual_llm_params(),
         )
         await self.memory.store_facts(result.facts)
-
+# TODO Affordable memory
     async def pre_conversation_hook(self, other_agent: "LLMAgent"):
         await self._initialize_bdi()
 
