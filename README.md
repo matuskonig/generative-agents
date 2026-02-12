@@ -14,37 +14,36 @@ This library provides tools and frameworks for using generative agents to simula
 
 - Python 3.12 or higher
 
-This example uses `uv`, an extremely fast python package manager, but feel free to
-use your favourite as `pip` etc.
+This example uses `uv`, an extremely fast python package manager, but feel free to use your favorite as `pip` etc.
 
 ### Steps
 
 1. **Create and activate a virtual environment**:
 
-   ```bash
-   uv venv venv --seed
-   source venv/bin/activate
-   ```
+    ```bash
+    uv venv venv --seed
+    source venv/bin/activate
+    ```
 
 2. **Install the library**:
 
-   - For editable mode (development):
+    - For editable mode (development):
 
-     ```bash
-     uv pip install -e .
-     ```
+      ```bash
+      uv pip install -e .
+      ```
 
-   - For regular installation:
+    - For regular installation:
 
-     ```bash
-     uv pip install .
-     ```
+      ```bash
+      uv pip install .
+      ```
 
 3. **Install dependencies for experiments**:
 
-   ```bash
-   uv pip install -e .[dev]
-   ```
+    ```bash
+    uv pip install -e .[dev]
+    ```
 
 ## Configuration
 
@@ -61,18 +60,16 @@ python experiments/valentine_party.py
 Sample experiments are located in the `experiments` directory.
 
 ### Overriding the prompts
-You can override the default provided prompts from the model by subclassing the `DefaultPromptBuilder`, replacing the methods 
-and overriding the config by provided decorator.
+You can override the default provided prompts from the model by subclassing the `DefaultPromptBuilder`, replacing the methods and overriding the config by provided decorator.
 
 ```
 @default_builder.override(DefaultPromptBuilder())
 async def main():
-   ...
+    ...
 
 with default_builder.override(DefaultPromptBuilder()):
-   ...
+    ...
 ```
-
 
 ## License
 
