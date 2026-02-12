@@ -246,6 +246,10 @@ class ConversationManager:
         return conversation
 
     async def __process_conversation_pair(self, agent1: LLMAgent, agent2: LLMAgent):
+        await asyncio.gather(
+            agent1.pre_conversation_hook(agent2),
+            agent2.pre_conversation_hook(agent1),
+        )
         conversation = await self.__generate_conversation(agent1, agent2)
         if self._logger:
             self._logger.debug(
@@ -255,10 +259,10 @@ class ConversationManager:
                 },
             )
         await asyncio.gather(
-            agent1.adjust_memory_after_conversation(
+            agent1.post_conversation_hook(
                 agent2, conversation, logger=self._logger
             ),
-            agent2.adjust_memory_after_conversation(
+            agent2.post_conversation_hook(
                 agent1, conversation, logger=self._logger
             ),
         )

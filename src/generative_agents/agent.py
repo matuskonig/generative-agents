@@ -622,7 +622,7 @@ class EmbeddingMemory(MemoryBase):
             record for record in self.__memory if record.timestamp not in timestamps
         ]
 
-
+# TODO: switch to file-based prompts together with 
 # TODO: add composite memory manager which allows to combine multiple memory managers
 # TODO: make pruning optional
 class MemoryManagerBase(abc.ABC):
@@ -755,6 +755,8 @@ def get_fact_removal_probability_factory(max_prob_coef: float):
 class PruneFactsResponse(BaseModel):
     timestamps_to_remove: list[int]
 
+# TODO: rozbit to na viac filov
+# TODO: ako vyriesime generalizaciu a context injcetion do jednotlivych agentov (mimo background)
 # TODO: make pruning a standalone configuration
 class BDIMemoryManager(MemoryManagerBase):
     """Simple memory manager elevating Belief-Desire-Intention (BDI) architecture."""
@@ -818,7 +820,9 @@ class BDIMemoryManager(MemoryManagerBase):
                 response_format=str(BDIData.model_json_schema()),
             )
             result = await self._agent.context.get_structued_response(
-                prompt, BDIData, params=default_config().get_neutral_default_llm_params()
+                prompt,
+                BDIData,
+                params=default_config().get_neutral_default_llm_params(),
             )
             self.__bdi_data = result
 
@@ -988,7 +992,6 @@ class LLMAgent:
             introduction_message,
             second_agent.data.full_name,
         )
-        await self.memory_manager.pre_conversation_hook(second_agent)
         response = await self.context.get_text_response(
             prompt, params=default_config().get_creative_llm_params()
         )
@@ -1052,13 +1055,17 @@ class LLMAgent:
             params=default_config().get_factual_llm_params(),
         )
 
-    async def adjust_memory_after_conversation(
+    async def post_conversation_hook(
         self,
         other: "LLMAgent",
         conversation: Conversation,
         logger: logging.Logger | None = None,
     ):
         await self.memory_manager.post_conversation_hook(other, conversation, logger)
+
+    async def pre_conversation_hook(self, other: "LLMAgent"):
+        await self.memory_manager.pre_conversation_hook(other)
+
 
 # TODO: in additon to pruning, implement memory compression ?
 # TODO: consider adding what they did in Affordable Generative agents - where for every agent they hold some really short summary
