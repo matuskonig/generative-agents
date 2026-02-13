@@ -92,8 +92,10 @@ def create_completion_params(
     )
 
 
-def rate_limit_repeated(delay_sec: float = 1, exp_backoff: float = 1.5):  # type: ignore[no-untyped-def]
-    def rate_limit_repeated[**P, R](
+def rate_limit_repeated[**P, R](
+    delay_sec: float = 1, exp_backoff: float = 1.5
+) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
+    def decorator(
         func: Callable[P, Awaitable[R]],
     ) -> Callable[P, Awaitable[R]]:
         async def inner(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -108,7 +110,7 @@ def rate_limit_repeated(delay_sec: float = 1, exp_backoff: float = 1.5):  # type
 
         return inner
 
-    return rate_limit_repeated
+    return decorator
 
 
 class LLMBackend:

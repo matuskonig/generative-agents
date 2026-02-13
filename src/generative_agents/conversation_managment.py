@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Generator
 import asyncio
 import networkx as nx
 import abc
@@ -18,7 +18,7 @@ class ConversationSelectorABC(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def reset(self):
+    def reset(self) -> None:
         """Resets the internal state of the selector to the initialization state."""
         pass
 
@@ -34,16 +34,16 @@ class BFSFrontierGraph[T]:
             nx.bfs_layers(graph, sources=sources)
         )  # type: list[list[T]]
 
-    def get_core_nodes(self, distance: int):
+    def get_core_nodes(self, distance: int) -> list[T]:
         """Nodes completely within the given distance from the source nodes."""
         return [node for nodes in self._layers[: distance + 1] for node in nodes]
 
-    def get_frontier_extended_graph(self, distance: int):
+    def get_frontier_extended_graph(self, distance: int) -> nx.Graph:
         """Returns a graph containing complete subgraph of given distance. The graph is extended to include adjacent edges to the nodes in the specified distance.
         Distance starts from 0, which is the source nodes.
         """
         core_nodes = self.get_core_nodes(distance)
-        graph = self._graph.subgraph(core_nodes).copy()  # type: nx.Graph
+        graph = self._graph.subgraph(core_nodes).copy()
 
         graph.add_edges_from(self._graph.edges(core_nodes))
         return graph
@@ -67,12 +67,14 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
         """Structure used as a source for the conversation pairs. Only nodes in the structure are considered for the conversation pairs."""
         pass
 
-    def generate_epoch_pairs(self):
+    def generate_epoch_pairs(
+        self,
+    ) -> Generator[list[tuple[LLMAgent, LLMAgent]], None, None]:
         # remove agents from the structure during the progression of the algorithm
         structure = self._get_generator_structure()
 
         agents: list[LLMAgent] = list(structure.nodes)
-        self.__seed.shuffle(agents)  # type: ignore numpy is defined on number arrays only, but this works for all types
+        self.__seed.shuffle(agents)
 
         conversation_pairs: list[tuple[LLMAgent, LLMAgent]] = []
 
@@ -83,7 +85,7 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
             neighbor_agents: list[LLMAgent] = list(structure.neighbors(agent1))
             if len(neighbor_agents) == 0:
                 continue
-            agent2: LLMAgent = self.__seed.choice(neighbor_agents)  # type: ignore
+            agent2: LLMAgent = self.__seed.choice(neighbor_agents)  # type: ignore[arg-type]
 
             conversation_pairs.append((agent1, agent2))
             structure.remove_node(agent1)
@@ -92,7 +94,7 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
         yield conversation_pairs
         self._generated_epochs += 1
 
-    def reset(self):
+    def reset(self) -> None:
         self._generated_epochs = 0
 
 
@@ -146,7 +148,9 @@ class ConversationRandomRestrictionAdapter(ConversationSelectorABC):
         self.__selection_probability = selection_probability
         self.__seed = seed or np.random.default_rng()
 
-    def generate_epoch_pairs(self):
+    def generate_epoch_pairs(
+        self,
+    ) -> Generator[list[tuple[LLMAgent, LLMAgent]], None, None]:
         """Selects a random subset of conversations, controled using probability."""
         for pairs_in_parallel in self.__base_selector.generate_epoch_pairs():
             yield [
@@ -155,7 +159,7 @@ class ConversationRandomRestrictionAdapter(ConversationSelectorABC):
                 if self.__seed.random() < self.__selection_probability
             ]
 
-    def reset(self):
+    def reset(self) -> None:
         self.__base_selector.reset()
 
 
@@ -177,7 +181,9 @@ class SequentialConversationSelector(ConversationSelectorABC):
         self.__initial_conversation = initial_conversation
         self.seed = seed or np.random.default_rng()
 
-    def generate_epoch_pairs(self):
+    def generate_epoch_pairs(
+        self,
+    ) -> Generator[list[tuple[LLMAgent, LLMAgent]], None, None]:
         initialization = (
             self.__initial_conversation if self.__generated_epochs == 0 else []
         )
@@ -188,7 +194,7 @@ class SequentialConversationSelector(ConversationSelectorABC):
         conversation_pairs: list[tuple[LLMAgent, LLMAgent]] = list(
             self.__structure.edges
         )
-        self.seed.shuffle(conversation_pairs)  # type: ignore numpy is defined on number arrays only, but this works for all
+        self.seed.shuffle(conversation_pairs)
         conversation_pairs = [
             (first, second) if self.seed.random() < 0.5 else (second, first)
             for (first, second) in conversation_pairs
@@ -202,7 +208,7 @@ class SequentialConversationSelector(ConversationSelectorABC):
 
         self.__generated_epochs += 1
 
-    def reset(self):
+    def reset(self) -> None:
         self.__generated_epochs = 0
 
 
@@ -217,7 +223,9 @@ class ConversationManager:
         self.conversation_selector = conversation_selector
         self._logger = logger
 
-    async def __generate_conversation(self, agent1: LLMAgent, agent2: LLMAgent):
+    async def __generate_conversation(
+        self, agent1: LLMAgent, agent2: LLMAgent
+    ) -> Conversation:
         conversation: Conversation = []
 
         for _ in range(self.max_conversation_utterances):
@@ -245,7 +253,9 @@ class ConversationManager:
 
         return conversation
 
-    async def __process_conversation_pair(self, agent1: LLMAgent, agent2: LLMAgent):
+    async def __process_conversation_pair(
+        self, agent1: LLMAgent, agent2: LLMAgent
+    ) -> None:
         await asyncio.gather(
             agent1.pre_conversation_hook(agent2),
             agent2.pre_conversation_hook(agent1),
@@ -259,19 +269,15 @@ class ConversationManager:
                 },
             )
         await asyncio.gather(
-            agent1.post_conversation_hook(
-                agent2, conversation, logger=self._logger
-            ),
-            agent2.post_conversation_hook(
-                agent1, conversation, logger=self._logger
-            ),
+            agent1.post_conversation_hook(agent2, conversation, logger=self._logger),
+            agent2.post_conversation_hook(agent1, conversation, logger=self._logger),
         )
 
-    async def run_simulation_epoch(self):
+    async def run_simulation_epoch(self) -> None:
         for pairs in self.conversation_selector.generate_epoch_pairs():
             await asyncio.gather(
                 *[self.__process_conversation_pair(*pair) for pair in pairs]
             )
 
-    def reset_epochs(self):
+    def reset_epochs(self) -> None:
         self.conversation_selector.reset()

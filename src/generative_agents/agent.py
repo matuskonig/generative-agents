@@ -1,8 +1,13 @@
-from typing import Type, Sequence, Iterable, Callable, Union, Literal
+from typing import Type, Sequence, Iterable, Callable, Union, Literal, cast
 from pydantic import BaseModel, Field
 import abc
 import logging
-from .llm_backend import LLMBackend, ResponseFormatType, create_completion_params
+from .llm_backend import (
+    LLMBackend,
+    ResponseFormatType,
+    create_completion_params,
+    CompletionParams,
+)
 from .utils import OverridableContextVar
 import numpy as np
 from numpydantic import NDArray
@@ -18,19 +23,19 @@ Core principles:
 - Be consistent with your established personality
 - Adapt your responses based on the relationship and conversation history"""
 
-    def get_factual_llm_params(self):
+    def get_factual_llm_params(self) -> CompletionParams:
         return create_completion_params(temperature=0.3)
 
-    def get_neutral_default_llm_params(self):
+    def get_neutral_default_llm_params(self) -> CompletionParams:
         return create_completion_params()
 
-    def get_creative_llm_params(self):
+    def get_creative_llm_params(self) -> CompletionParams:
         return create_completion_params(temperature=1.3, frequency_penalty=0.8)
 
-    def get_system_prompt(self):
+    def get_system_prompt(self) -> str:
         return self.__SYSTEM_PROMPT
 
-    def get_introduction_prompt(self, agent_data: "AgentModelBase"):
+    def get_introduction_prompt(self, agent_data: "AgentModelBase") -> str:
         return f"""Your name is {agent_data.full_name}. 
 
 Your characteristics: {agent_data.agent_characteristics}
@@ -55,7 +60,7 @@ IMPORTANT: Be specific about events, dates, and details. If you're organizing so
 For information you want to actively share in the network, please provide all the relevant details and emphasize your intention to share it with others.
 Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you."""
 
-    def conversation_to_text(self, conversation: "Conversation"):
+    def conversation_to_text(self, conversation: "Conversation") -> str:
         return "\n".join(
             [
                 f"[{agent.data.full_name}]: {utterance.message}"
@@ -63,14 +68,14 @@ Keep it authentic and conversational. This introduction will define how others p
             ]
         )
 
-    def conversation_to_tagged_text(self, conversation: "Conversation"):
+    def conversation_to_tagged_text(self, conversation: "Conversation") -> str:
         return (
             "<conversation>\n"
             + self.conversation_to_text(conversation)
             + "\n</conversation>"
         )
 
-    def memory_prompt(self, memory_content: str):
+    def memory_prompt(self, memory_content: str) -> str:
         return f"""<memory_context>
 {memory_content}
 </memory_context>
@@ -263,7 +268,7 @@ Respond using this JSON format: {response_format}"""
         agent_introduction: str,
         memory_string: str | None = None,
         response_format: str | None = None,
-    ):
+    ) -> str:
         memory_section = (
             self.memory_prompt(memory_string)
             if memory_string and memory_string.strip()
@@ -317,7 +322,7 @@ Respond using this JSON format: {response_format}"""
         conversation_string: str,
         memory_string: str | None = None,
         response_format: str | None = None,
-    ):
+    ) -> str:
         memory_section = (
             self.memory_prompt(memory_string)
             if memory_string and memory_string.strip()
@@ -384,7 +389,7 @@ Respond using this JSON format: {response_format}"""
         agent_introduction: str,
         memory_string: str | None = None,
         response_format: str | None = None,
-    ):
+    ) -> str:
         memory_section = (
             self.memory_prompt(memory_string)
             if memory_string and memory_string.strip()
@@ -467,16 +472,16 @@ class MemoryBase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def store_facts(self, facts: Sequence[MemoryRecordResponse]):
+    async def store_facts(self, facts: Sequence[MemoryRecordResponse]) -> None:
         """Append new facts to the memory."""
 
     @abc.abstractmethod
-    def remove_facts(self, timestamps: list[int]):
+    def remove_facts(self, timestamps: list[int]) -> None:
         pass
 
 
 class SimpleMemory(MemoryBase):
-    def __init__(self):
+    def __init__(self) -> None:
         self.__timestamp = 0
         self.__memory: list[MemoryRecord] = []
 
@@ -489,11 +494,11 @@ class SimpleMemory(MemoryBase):
     async def query_retrieval(self, query: str) -> list[MemoryRecord]:
         return self.__memory
 
-    def __get_next_timestamp(self):
+    def __get_next_timestamp(self) -> int:
         self.__timestamp += 1
         return self.__timestamp
 
-    async def store_facts(self, facts: Sequence[MemoryRecordResponse]):
+    async def store_facts(self, facts: Sequence[MemoryRecordResponse]) -> None:
         self.__memory.extend(
             [
                 MemoryRecord(
@@ -505,21 +510,25 @@ class SimpleMemory(MemoryBase):
             ]
         )
 
-    def remove_facts(self, timestamps: list[int]):
+    def remove_facts(self, timestamps: list[int]) -> None:
         self.__memory = [
             record for record in self.__memory if record.timestamp not in timestamps
         ]
 
 
-def fixed_count_strategy_factory(count: int):
-    def inner(records: Sequence[tuple[float, MemoryRecord]]):
+def fixed_count_strategy_factory(
+    count: int,
+) -> Callable[[Sequence[tuple[float, MemoryRecord]]], int]:
+    def inner(records: Sequence[tuple[float, MemoryRecord]]) -> int:
         return min(count, len(records))
 
     return inner
 
 
-def mean_std_count_strategy_factory(std_coef: float = 0.5):
-    def inner(records: Sequence[tuple[float, MemoryRecord]]):
+def mean_std_count_strategy_factory(
+    std_coef: float = 0.5,
+) -> Callable[[Sequence[tuple[float, MemoryRecord]]], int]:
+    def inner(records: Sequence[tuple[float, MemoryRecord]]) -> int:
         if len(records) == 0:
             return 0
         scores = np.array([score for score, _ in records])
@@ -531,8 +540,10 @@ def mean_std_count_strategy_factory(std_coef: float = 0.5):
     return inner
 
 
-def top_std_count_strategy_factory(std_coef: float = 1.0):
-    def inner(records: Sequence[tuple[float, MemoryRecord]]):
+def top_std_count_strategy_factory(
+    std_coef: float = 1.0,
+) -> Callable[[Sequence[tuple[float, MemoryRecord]]], int]:
+    def inner(records: Sequence[tuple[float, MemoryRecord]]) -> int:
         if len(records) == 0:
             return 0
         scores = np.array([score for score, _ in records])
@@ -549,11 +560,11 @@ class EmbeddingMemory(MemoryBase):
         self,
         context: LLMBackend,
         count_selector: Callable[[Sequence[tuple[float, MemoryRecord]]], int],
-        time_weight=1.0,
-        time_smoothing=0.7,
-        relevance_weight=1.0,
-        similairity_weight=1.0,
-    ):
+        time_weight: float = 1.0,
+        time_smoothing: float = 0.7,
+        relevance_weight: float = 1.0,
+        similairity_weight: float = 1.0,
+    ) -> None:
         self.__context = context
         self.__count_selector = count_selector
         self.__memory: list[MemoryRecordWithEmbedding] = []
@@ -564,23 +575,25 @@ class EmbeddingMemory(MemoryBase):
         self.__relevance_weight = relevance_weight
         self.__similarity_weight = similairity_weight
 
-    def __get_next_timestamp(self):
+    def __get_next_timestamp(self) -> int:
         self.__timestamp += 1
         return self.__timestamp
 
     def current_timestamp(self) -> int:
         return self.__timestamp
 
-    def full_retrieval(self):
+    def full_retrieval(self) -> list[MemoryRecordWithEmbedding]:
         return self.__memory
 
     def __get_memory_record_score(
         self, query_emb: np.ndarray, record: MemoryRecordWithEmbedding
     ) -> float:
-        time_similarity = (record.timestamp / self.__timestamp) ** self.__time_smoothing
-        cosine_similarity = np.dot(record.embedding, query_emb) / (
-            np.linalg.norm(record.embedding) * np.linalg.norm(query_emb)
-        )
+        time_similarity: float = (
+            record.timestamp / self.__timestamp
+        ) ** self.__time_smoothing
+        cosine_similarity: float = np.dot(
+            cast(np.ndarray, record.embedding), query_emb
+        ) / (np.linalg.norm(record.embedding) * np.linalg.norm(query_emb))
         return (
             self.__time_weight * time_similarity
             + self.__relevance_weight * record.relevance
@@ -603,7 +616,7 @@ class EmbeddingMemory(MemoryBase):
         selected_count = self.__count_selector(scored_records)
         return [record for _, record in scored_records[:selected_count]]
 
-    async def store_facts(self, facts: Iterable[MemoryRecordResponse]):
+    async def store_facts(self, facts: Iterable[MemoryRecordResponse]) -> None:
         embeddings = await self.__context.embed_text([fact.text for fact in facts])
         self.__memory.extend(
             [
@@ -617,17 +630,18 @@ class EmbeddingMemory(MemoryBase):
             ]
         )
 
-    def remove_facts(self, timestamps: list[int]):
+    def remove_facts(self, timestamps: list[int]) -> None:
         self.__memory = [
             record for record in self.__memory if record.timestamp not in timestamps
         ]
 
-# TODO: switch to file-based prompts together with 
+
+# TODO: switch to file-based prompts together with
 # TODO: add composite memory manager which allows to combine multiple memory managers
 # TODO: make pruning optional
 class MemoryManagerBase(abc.ABC):
     @abc.abstractmethod
-    def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
+    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
         pass
 
     @abc.abstractmethod
@@ -635,7 +649,7 @@ class MemoryManagerBase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+    async def pre_conversation_hook(self, other_agent: "LLMAgent") -> None:
         pass
 
     @abc.abstractmethod
@@ -644,7 +658,7 @@ class MemoryManagerBase(abc.ABC):
         other_agent: "LLMAgent",
         conversation: "Conversation",
         logger: logging.Logger | None = None,
-    ):
+    ) -> None:
         pass
 
 
@@ -653,10 +667,10 @@ class SimpleMemoryManager(MemoryManagerBase):
         self.memory = memory
         self._agent = agent
 
-    def _get_memory_tag(self, memory_string: str):
+    def _get_memory_tag(self, memory_string: str) -> str:
         return f"<memory>{memory_string}</memory>"
 
-    def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
+    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
         return self._get_memory_tag(
             "\n".join(
                 [
@@ -679,7 +693,7 @@ class SimpleMemoryManager(MemoryManagerBase):
 
     async def _add_new_memory(
         self, other_agent: "LLMAgent", conversation: "Conversation"
-    ):
+    ) -> None:
         prompt = default_config().get_conversation_summary_prompt(
             agent_full_name=self._agent.data.full_name,
             agent_introduction=await self._agent.get_agent_introduction_message(),
@@ -697,12 +711,15 @@ class SimpleMemoryManager(MemoryManagerBase):
         )
         await self.memory.store_facts(result.facts)
 
-    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+    async def pre_conversation_hook(self, other_agent: "LLMAgent") -> None:
         pass
 
     async def post_conversation_hook(
-        self, other_agent: "LLMAgent", conversation: "Conversation", logger=None
-    ):
+        self,
+        other_agent: "LLMAgent",
+        conversation: "Conversation",
+        logger: logging.Logger | None = None,
+    ) -> None:
         await self._add_new_memory(other_agent, conversation)
         if logger:
             logger.debug(
@@ -744,8 +761,10 @@ class BDIResponse(BaseModel):
     )
 
 
-def get_fact_removal_probability_factory(max_prob_coef: float):
-    def inner(current_timestamp: int, fact: MemoryRecord):
+def get_fact_removal_probability_factory(
+    max_prob_coef: float,
+) -> Callable[[int, MemoryRecord], float]:
+    def inner(current_timestamp: int, fact: MemoryRecord) -> float:
         linear_prob = 1 - (fact.timestamp / current_timestamp)
         return max_prob_coef * linear_prob
 
@@ -754,6 +773,7 @@ def get_fact_removal_probability_factory(max_prob_coef: float):
 
 class PruneFactsResponse(BaseModel):
     timestamps_to_remove: list[int]
+
 
 # TODO: rozbit to na viac filov
 # TODO: ako vyriesime generalizaciu a context injcetion do jednotlivych agentov (mimo background)
@@ -773,8 +793,11 @@ class BDIMemoryManager(MemoryManagerBase):
         self.memory_removal_probability = memory_removal_probability
 
     def _get_memory_tag(
-        self, memory_string: str, with_desires=False, with_intention: bool = True
-    ):
+        self,
+        memory_string: str,
+        with_desires: bool = False,
+        with_intention: bool = True,
+    ) -> str:
         memory = f"<memory>{memory_string}</memory>"
         desires = (
             f'<desires>{"\n".join(self.__bdi_data.desires)}</desires>'
@@ -788,7 +811,7 @@ class BDIMemoryManager(MemoryManagerBase):
         )
         return f"{memory}{desires}{intention}"
 
-    def get_tagged_full_memory(self, with_full_memory_record=False) -> str:
+    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
         return self._get_memory_tag(
             "\n".join(
                 [
@@ -809,9 +832,7 @@ class BDIMemoryManager(MemoryManagerBase):
             )
         )
 
-    #
-
-    async def _initialize_bdi(self):
+    async def _initialize_bdi(self) -> None:
         if not self.__bdi_data:
             prompt = default_config().get_bdi_init_prompt(
                 self._agent.data.full_name,
@@ -826,7 +847,9 @@ class BDIMemoryManager(MemoryManagerBase):
             )
             self.__bdi_data = result
 
-    async def _update_bdi(self, second_agent: "LLMAgent", conversation: "Conversation"):
+    async def _update_bdi(
+        self, second_agent: "LLMAgent", conversation: "Conversation"
+    ) -> None:
         prompt = default_config().get_bdi_update_prompt(
             self._agent.data.full_name,
             await self._agent.get_agent_introduction_message(),
@@ -850,7 +873,7 @@ class BDIMemoryManager(MemoryManagerBase):
                 intention=result.data.intention,
             )
 
-    async def _prune_old_memory(self):
+    async def _prune_old_memory(self) -> None:
         if not self.memory_removal_probability:
             return
 
@@ -860,7 +883,7 @@ class BDIMemoryManager(MemoryManagerBase):
             if random.random()
             <= self.memory_removal_probability(self.memory.current_timestamp(), fact)
         ]
-        timestamps = {fact.timestamp for fact in facts_to_prune}
+        timestamps: set[int] = {fact.timestamp for fact in facts_to_prune}
         if len(facts_to_prune) == 0:
             return
 
@@ -891,7 +914,7 @@ class BDIMemoryManager(MemoryManagerBase):
 
     async def _add_new_memory(
         self, other_agent: "LLMAgent", conversation: "Conversation"
-    ):
+    ) -> None:
         prompt = default_config().get_conversation_summary_prompt(
             agent_full_name=self._agent.data.full_name,
             agent_introduction=await self._agent.get_agent_introduction_message(),
@@ -908,13 +931,17 @@ class BDIMemoryManager(MemoryManagerBase):
             params=default_config().get_factual_llm_params(),
         )
         await self.memory.store_facts(result.facts)
-# TODO Affordable memory
-    async def pre_conversation_hook(self, other_agent: "LLMAgent"):
+
+    # TODO Affordable memory
+    async def pre_conversation_hook(self, other_agent: "LLMAgent") -> None:
         await self._initialize_bdi()
 
     async def post_conversation_hook(
-        self, other_agent: "LLMAgent", conversation: "Conversation", logger=None
-    ):
+        self,
+        other_agent: "LLMAgent",
+        conversation: "Conversation",
+        logger: logging.Logger | None = None,
+    ) -> None:
         await self._add_new_memory(other_agent, conversation)
         await self._prune_old_memory()
         await self._update_bdi(other_agent, conversation)
@@ -963,14 +990,14 @@ class LLMAgent:
         data: AgentModelBase,
         context: LLMBackend,
         create_memory_manager: Callable[["LLMAgent"], MemoryManagerBase],
-    ):
+    ) -> None:
         self.data = data
         self.context = context
         self.memory_manager = create_memory_manager(self)
 
         self.__intro_message: str | None = None
 
-    async def get_agent_introduction_message(self):
+    async def get_agent_introduction_message(self) -> str:
         if self.__intro_message:
             return self.__intro_message
 
@@ -984,7 +1011,7 @@ class LLMAgent:
         self.__intro_message = response
         return response
 
-    async def start_conversation(self, second_agent: "LLMAgent"):
+    async def start_conversation(self, second_agent: "LLMAgent") -> str:
         introduction_message = await self.get_agent_introduction_message()
         prompt = default_config().start_conversation_prompt(
             self.memory_manager.get_tagged_full_memory(),
@@ -1011,11 +1038,14 @@ class LLMAgent:
             conversation,
             response_format=str(Utterance.model_json_schema()),
         )
-        return await self.context.get_structued_response(
-            prompt, Utterance, params=default_config().get_creative_llm_params()
+        result = await self.context.get_structued_response(
+            prompt,
+            response_format=Utterance,
+            params=default_config().get_creative_llm_params(),
         )
+        return result
 
-    async def ask_agent(self, question: str, use_full_memory: bool = True):
+    async def ask_agent(self, question: str, use_full_memory: bool = True) -> str:
         memory = (
             self.memory_manager.get_tagged_full_memory()
             if use_full_memory
@@ -1036,7 +1066,7 @@ class LLMAgent:
         question: str,
         response_format: Type[ResponseFormatType],
         use_full_memory: bool = True,
-    ):
+    ) -> ResponseFormatType:
         memory = (
             self.memory_manager.get_tagged_full_memory()
             if use_full_memory
@@ -1060,10 +1090,10 @@ class LLMAgent:
         other: "LLMAgent",
         conversation: Conversation,
         logger: logging.Logger | None = None,
-    ):
+    ) -> None:
         await self.memory_manager.post_conversation_hook(other, conversation, logger)
 
-    async def pre_conversation_hook(self, other: "LLMAgent"):
+    async def pre_conversation_hook(self, other: "LLMAgent") -> None:
         await self.memory_manager.pre_conversation_hook(other)
 
 

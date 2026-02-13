@@ -9,10 +9,11 @@ class Throttler:
         self.heap: list[float] = []
         self.lock = asyncio.Lock()
 
-    async def throttle(self):
+    async def throttle(self) -> None:
         async with self.lock:
             now = time.monotonic()
             # Clear the heap of requests older than 1 second
+            # TODO: wtf
             while len(self.heap) and (now - self.heap[0] > 1):
                 heapq.heappop(self.heap)
 
@@ -26,7 +27,7 @@ class Throttler:
 
             heapq.heappush(self.heap, time.monotonic())
 
-    async def __call__(self):
+    async def __call__(self) -> None:
         await self.throttle()
 
 
