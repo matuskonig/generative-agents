@@ -15,7 +15,14 @@ from .agent import (
     top_std_count_strategy_factory,
     mean_std_count_strategy_factory,
 )
-from .llm_backend import LLMBackend, create_completion_params, CompletionParams
+from .llm_backend import (
+    LLMBackend,
+    create_completion_params,
+    CompletionParams,
+    EmbeddingProvider,
+    OpenAIEmbeddingProvider,
+    SentenceTransformerProvider,
+)
 from .conversation_managment import (
     ConversationManager,
     SequentialConversationSelector,
@@ -31,6 +38,9 @@ __all__ = [
     "LLMAgent",
     "AgentModelBase",
     "LLMBackend",
+    "EmbeddingProvider",
+    "OpenAIEmbeddingProvider",
+    "SentenceTransformerProvider",
     "ConversationManager",
     "SequentialConversationSelector",
     "ConversationSelectorABC",

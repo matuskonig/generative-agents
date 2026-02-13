@@ -19,6 +19,8 @@ from generative_agents import (
     BDIMemoryManager,
     SimpleMemory,
     SimpleMemoryManager,
+    OpenAIEmbeddingProvider,
+    SentenceTransformerProvider,
     EmbeddingMemory,
     get_fact_removal_probability_factory,
     mean_std_count_strategy_factory,
@@ -66,7 +68,10 @@ async def main():
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
-        embedding_model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),
+        embedding_provider=OpenAIEmbeddingProvider(
+            client=client,
+            model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),  # type: ignore
+        ),
     )
 
     with open("./data/valentine_party.json", "r") as f:

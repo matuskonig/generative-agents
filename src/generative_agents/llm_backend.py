@@ -3,14 +3,71 @@ from typing import TypeVar, Type, overload, Callable, TypedDict, Awaitable
 from pydantic import BaseModel
 import time
 import asyncio
+import abc
 from .async_helpers import Throttler
 import numpy as np
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
 
 
-# TODO: make embedding a solo thing not necessary a part of the LLMBackend,
-# add support for SentenceTransformers or other embedding models
+class EmbeddingProvider(abc.ABC):
+    """Abstract base class for embedding implementations."""
+
+    @abc.abstractmethod
+    async def _embed_impl(self, input: list[str]) -> list[np.ndarray]: ...
+
+    @overload
+    async def embed_text(self, input: str) -> np.ndarray: ...
+    @overload
+    async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
+    async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
+        if isinstance(input, str):
+            result = await self._embed_impl([input])
+            return result[0]
+        else:
+            return await self._embed_impl(input)
+
+
+class OpenAIEmbeddingProvider(EmbeddingProvider):
+    """OpenAI API-based embeddings."""
+
+    def __init__(
+        self,
+        client: AsyncClient,
+        model: str,
+    ):
+        self.__client = client
+        self.__model = model
+
+    async def _embed_impl(self, input: list[str]) -> list[np.ndarray]:
+        response = await self.__client.embeddings.create(
+            input=input, model=self.__model
+        )
+        return [
+            np.array(embedding_response.embedding)
+            for embedding_response in response.data
+        ]
+
+
+class SentenceTransformerProvider(EmbeddingProvider):
+    """Local SentenceTransformer embeddings."""
+
+    def __init__(self, model_name: str, device: str = "cpu"):
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError:
+            raise ImportError(
+                "sentence-transformers is not installed. "
+                "Please install it with: pip install sentence-transformers or as part of optional project dependencies [embedding]"
+            )
+
+        self.__model = SentenceTransformer(model_name, device=device)
+
+    async def _embed_impl(self, input: list[str]) -> list[np.ndarray]:
+        result = self.__model.encode(input, convert_to_numpy=True)
+        return list(result)
+
+
 class CompletionParams(TypedDict):
     temperature: float | Omit | None
     max_completion_tokens: int | Omit | None
@@ -61,20 +118,20 @@ class LLMBackend:
         client: AsyncClient,
         model: str,
         RPS: int | float | None,
-        embedding_model: str | None = None,
+        embedding_provider: EmbeddingProvider | None = None,
     ) -> None:
 
         from .agent import default_config
 
         self.__client = client
         self.__chat_model = model
-        self.__embedding_model = embedding_model
         self.__throttle = Throttler(RPS) if RPS else None
         self.completion_tokens: int = 0
         self.prompt_tokens: int = 0
         self.total_time: float = 0.0
         self.total_requests = 0
         self.system_prompt = default_config().get_system_prompt()
+        self.__embedding_provider = embedding_provider
 
     @rate_limit_repeated()
     async def get_text_response(
@@ -142,21 +199,11 @@ class LLMBackend:
 
     @rate_limit_repeated()
     async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
-        if not self.__embedding_model:
+        if not self.__embedding_provider:
             raise ValueError(
-                "Embedding model is not set, however embedding action is requested."
+                "Embedding provider is not set, however embedding action is requested."
             )
         if self.__throttle:
             await self.__throttle()
 
-        response = await self.__client.embeddings.create(
-            input=input, model=self.__embedding_model
-        )
-
-        if isinstance(input, str):
-            return np.array(response.data[0].embedding)
-
-        return [
-            np.array(embedding_response.embedding)
-            for embedding_response in response.data
-        ]
+        return await self.__embedding_provider.embed_text(input)

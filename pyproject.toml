@@ -32,6 +32,9 @@ dev = [
     "ipykernel>=6.21.0",
     "python-dotenv>=1.0.0",
 ]
+embedding = [
+    "sentence-transformers>=5.2.0",
+]
 
 [tool.setuptools]
 packages = ["generative_agents"]

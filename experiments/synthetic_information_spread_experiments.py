@@ -27,6 +27,8 @@ from generative_agents import (
     default_config,
     DefaultConfig,
     AgentModelBase,
+    OpenAIEmbeddingProvider,
+    SentenceTransformerProvider,
 )
 import httpx
 
@@ -487,7 +489,10 @@ async def main():
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
-        embedding_model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),
+        embedding_provider=OpenAIEmbeddingProvider(
+            client=client,
+            model=os.getenv("OPENAI_EMBEDDINGS_MODEL"), # type: ignore
+        ),
     )
 
     if not os.path.exists("./results"):

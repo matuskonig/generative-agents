@@ -45,6 +45,12 @@ This example uses `uv`, an extremely fast python package manager, but feel free 
     uv pip install -e .[dev]
     ```
 
+4. **Install sentence-transformers for local embedding support (optional)**:
+
+    ```bash
+    uv pip install .[embedding]
+    ```
+
 ## Configuration
 
 - **Environment Variables**: Optionally, configure environment variables in the `.env` file to match the naming used in your experiments. This is only required for running the example experiments.
