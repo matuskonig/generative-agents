@@ -1,27 +1,30 @@
-from openai import AsyncClient, RateLimitError, APITimeoutError, NotGiven, NOT_GIVEN
-from typing import TypeVar, Type, overload, Callable, Awaitable, TypedDict
+from openai import AsyncClient, RateLimitError, APITimeoutError, Omit, omit
+from typing import TypeVar, Type, overload, Callable, TypedDict, Awaitable
 from pydantic import BaseModel
 import time
+import asyncio
 from .async_helpers import Throttler
 import numpy as np
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
 
-# TODO: make embedding a solo thing not neccesary a part of the LLMBackend, add support for SentenceTransformers or other embedding models
+
+# TODO: make embedding a solo thing not necessary a part of the LLMBackend,
+# add support for SentenceTransformers or other embedding models
 class CompletionParams(TypedDict):
-    temperature: float | NotGiven | None
-    max_completion_tokens: int | NotGiven | None
-    top_p: float | NotGiven | None
-    frequency_penalty: float | NotGiven | None
-    presence_penalty: float | NotGiven | None
+    temperature: float | Omit | None
+    max_completion_tokens: int | Omit | None
+    top_p: float | Omit | None
+    frequency_penalty: float | Omit | None
+    presence_penalty: float | Omit | None
 
 
 def create_completion_params(
-    temperature: float | NotGiven | None = NOT_GIVEN,
-    max_completion_tokens: int | NotGiven | None = NOT_GIVEN,
-    top_p: float | NotGiven | None = NOT_GIVEN,
-    frequency_penalty: float | NotGiven | None = NOT_GIVEN,
-    presence_penalty: float | NotGiven | None = NOT_GIVEN,
+    temperature: float | Omit | None = omit,
+    max_completion_tokens: int | Omit | None = omit,
+    top_p: float | Omit | None = omit,
+    frequency_penalty: float | Omit | None = omit,
+    presence_penalty: float | Omit | None = omit,
 ) -> CompletionParams:
     return CompletionParams(
         temperature=temperature,
@@ -32,16 +35,23 @@ def create_completion_params(
     )
 
 
-def rate_limit_repeated[**P, R](func: Callable[P, Awaitable[R]]):
-    async def inner(*args: P.args, **kwargs: P.kwargs):
-        while True:
-            try:
-                return await func(*args, **kwargs)
-            except (RateLimitError, APITimeoutError) as e:
-                # TODO add exponential backoff
-                continue
+def rate_limit_repeated(delay_sec: float = 1, exp_backoff: float = 1.5):  # type: ignore[no-untyped-def]
+    def rate_limit_repeated[**P, R](
+        func: Callable[P, Awaitable[R]],
+    ) -> Callable[P, Awaitable[R]]:
+        async def inner(*args: P.args, **kwargs: P.kwargs) -> R:
+            retry_count = 0
+            while True:
+                try:
+                    return await func(*args, **kwargs)
+                except (RateLimitError, APITimeoutError):
+                    delay = delay_sec * (exp_backoff**retry_count)
+                    retry_count += 1
+                    await asyncio.sleep(delay)
 
-    return inner
+        return inner
+
+    return rate_limit_repeated
 
 
 class LLMBackend:
@@ -60,13 +70,13 @@ class LLMBackend:
         self.__chat_model = model
         self.__embedding_model = embedding_model
         self.__throttle = Throttler(RPS) if RPS else None
-        self.completion_tokens = 0
-        self.prompt_tokens = 0
-        self.total_time = 0
+        self.completion_tokens: int = 0
+        self.prompt_tokens: int = 0
+        self.total_time: float = 0.0
         self.total_requests = 0
         self.system_prompt = default_config().get_system_prompt()
 
-    @rate_limit_repeated
+    @rate_limit_repeated()
     async def get_text_response(
         self, prompt: str, params: CompletionParams = create_completion_params()
     ) -> str:
@@ -91,7 +101,7 @@ class LLMBackend:
 
         return response.choices[0].message.content or ""
 
-    @rate_limit_repeated
+    @rate_limit_repeated()
     async def get_structued_response(
         self,
         prompt: str,
@@ -102,8 +112,7 @@ class LLMBackend:
             await self.__throttle()
 
         start = time.time()
-
-        response = await self.__client.beta.chat.completions.parse(
+        response = await self.__client.chat.completions.parse(
             model=self.__chat_model,
             messages=[
                 {"role": "system", "content": self.system_prompt},
@@ -130,8 +139,9 @@ class LLMBackend:
     async def embed_text(self, input: str) -> np.ndarray: ...
     @overload
     async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
-    @rate_limit_repeated
-    async def embed_text(self, input: str | list[str]):
+
+    @rate_limit_repeated()
+    async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
         if not self.__embedding_model:
             raise ValueError(
                 "Embedding model is not set, however embedding action is requested."
@@ -140,11 +150,10 @@ class LLMBackend:
             await self.__throttle()
 
         response = await self.__client.embeddings.create(
-            input=input,
-            model=self.__embedding_model,
+            input=input, model=self.__embedding_model
         )
 
-        if type(input) == str:
+        if isinstance(input, str):
             return np.array(response.data[0].embedding)
 
         return [
