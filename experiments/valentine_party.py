@@ -86,6 +86,7 @@ async def main():
                     context, count_selector=mean_std_count_strategy_factory(0.5)
                 ),
                 agent=agent,
+                context=context,
                 memory_removal_probability=get_fact_removal_probability_factory(0.5),
             ),
         )
@@ -115,10 +116,10 @@ async def main():
     )
     manager = ConversationManager(
         conversation_selector=conversation_selector,
-        max_conversation_utterances=12,
+        max_conversation_utterances=4,
         logger=logger,
     )
-    for i in range(4):
+    for i in range(2):
         await manager.run_simulation_epoch()
 
     question = "When is the party happening ? Did you hear about the party ?"

@@ -354,11 +354,12 @@ async def run_experiment(
 
         match memory_manager_config["manager_type"]:
             case "simple":
-                return SimpleMemoryManager(memory, agent)
+                return SimpleMemoryManager(memory, agent, context)
             case "bdi":
                 return BDIMemoryManager(
                     memory,
                     agent,
+                    context,
                     get_fact_removal_probability_factory(
                         memory_manager_config["memory_removal_prob"]
                     ),

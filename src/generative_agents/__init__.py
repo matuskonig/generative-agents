@@ -1,19 +1,29 @@
-from .agent import (
-    LLMAgent,
+from .agent import LLMAgent
+from .types import (
     AgentModelBase,
-    default_config,
-    DefaultConfig,
-    BDIMemoryManager,
-    SimpleMemoryManager,
+    LLMAgentBase,
+    MemoryRecord,
+    MemoryRecordResponse,
+    MemoryRecordWithEmbedding,
+    BDIData,
+    BDIResponse,
+    Utterance,
+    FactResponse,
+    Conversation,
+    PruneFactsResponse,
+)
+from .config import DefaultConfig, default_config
+from .memory import (
+    MemoryBase,
     SimpleMemory,
     EmbeddingMemory,
+    MemoryManagerBase,
+    SimpleMemoryManager,
+    BDIMemoryManager,
+    fixed_count_strategy_factory,
+    mean_std_count_strategy_factory,
+    top_std_count_strategy_factory,
     get_fact_removal_probability_factory,
-    top_std_count_strategy_factory,
-    mean_std_count_strategy_factory,
-    fixed_count_strategy_factory,
-    fixed_count_strategy_factory,
-    top_std_count_strategy_factory,
-    mean_std_count_strategy_factory,
 )
 from .llm_backend import (
     LLMBackend,
@@ -36,6 +46,7 @@ from .conversation_managment import (
 
 __all__ = [
     "LLMAgent",
+    "LLMAgentBase",
     "AgentModelBase",
     "LLMBackend",
     "EmbeddingProvider",
@@ -61,5 +72,16 @@ __all__ = [
     "FullParallelConversationSelector",
     "ConversationRandomRestrictionAdapter",
     "BFSFrontierGraph",
+    "MemoryRecord",
+    "MemoryRecordResponse",
+    "MemoryRecordWithEmbedding",
+    "BDIData",
+    "BDIResponse",
+    "Utterance",
+    "FactResponse",
+    "Conversation",
+    "PruneFactsResponse",
+    "MemoryBase",
+    "MemoryManagerBase",
 ]
 PACKAGE_VERSION = "1.0.0"
