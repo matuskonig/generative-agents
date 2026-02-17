@@ -2,7 +2,7 @@ from typing import Type, Callable
 import logging
 
 from .llm_backend import LLMBackend, ResponseFormatType
-from .types import AgentModelBase, Conversation, Utterance, FactResponse, LLMAgentBase
+from .types import AgentModelBase, Conversation, Utterance, LLMAgentBase
 from .memory import MemoryManagerBase
 from .config import default_config
 

@@ -2,15 +2,8 @@ from .agent import LLMAgent
 from .types import (
     AgentModelBase,
     LLMAgentBase,
-    MemoryRecord,
-    MemoryRecordResponse,
-    MemoryRecordWithEmbedding,
-    BDIData,
-    BDIResponse,
     Utterance,
-    FactResponse,
     Conversation,
-    PruneFactsResponse,
 )
 from .config import DefaultConfig, default_config
 from .memory import (
@@ -20,6 +13,13 @@ from .memory import (
     MemoryManagerBase,
     SimpleMemoryManager,
     BDIMemoryManager,
+    PruneFactsResponse,
+    FactResponse,
+    MemoryRecord,
+    MemoryRecordResponse,
+    MemoryRecordWithEmbedding,
+    BDIData,
+    BDIResponse,
     fixed_count_strategy_factory,
     mean_std_count_strategy_factory,
     top_std_count_strategy_factory,
