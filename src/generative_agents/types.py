@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
 import abc
+
+from pydantic import BaseModel, Field
 
 
 class AgentModelBase(BaseModel, abc.ABC):

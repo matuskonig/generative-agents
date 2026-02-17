@@ -1,11 +1,13 @@
-from typing import Iterable, Generator
-import asyncio
-import networkx as nx
 import abc
-from networkx import Graph
-from .agent import LLMAgent, Utterance, Conversation, default_config
-import numpy as np
+import asyncio
 import logging
+from typing import Generator, Iterable
+
+import networkx as nx
+import numpy as np
+from networkx import Graph
+
+from .agent import Conversation, LLMAgent, Utterance, default_config
 
 
 class ConversationSelectorABC(abc.ABC):

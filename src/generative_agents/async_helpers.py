@@ -1,6 +1,6 @@
 import asyncio
-import time
 import heapq
+import time
 
 
 class Throttler:

@@ -1,10 +1,10 @@
-from typing import Type, Callable
 import logging
+from typing import Callable, Type
 
-from .llm_backend import LLMBackend, ResponseFormatType
-from .types import AgentModelBase, Conversation, Utterance, LLMAgentBase
-from .memory import MemoryManagerBase
 from .config import default_config
+from .llm_backend import LLMBackend, ResponseFormatType
+from .memory import MemoryManagerBase
+from .types import AgentModelBase, Conversation, LLMAgentBase, Utterance
 
 
 class LLMAgent(LLMAgentBase):

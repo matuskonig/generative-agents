@@ -1,7 +1,6 @@
-from typing import TypeVar, Generic, Callable, Iterator
-
 import contextlib
 import contextvars
+from typing import Generic, Iterator, TypeVar
 
 T = TypeVar("T")
 
