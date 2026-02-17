@@ -38,3 +38,6 @@ class Throttler:
                     await asyncio.sleep(time_to_expire)
 
             heapq.heappush(self._heap, time.monotonic())
+
+    async def __call__(self) -> None:
+        await self.throttle()
