@@ -1,39 +1,37 @@
-from pydantic import BaseModel, Field
-import dotenv
-import os
-from typing import Literal, TypedDict
-import networkx as nx
-from openai import AsyncOpenAI
-import numpy as np
 import asyncio
 import logging
 import os
+from typing import Literal, TypedDict
 
+import dotenv
+import httpx
+import networkx as nx
+import numpy as np
 from data_generation_utils import Dataset, SocietyAgent
+from logger_utils import get_xml_file_logger
+from openai import AsyncOpenAI
+from pydantic import BaseModel, Field
+
 from generative_agents import (
-    ConversationManager,
-    LLMBackend,
-    LLMAgent,
-    BDIMemoryManager,
-    SimpleMemory,
-    SimpleMemoryManager,
-    InformationSpreadConversationSelector,
-    FullParallelConversationSelector,
-    EmbeddingMemory,
-    get_fact_removal_probability_factory,
-    mean_std_count_strategy_factory,
-    fixed_count_strategy_factory,
-    top_std_count_strategy_factory,
-    default_config,
-    DefaultConfig,
     AgentModelBase,
+    BDIMemoryManager,
+    ConversationManager,
+    DefaultConfig,
+    EmbeddingMemory,
+    FullParallelConversationSelector,
+    InformationSpreadConversationSelector,
+    LLMAgent,
+    LLMBackend,
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
+    SimpleMemory,
+    SimpleMemoryManager,
+    default_config,
+    fixed_count_strategy_factory,
+    get_fact_removal_probability_factory,
+    mean_std_count_strategy_factory,
+    top_std_count_strategy_factory,
 )
-import httpx
-
-
-from logger_utils import get_xml_file_logger
 
 
 class BDIMemoryManagerType(TypedDict):
@@ -492,7 +490,7 @@ async def main():
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
         embedding_provider=OpenAIEmbeddingProvider(
             client=client,
-            model=os.getenv("OPENAI_EMBEDDINGS_MODEL"), # type: ignore
+            model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),  # type: ignore
         ),
     )
 

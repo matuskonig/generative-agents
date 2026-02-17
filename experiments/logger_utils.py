@@ -1,5 +1,5 @@
-from typing import override
 import logging
+from typing import override
 
 
 class XMLExtraAdapter(logging.LoggerAdapter):

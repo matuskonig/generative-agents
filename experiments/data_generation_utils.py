@@ -1,7 +1,9 @@
+from typing import Literal, Mapping
+
 import networkx as nx
 import pydantic
 from openai import AsyncOpenAI
-from typing import Literal, Mapping
+
 from generative_agents import AgentModelBase
 
 
