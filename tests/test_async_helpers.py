@@ -74,8 +74,6 @@ class TestThrottlerBasicBehavior:
         await throttler.throttle()
         assert time.monotonic() - now >= 2
 
-
-
     @pytest.mark.asyncio
     async def test_sequential_calls_subsecond_throttle(self) -> None:
         rps = 0.5
