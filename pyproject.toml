@@ -50,7 +50,6 @@ include = '\.pyi?$'
 
 [tool.isort]
 profile = "black"
-line-length = 88
 
 [tool.mypy]
 python_version = "3.12"
