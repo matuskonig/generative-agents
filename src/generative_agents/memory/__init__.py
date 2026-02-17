@@ -52,9 +52,7 @@ __all__ = [
 # TODO: add some freetext field to the BDI to support model writing notes, planning and reasoning
 # TODO: add possibly something to extend the actions
 
-# TODO: rozbit to na viac filov
 # TODO: ako vyriesime generalizaciu a context injcetion do jednotlivych agentov (mimo background)
 # TODO: make pruning a standalone configuration
-
 
 # TODO Affordable memory
