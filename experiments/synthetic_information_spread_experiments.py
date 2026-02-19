@@ -14,7 +14,6 @@ from pydantic import BaseModel, Field
 
 from generative_agents import (
     AgentModelBase,
-    BDIMemoryManager,
     ConversationManager,
     DefaultConfig,
     EmbeddingMemory,
@@ -25,10 +24,14 @@ from generative_agents import (
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
     SimpleMemory,
-    SimpleMemoryManager,
+    CompositeBehaviorFactoryBase,
+    CompositeBehaviorMemoryManager,
+    MemoryUpdatingBehavior,
+    BDIPlanningBehavior,
+    MemoryForgettingBehavior,
     default_config,
     fixed_count_strategy_factory,
-    get_fact_removal_probability_factory,
+    get_record_removal_linear_probability,
     mean_std_count_strategy_factory,
     top_std_count_strategy_factory,
 )
@@ -352,17 +355,31 @@ async def run_experiment(
 
         match memory_manager_config["manager_type"]:
             case "simple":
-                return SimpleMemoryManager(memory, agent, context)
-            case "bdi":
-                return BDIMemoryManager(
+                return CompositeBehaviorMemoryManager(
                     memory,
                     agent,
                     context,
-                    get_fact_removal_probability_factory(
-                        memory_manager_config["memory_removal_prob"]
-                    ),
+                    [
+                        MemoryUpdatingBehavior(),
+                    ],
+                )
+            case "bdi":
+                return CompositeBehaviorMemoryManager(
+                    memory,
+                    agent,
+                    context,
+                    [
+                        MemoryUpdatingBehavior(),
+                        BDIPlanningBehavior(),
+                        MemoryForgettingBehavior(
+                            get_record_removal_linear_probability(
+                                memory_manager_config["memory_removal_prob"]
+                            )
+                        ),
+                    ],
                 )
 
+    # TODO: something smarter in regards to the pruning
     agents = [
         LLMAgent(data, context, get_agent_memory_manager) for data in dataset.agents
     ]

@@ -13,7 +13,11 @@ from pydantic import BaseModel, Field
 
 from generative_agents import (
     AgentModelBase,
-    BDIMemoryManager,
+    CompositeBehaviorMemoryManager,
+    CompositeBehaviorFactoryBase,
+    BDIPlanningBehavior,
+    MemoryUpdatingBehavior,
+    MemoryForgettingBehavior,
     ConversationManager,
     EmbeddingMemory,
     LLMAgent,
@@ -22,8 +26,7 @@ from generative_agents import (
     SentenceTransformerProvider,
     SequentialConversationSelector,
     SimpleMemory,
-    SimpleMemoryManager,
-    get_fact_removal_probability_factory,
+    get_record_removal_linear_probability,
     mean_std_count_strategy_factory,
 )
 
@@ -73,6 +76,11 @@ async def main():
             model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),  # type: ignore
         ),
     )
+    behaviors: list[CompositeBehaviorFactoryBase] = [
+        MemoryUpdatingBehavior(),
+        BDIPlanningBehavior(),
+        MemoryForgettingBehavior(get_record_removal_linear_probability(0.5)),
+    ]
 
     with open("./data/valentine_party.json", "r") as f:
         raw_data = ExperimentData.model_validate_json(f.read())
@@ -81,13 +89,13 @@ async def main():
         LLMAgent(
             data,
             context,
-            lambda agent: BDIMemoryManager(
+            lambda agent: CompositeBehaviorMemoryManager(
                 EmbeddingMemory(
                     context, count_selector=mean_std_count_strategy_factory(0.5)
                 ),
-                agent=agent,
-                context=context,
-                memory_removal_probability=get_fact_removal_probability_factory(0.5),
+                agent,
+                context,
+                behaviors,
             ),
         )
         for data in raw_data.agents

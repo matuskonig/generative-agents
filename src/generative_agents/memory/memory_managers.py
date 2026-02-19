@@ -1,7 +1,7 @@
 import abc
 import logging
 import random
-from typing import Callable
+from typing import Mapping, Protocol, Sequence
 
 from ..config import default_config
 from ..llm_backend import LLMBackend
@@ -42,154 +42,139 @@ class MemoryManagerBase(abc.ABC):
         pass
 
 
-class SimpleMemoryManager(MemoryManagerBase):
-    def __init__(
-        self, memory: MemoryBase, agent: LLMAgentBase, context: LLMBackend
-    ) -> None:
-        self.memory = memory
-        self._agent = agent
-        self._context = context
-
-    def _get_memory_tag(self, memory_string: str) -> str:
-        return f"<memory>{memory_string}</memory>"
-
-    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
-        return self._get_memory_tag(
-            "\n".join(
-                [
-                    (
-                        record.model_dump_json(include=set(MemoryRecord.model_fields))
-                        if with_full_memory_record
-                        else record.text
-                    )
-                    for record in self.memory.full_retrieval()
-                ]
-            )
-        )
-
-    async def get_tagged_memory_by_query(self, query: str) -> str:
-        return self._get_memory_tag(
-            "\n".join(
-                ([record.text for record in await self.memory.query_retrieval(query)])
-            )
-        )
-
-    async def _add_new_memory(
-        self, other_agent: LLMAgentBase, conversation: Conversation
-    ) -> None:
-        prompt = default_config().get_conversation_summary_prompt(
-            agent_full_name=self._agent.data.full_name,
-            agent_introduction=await self._agent.get_agent_introduction_message(),
-            other_agent_full_name=other_agent.data.full_name,
-            conversation_string=default_config().conversation_to_tagged_text(
-                conversation
-            ),
-            memory_string=self.get_tagged_full_memory(with_full_memory_record=True),
-            response_format=str(FactResponse.model_json_schema()),
-        )
-        result = await self._context.get_structued_response(
-            prompt,
-            response_format=FactResponse,
-            params=default_config().get_factual_llm_params(),
-        )
-        await self.memory.store_facts(result.facts)
-
-    async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
-        pass
-
-    async def post_conversation_hook(
-        self,
-        other_agent: LLMAgentBase,
-        conversation: Conversation,
-        logger: logging.Logger | None = None,
-    ) -> None:
-        await self._add_new_memory(other_agent, conversation)
-        if logger:
-            logger.debug(
-                f"Memory state of {self._agent.data.full_name} after conversation with {other_agent.data.full_name}",
-                extra={
-                    "memory": "\n".join(
-                        [
-                            fact.model_dump_json(include=set(MemoryRecord.model_fields))
-                            for fact in self.memory.full_retrieval()
-                        ]
-                    )
-                },
-            )
-
-
-def get_fact_removal_probability_factory(
-    max_prob_coef: float,
-) -> Callable[[int, MemoryRecord], float]:
-    def inner(current_timestamp: int, fact: MemoryRecord) -> float:
-        linear_prob = 1 - (fact.timestamp / current_timestamp)
-        return max_prob_coef * linear_prob
-
-    return inner
-
-
-class BDIMemoryManager(MemoryManagerBase):
-    """Simple memory manager elevating Belief-Desire-Intention (BDI) architecture."""
-
-    def __init__(
+class CompositeBehaviorFactoryBase(abc.ABC):
+    @abc.abstractmethod
+    def instantizate(
         self,
         memory: MemoryBase,
+        owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-        memory_removal_probability: Callable[[int, MemoryRecord], float] | None = None,
-    ):
-        self.memory = memory
-        self._agent = agent
-        self._context = context
-        self.__bdi_data: BDIData | None = None
-        self.memory_removal_probability = memory_removal_probability
+    ) -> "CompositeBehaviorFactoryBase.CompositeBehaviorBase":
+        pass
 
-    def _get_memory_tag(
+    class CompositeBehaviorBase(abc.ABC):
+
+        @abc.abstractmethod
+        async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
+            pass
+
+        @abc.abstractmethod
+        async def post_conversation_hook(
+            self,
+            other_agent: LLMAgentBase,
+            conversation: Conversation,
+            logger: logging.Logger | None = None,
+        ) -> None:
+            pass
+
+        @abc.abstractmethod
+        def get_memory_extension_data(self) -> Mapping[str, str] | None:
+            """Additional data to be included in string representation of the memory."""
+            pass
+
+
+class MemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
+    def instantizate(
         self,
-        memory_string: str,
-        with_desires: bool = False,
-        with_intention: bool = True,
-    ) -> str:
-        memory = f"<memory>{memory_string}</memory>"
-        desires = (
-            f'<desires>{"\n".join(self.__bdi_data.desires)}</desires>'
-            if with_desires and self.__bdi_data
-            else ""
+        memory: MemoryBase,
+        owner: MemoryManagerBase,
+        agent: LLMAgentBase,
+        context: LLMBackend,
+    ) -> "MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl":
+        return MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl(
+            memory, owner, agent, context
         )
-        intention = (
-            f"<intention>{self.__bdi_data.intention}</intention>"
-            if with_intention and self.__bdi_data
-            else ""
-        )
-        return f"{memory}{desires}{intention}"
 
-    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
-        return self._get_memory_tag(
-            "\n".join(
-                [
-                    (
-                        record.model_dump_json(include=set(MemoryRecord.model_fields))
-                        if with_full_memory_record
-                        else record.text
-                    )
-                    for record in self.memory.full_retrieval()
-                ],
+    class MemoryUpdatingBehaviorImpl(
+        CompositeBehaviorFactoryBase.CompositeBehaviorBase
+    ):
+        def __init__(
+            self,
+            memory: MemoryBase,
+            owner: MemoryManagerBase,
+            agent: LLMAgentBase,
+            context: LLMBackend,
+        ):
+            self.memory = memory
+            self._owner = owner
+            self._agent = agent
+            self._context = context
+
+        async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
+            pass
+
+        async def _add_new_memory(
+            self, other_agent: LLMAgentBase, conversation: Conversation
+        ) -> None:
+            memory_string = self._owner.get_tagged_full_memory(
+                with_full_memory_record=True
             )
-        )
-
-    async def get_tagged_memory_by_query(self, query: str) -> str:
-        return self._get_memory_tag(
-            "\n".join(
-                ([record.text for record in await self.memory.query_retrieval(query)])
+            prompt = default_config().get_conversation_summary_prompt(
+                agent_full_name=self._agent.data.full_name,
+                agent_introduction=await self._agent.get_agent_introduction_message(),
+                other_agent_full_name=other_agent.data.full_name,
+                conversation_string=default_config().conversation_to_tagged_text(
+                    conversation
+                ),
+                memory_string=memory_string,
+                response_format=str(FactResponse.model_json_schema()),
             )
+            result = await self._context.get_structued_response(
+                prompt,
+                response_format=FactResponse,
+                params=default_config().get_factual_llm_params(),
+            )
+            await self.memory.store_facts(result.facts)
+
+        async def post_conversation_hook(
+            self,
+            other_agent: LLMAgentBase,
+            conversation: Conversation,
+            logger: logging.Logger | None = None,
+        ) -> None:
+            await self._add_new_memory(other_agent, conversation)
+
+        def get_memory_extension_data(self) -> Mapping[str, str] | None:
+            return None
+
+
+class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
+    def instantizate(
+        self,
+        memory: MemoryBase,
+        owner: MemoryManagerBase,
+        agent: LLMAgentBase,
+        context: LLMBackend,
+    ) -> "BDIPlanningBehavior.BDIPlanningBehaviorImpl":
+        return BDIPlanningBehavior.BDIPlanningBehaviorImpl(
+            memory, owner, agent, context
         )
 
-    async def _initialize_bdi(self) -> None:
-        if not self.__bdi_data:
+    class BDIPlanningBehaviorImpl(CompositeBehaviorFactoryBase.CompositeBehaviorBase):
+        def __init__(
+            self,
+            memory: MemoryBase,
+            owner: MemoryManagerBase,
+            agent: LLMAgentBase,
+            context: LLMBackend,
+        ):
+            self.memory = memory
+            self._owner = owner
+            self._agent = agent
+            self._context = context
+            self.__bdi_data: BDIData | None = None
+
+        async def _initialize_bdi(self) -> None:
+            if self.__bdi_data:
+                return
+            memory_string = self._owner.get_tagged_full_memory(
+                with_full_memory_record=True
+            )
             prompt = default_config().get_bdi_init_prompt(
                 self._agent.data.full_name,
                 await self._agent.get_agent_introduction_message(),
-                self.get_tagged_full_memory(with_full_memory_record=True),
+                memory_string,
                 response_format=str(BDIData.model_json_schema()),
             )
             result = await self._context.get_structued_response(
@@ -199,93 +184,209 @@ class BDIMemoryManager(MemoryManagerBase):
             )
             self.__bdi_data = result
 
-    async def _update_bdi(
-        self, second_agent: LLMAgentBase, conversation: Conversation
-    ) -> None:
-        prompt = default_config().get_bdi_update_prompt(
-            self._agent.data.full_name,
-            await self._agent.get_agent_introduction_message(),
-            second_agent.data.full_name,
-            default_config().conversation_to_tagged_text(conversation),
-            self.get_tagged_full_memory(with_full_memory_record=True),
-            response_format=str(BDIResponse.model_json_schema()),
-        )
-        result = await self._context.get_structued_response(
-            prompt,
-            response_format=BDIResponse,
-            params=default_config().get_neutral_default_llm_params(),
-        )
-        if isinstance(result.data, BDINoChanges):
-            return
-        elif isinstance(result.data, BDIChangeIntention) and self.__bdi_data:
-            self.__bdi_data.intention = result.data.intention
-        elif isinstance(result.data, BDIFullChange):
-            self.__bdi_data = BDIData(
-                desires=result.data.desires,
-                intention=result.data.intention,
+        async def _update_bdi(
+            self, second_agent: LLMAgentBase, conversation: Conversation
+        ) -> None:
+            memory_string = self._owner.get_tagged_full_memory(
+                with_full_memory_record=True
             )
+            prompt = default_config().get_bdi_update_prompt(
+                self._agent.data.full_name,
+                await self._agent.get_agent_introduction_message(),
+                second_agent.data.full_name,
+                default_config().conversation_to_tagged_text(conversation),
+                memory_string,
+                response_format=str(BDIResponse.model_json_schema()),
+            )
+            result = await self._context.get_structued_response(
+                prompt,
+                response_format=BDIResponse,
+                params=default_config().get_neutral_default_llm_params(),
+            )
+            if isinstance(result.data, BDINoChanges):
+                return
+            elif isinstance(result.data, BDIChangeIntention) and self.__bdi_data:
+                self.__bdi_data.intention = result.data.intention
+            elif isinstance(result.data, BDIFullChange):
+                self.__bdi_data = BDIData(
+                    desires=result.data.desires,
+                    intention=result.data.intention,
+                )
 
-    async def _prune_old_memory(self) -> None:
-        if not self.memory_removal_probability:
-            return
+        async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
+            await self._initialize_bdi()
 
-        facts_to_prune = [
-            fact
-            for fact in self.memory.full_retrieval()
-            if random.random()
-            <= self.memory_removal_probability(self.memory.current_timestamp(), fact)
-        ]
-        timestamps: set[int] = {fact.timestamp for fact in facts_to_prune}
-        if len(facts_to_prune) == 0:
-            return
+        async def post_conversation_hook(
+            self,
+            other_agent: LLMAgentBase,
+            conversation: Conversation,
+            logger: logging.Logger | None = None,
+        ) -> None:
+            await self._update_bdi(other_agent, conversation)
 
-        memory = "\n".join(
-            [
-                fact.model_dump_json(include=set(MemoryRecord.model_fields))
-                for fact in facts_to_prune
+        def get_memory_extension_data(self) -> Mapping[str, str] | None:
+            if not self.__bdi_data:
+                return None
+            return {
+                "current_desires": "\n".join(self.__bdi_data.desires),
+                "current_intention": self.__bdi_data.intention,
+            }
+
+
+class RecordRemovalProbSelector(Protocol):
+    def __call__(
+        self, current_timestamp: int, target_memory_record: MemoryRecord
+    ) -> float: ...
+
+
+def get_record_removal_linear_probability(
+    max_prob_coef: float,
+) -> "RecordRemovalProbSelector":
+    def inner(current_timestamp: int, target_memory_record: MemoryRecord) -> float:
+        linear_prob = 1 - (target_memory_record.timestamp / current_timestamp)
+        return max_prob_coef * linear_prob
+
+    return inner
+
+
+class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
+    def __init__(self, get_record_removal_prob: RecordRemovalProbSelector):
+        self.get_record_removal_prob = get_record_removal_prob
+
+    def instantizate(
+        self,
+        memory: MemoryBase,
+        owner: MemoryManagerBase,
+        agent: LLMAgentBase,
+        context: LLMBackend,
+    ) -> "MemoryForgettingBehavior.MemoryForgettingBehaviorImpl":
+        return MemoryForgettingBehavior.MemoryForgettingBehaviorImpl(
+            memory, owner, agent, context, self.get_record_removal_prob
+        )
+
+    class MemoryForgettingBehaviorImpl(
+        CompositeBehaviorFactoryBase.CompositeBehaviorBase
+    ):
+        def __init__(
+            self,
+            memory: MemoryBase,
+            owner: MemoryManagerBase,
+            agent: LLMAgentBase,
+            context: LLMBackend,
+            get_record_removal_prob: RecordRemovalProbSelector,
+        ):
+            self.memory = memory
+            self._agent = agent
+            self._context = context
+            self._get_record_removal_prob = get_record_removal_prob
+
+        async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
+            pass
+
+        async def _prune_old_memory(self) -> None:
+            records_to_prune = [
+                record
+                for record in self.memory.full_retrieval()
+                if random.random()  # TODO: Seed support
+                <= self._get_record_removal_prob(
+                    self.memory.current_timestamp(), record
+                )
             ]
-        )
-        prompt = default_config().get_memory_prune_prompt(
-            self._agent.data.full_name,
-            await self._agent.get_agent_introduction_message(),
-            memory,
-            str(PruneFactsResponse.model_json_schema()),
-        )
-        result = await self._context.get_structued_response(
-            prompt,
-            PruneFactsResponse,
-            params=default_config().get_neutral_default_llm_params(),
-        )
-        validated_timestamps = {
-            timestamp
-            for timestamp in result.timestamps_to_remove
-            if timestamp in timestamps
-        }
-        if len(validated_timestamps):
-            self.memory.remove_facts(list(validated_timestamps))
+            if len(records_to_prune) == 0:
+                return
+            timestamps: set[int] = {fact.timestamp for fact in records_to_prune}
 
-    async def _add_new_memory(
-        self, other_agent: LLMAgentBase, conversation: Conversation
+            memory = get_memory_string(records_to_prune, with_full_memory_record=True)
+            prompt = default_config().get_memory_prune_prompt(
+                self._agent.data.full_name,
+                await self._agent.get_agent_introduction_message(),
+                memory,
+                str(PruneFactsResponse.model_json_schema()),
+            )
+            result = await self._context.get_structued_response(
+                prompt,
+                PruneFactsResponse,
+                params=default_config().get_neutral_default_llm_params(),
+            )
+            validated_timestamps = {
+                timestamp
+                for timestamp in result.timestamps_to_remove
+                if timestamp in timestamps
+            }
+            if len(validated_timestamps):
+                self.memory.remove_facts(list(validated_timestamps))
+
+        async def post_conversation_hook(
+            self,
+            other_agent: LLMAgentBase,
+            conversation: Conversation,
+            logger: logging.Logger | None = None,
+        ) -> None:
+            await self._prune_old_memory()
+
+        def get_memory_extension_data(self) -> Mapping[str, str] | None:
+            return None
+
+
+def get_memory_string(
+    records: Sequence[MemoryRecord], with_full_memory_record: bool = False
+) -> str:
+    return "\n".join(
+        (
+            record.model_dump_json(include=set(MemoryRecord.model_fields))
+            if with_full_memory_record
+            else record.text
+        )
+        for record in records
+    )
+
+
+def construct_tagged_combined_data_string(data: dict[str, str]) -> str:
+    return "\n".join(f"<{tag}>{value}</{tag}>" for tag, value in data.items())
+
+
+class CompositeBehaviorMemoryManager(MemoryManagerBase):
+    def __init__(
+        self,
+        memory: MemoryBase,
+        agent: LLMAgentBase,
+        context: LLMBackend,
+        behaviors: Sequence[CompositeBehaviorFactoryBase],
     ) -> None:
-        prompt = default_config().get_conversation_summary_prompt(
-            agent_full_name=self._agent.data.full_name,
-            agent_introduction=await self._agent.get_agent_introduction_message(),
-            other_agent_full_name=other_agent.data.full_name,
-            conversation_string=default_config().conversation_to_tagged_text(
-                conversation
-            ),
-            memory_string=self.get_tagged_full_memory(with_full_memory_record=True),
-            response_format=str(FactResponse.model_json_schema()),
+        self.memory = memory
+        self._agent = agent
+        self._behaviors = [
+            (behavior.instantizate(memory, self, agent, context))
+            for behavior in behaviors
+        ]
+
+    def _get_tagged_memory_string(
+        self, records: Sequence[MemoryRecord], with_full_memory_record: bool = False
+    ) -> str:
+        tagged_data = {
+            key: value
+            for behavior in self._behaviors
+            if (tagged_record := behavior.get_memory_extension_data()) is not None
+            for (key, value) in tagged_record.items()
+        }
+        return construct_tagged_combined_data_string(
+            {
+                **tagged_data,
+                "memory": get_memory_string(records, with_full_memory_record),
+            }
         )
-        result = await self._context.get_structued_response(
-            prompt,
-            response_format=FactResponse,
-            params=default_config().get_factual_llm_params(),
-        )
-        await self.memory.store_facts(result.facts)
+
+    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
+        records = self.memory.full_retrieval()
+        return self._get_tagged_memory_string(records, with_full_memory_record)
+
+    async def get_tagged_memory_by_query(self, query: str) -> str:
+        records = await self.memory.query_retrieval(query)
+        return self._get_tagged_memory_string(records)
 
     async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
-        await self._initialize_bdi()
+        for behavior in self._behaviors:
+            await behavior.pre_conversation_hook(other_agent)
 
     async def post_conversation_hook(
         self,
@@ -293,22 +394,5 @@ class BDIMemoryManager(MemoryManagerBase):
         conversation: Conversation,
         logger: logging.Logger | None = None,
     ) -> None:
-        await self._add_new_memory(other_agent, conversation)
-        await self._prune_old_memory()
-        await self._update_bdi(other_agent, conversation)
-        if logger:
-            logger.debug(
-                f"Memory state of {self._agent.data.full_name} after conversation with {other_agent.data.full_name}",
-                extra={
-                    "memory": "\n".join(
-                        [
-                            fact.model_dump_json(include=set(MemoryRecord.model_fields))
-                            for fact in self.memory.full_retrieval()
-                        ]
-                    )
-                },
-            )
-            logger.debug(
-                f"BDI state of {self._agent.data.full_name} after conversation with {other_agent.data.full_name}",
-                extra={"bdi": self.__bdi_data},
-            )
+        for behavior in self._behaviors:
+            await behavior.post_conversation_hook(other_agent, conversation, logger)

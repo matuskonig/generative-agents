@@ -6,10 +6,13 @@ from .embedding_memory import (
 )
 from .memory_base import MemoryBase
 from .memory_managers import (
-    BDIMemoryManager,
+    BDIPlanningBehavior,
+    CompositeBehaviorFactoryBase,
+    CompositeBehaviorMemoryManager,
+    MemoryForgettingBehavior,
     MemoryManagerBase,
-    SimpleMemoryManager,
-    get_fact_removal_probability_factory,
+    MemoryUpdatingBehavior,
+    get_record_removal_linear_probability,
 )
 from .models import (
     BDIChangeIntention,
@@ -30,8 +33,6 @@ __all__ = [
     "SimpleMemory",
     "EmbeddingMemory",
     "MemoryManagerBase",
-    "SimpleMemoryManager",
-    "BDIMemoryManager",
     "PruneFactsResponse",
     "FactResponse",
     "MemoryRecord",
@@ -42,12 +43,15 @@ __all__ = [
     "fixed_count_strategy_factory",
     "mean_std_count_strategy_factory",
     "top_std_count_strategy_factory",
-    "get_fact_removal_probability_factory",
+    "get_record_removal_linear_probability",
+    "CompositeBehaviorFactoryBase",
+    "CompositeBehaviorMemoryManager",
+    "MemoryUpdatingBehavior",
+    "BDIPlanningBehavior",
+    "MemoryForgettingBehavior",
 ]
 
 # TODO: switch to file-based prompts together with
-# TODO: add composite memory manager which allows to combine multiple memory managers
-# TODO: make pruning optional
 
 # TODO: add some freetext field to the BDI to support model writing notes, planning and reasoning
 # TODO: add possibly something to extend the actions
