@@ -206,9 +206,11 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
             if isinstance(result.data, BDINoChanges):
                 return
             elif isinstance(result.data, BDIChangeIntention) and self.__bdi_data:
+                self.__bdi_data.notes = result.data.notes
                 self.__bdi_data.intention = result.data.intention
             elif isinstance(result.data, BDIFullChange):
                 self.__bdi_data = BDIData(
+                    notes=result.data.notes,
                     desires=result.data.desires,
                     intention=result.data.intention,
                 )

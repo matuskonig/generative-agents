@@ -20,7 +20,7 @@ from generative_agents import (
     MemoryForgettingBehavior,
     ConversationManager,
     EmbeddingMemory,
-    LLMAgent,
+    LLMConversationAgent,
     LLMBackend,
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
@@ -86,7 +86,7 @@ async def main():
         raw_data = ExperimentData.model_validate_json(f.read())
 
     agents = [
-        LLMAgent(
+        LLMConversationAgent(
             data,
             context,
             lambda agent: CompositeBehaviorMemoryManager(

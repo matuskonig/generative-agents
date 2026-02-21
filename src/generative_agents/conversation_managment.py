@@ -5,15 +5,16 @@ from typing import Generator, Iterable
 
 import networkx as nx
 import numpy as np
-from networkx import Graph
 
-from .agent import Conversation, LLMAgent, Utterance, default_config
+from .agent import Conversation, LLMConversationAgent, Utterance, default_config
 
 
 class ConversationSelectorABC(abc.ABC):
 
     @abc.abstractmethod
-    def generate_epoch_pairs(self) -> Iterable[list[tuple[LLMAgent, LLMAgent]]]:
+    def generate_epoch_pairs(
+        self,
+    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         """Each tick of the iterable provides a list of agent pairs, which should have a conversation together.
         Conversations in the single tick are performed concurrently.
         """
@@ -25,11 +26,8 @@ class ConversationSelectorABC(abc.ABC):
         pass
 
 
-# TODO: isinstance check for node type of the graph
-
-
 class BFSFrontierGraph[T]:
-    def __init__(self, graph: nx.Graph, sources: Iterable[T]) -> None:
+    def __init__(self, graph: "nx.Graph[T]", sources: Iterable[T]) -> None:
         self._graph = graph
         self._sources = sources
         self._layers = list(
@@ -40,7 +38,7 @@ class BFSFrontierGraph[T]:
         """Nodes completely within the given distance from the source nodes."""
         return [node for nodes in self._layers[: distance + 1] for node in nodes]
 
-    def get_frontier_extended_graph(self, distance: int) -> nx.Graph:
+    def get_frontier_extended_graph(self, distance: int) -> "nx.Graph[T]":
         """Returns a graph containing complete subgraph of given distance. The graph is extended to include adjacent edges to the nodes in the specified distance.
         Distance starts from 0, which is the source nodes.
         """
@@ -65,29 +63,31 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
         self.__seed = seed or np.random.default_rng()
 
     @abc.abstractmethod
-    def _get_generator_structure(self) -> nx.Graph:
+    def _get_generator_structure(self) -> "nx.Graph[LLMConversationAgent]":
         """Structure used as a source for the conversation pairs. Only nodes in the structure are considered for the conversation pairs."""
         pass
 
     def generate_epoch_pairs(
         self,
-    ) -> Generator[list[tuple[LLMAgent, LLMAgent]], None, None]:
+    ) -> Generator[list[tuple[LLMConversationAgent, LLMConversationAgent]], None, None]:
         # remove agents from the structure during the progression of the algorithm
         structure = self._get_generator_structure()
 
-        agents: list[LLMAgent] = list(structure.nodes)
+        agents: list[LLMConversationAgent] = list(structure.nodes)
         self.__seed.shuffle(agents)
 
-        conversation_pairs: list[tuple[LLMAgent, LLMAgent]] = []
+        conversation_pairs: list[tuple[LLMConversationAgent, LLMConversationAgent]] = []
 
         while len(agents):
             agent1 = agents.pop()
             if not structure.has_node(agent1):
                 continue
-            neighbor_agents: list[LLMAgent] = list(structure.neighbors(agent1))
+            neighbor_agents: list[LLMConversationAgent] = list(
+                structure.neighbors(agent1)
+            )
             if len(neighbor_agents) == 0:
                 continue
-            agent2: LLMAgent = self.__seed.choice(neighbor_agents)  # type: ignore[arg-type]
+            agent2: LLMConversationAgent = self.__seed.choice(neighbor_agents)  # type: ignore[arg-type]
 
             conversation_pairs.append((agent1, agent2))
             structure.remove_node(agent1)
@@ -109,14 +109,24 @@ class InformationSpreadConversationSelector(GeneralParallelSelectorBase):
 
     def __init__(
         self,
-        structure: nx.Graph,  # must be working with nodes of type LLMAgent
-        seed_nodes: Iterable[LLMAgent],
+        structure: "nx.Graph[LLMConversationAgent]",
+        seed_nodes: Iterable[LLMConversationAgent],
         seed: np.random.Generator | None = None,
     ):
         super().__init__(seed)
+        for node in structure.nodes:
+            assert isinstance(
+                node, LLMConversationAgent
+            ), f"Graph node must be LLMConversationAgent, got {type(node)}"
+
+        for node in seed_nodes:
+            assert isinstance(
+                node, LLMConversationAgent
+            ), f"Seed node must be LLMConversationAgent, got {type(node)}"
+
         self.__bfs_frontier = BFSFrontierGraph(graph=structure, sources=seed_nodes)
 
-    def _get_generator_structure(self) -> Graph:
+    def _get_generator_structure(self) -> "nx.Graph[LLMConversationAgent]":
         return self.__bfs_frontier.get_frontier_extended_graph(self._generated_epochs)
 
 
@@ -125,13 +135,18 @@ class FullParallelConversationSelector(GeneralParallelSelectorBase):
 
     def __init__(
         self,
-        structure: nx.Graph,  # must be working with nodes of type LLMAgent
+        structure: "nx.Graph[LLMConversationAgent]",
         seed: np.random.Generator | None = None,
     ):
         super().__init__(seed)
+        for node in structure.nodes:
+            assert isinstance(
+                node, LLMConversationAgent
+            ), f"Graph node must be LLMConversationAgent, got {type(node)}"
+
         self.__structure = structure
 
-    def _get_generator_structure(self) -> nx.Graph:
+    def _get_generator_structure(self) -> "nx.Graph[LLMConversationAgent]":
         return self.__structure
 
 
@@ -152,7 +167,7 @@ class ConversationRandomRestrictionAdapter(ConversationSelectorABC):
 
     def generate_epoch_pairs(
         self,
-    ) -> Generator[list[tuple[LLMAgent, LLMAgent]], None, None]:
+    ) -> Generator[list[tuple[LLMConversationAgent, LLMConversationAgent]], None, None]:
         """Selects a random subset of conversations, controled using probability."""
         for pairs_in_parallel in self.__base_selector.generate_epoch_pairs():
             yield [
@@ -174,18 +189,25 @@ class SequentialConversationSelector(ConversationSelectorABC):
 
     def __init__(
         self,
-        structure: nx.Graph,  # must be working with nodes of type LLMAgent
+        structure: "nx.Graph[LLMConversationAgent]",
         seed: np.random.Generator | None = None,
-        initial_conversation: list[tuple[LLMAgent, LLMAgent]] = [],
+        initial_conversation: list[
+            tuple[LLMConversationAgent, LLMConversationAgent]
+        ] = [],
     ):
         self.__generated_epochs = 0
+        for node in structure.nodes:
+            assert isinstance(
+                node, LLMConversationAgent
+            ), f"Graph node must be LLMConversationAgent, got {type(node)}"
+
         self.__structure = structure
         self.__initial_conversation = initial_conversation
         self.seed = seed or np.random.default_rng()
 
     def generate_epoch_pairs(
         self,
-    ) -> Generator[list[tuple[LLMAgent, LLMAgent]], None, None]:
+    ) -> Generator[list[tuple[LLMConversationAgent, LLMConversationAgent]], None, None]:
         initialization = (
             self.__initial_conversation if self.__generated_epochs == 0 else []
         )
@@ -193,8 +215,8 @@ class SequentialConversationSelector(ConversationSelectorABC):
             (second, first) for first, second in initialization
         }
 
-        conversation_pairs: list[tuple[LLMAgent, LLMAgent]] = list(
-            self.__structure.edges
+        conversation_pairs: list[tuple[LLMConversationAgent, LLMConversationAgent]] = (
+            list(self.__structure.edges)
         )
         self.seed.shuffle(conversation_pairs)
         conversation_pairs = [
@@ -214,6 +236,9 @@ class SequentialConversationSelector(ConversationSelectorABC):
         self.__generated_epochs = 0
 
 
+INITIAL_GREETING_ACTION = "initial greeting"
+
+
 class ConversationManager:
     def __init__(
         self,
@@ -226,7 +251,7 @@ class ConversationManager:
         self._logger = logger
 
     async def __generate_conversation(
-        self, agent1: LLMAgent, agent2: LLMAgent
+        self, agent1: LLMConversationAgent, agent2: LLMConversationAgent
     ) -> Conversation:
         conversation: Conversation = []
 
@@ -237,8 +262,8 @@ class ConversationManager:
                     (
                         agent1,
                         Utterance(
-                            actions=["initial greeting"],
-                            selected_action="initial greeting",
+                            actions=[INITIAL_GREETING_ACTION],
+                            selected_action=INITIAL_GREETING_ACTION,
                             message=message,
                             is_conversation_finished=False,
                         ),
@@ -256,7 +281,7 @@ class ConversationManager:
         return conversation
 
     async def __process_conversation_pair(
-        self, agent1: LLMAgent, agent2: LLMAgent
+        self, agent1: LLMConversationAgent, agent2: LLMConversationAgent
     ) -> None:
         await asyncio.gather(
             agent1.pre_conversation_hook(agent2),

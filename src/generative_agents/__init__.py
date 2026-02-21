@@ -1,4 +1,4 @@
-from .agent import LLMAgent
+from .agent import LLMConversationAgent
 from .config import DefaultConfig, default_config
 from .conversation_managment import (
     BFSFrontierGraph,
@@ -48,7 +48,7 @@ from .types import (
 )
 
 __all__ = [
-    "LLMAgent",
+    "LLMConversationAgent",
     "LLMAgentBase",
     "AgentModelBase",
     "LLMBackend",

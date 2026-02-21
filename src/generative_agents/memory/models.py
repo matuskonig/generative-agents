@@ -21,16 +21,22 @@ class MemoryRecordWithEmbedding(MemoryRecord):
     embedding: NDArray
 
 
-class BDIData(BaseModel):
+class BDIReasoningBase(BaseModel):
+    notes: str = Field(
+        description="Freetext field for the agent to write notes, reasoning and planning for the response"
+    )
+
+
+class BDIData(BDIReasoningBase):
     desires: list[str] = Field(description="Enumeration of plans")
     intention: str = Field(description="Selected plan")
 
 
-class BDINoChanges(BaseModel):
+class BDINoChanges(BDIReasoningBase):
     tag: Literal["no_change"]
 
 
-class BDIChangeIntention(BaseModel):
+class BDIChangeIntention(BDIReasoningBase):
     tag: Literal["change_intention"]
     intention: str
 

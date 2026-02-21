@@ -64,6 +64,8 @@ Keep it authentic and conversational. This introduction will define how others p
             + "\n</conversation>"
         )
 
+    # TODO: switch to normal prompt template
+    # TODO: possibly memory prompt does not need any custom wrapping as it is already tagged
     def memory_prompt(self, memory_content: str) -> str:
         return f"""<memory_context>
 {memory_content}

@@ -19,7 +19,7 @@ from generative_agents import (
     EmbeddingMemory,
     FullParallelConversationSelector,
     InformationSpreadConversationSelector,
-    LLMAgent,
+    LLMConversationAgent,
     LLMBackend,
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
@@ -333,7 +333,7 @@ async def run_experiment(
     max_utterances=12,
     epochs=5,
 ):
-    def get_agent_memory_manager(agent: LLMAgent):
+    def get_agent_memory_manager(agent: LLMConversationAgent):
         match memory_config["memory_type"]:
             case "simple":
                 memory = SimpleMemory()
@@ -381,7 +381,8 @@ async def run_experiment(
 
     # TODO: something smarter in regards to the pruning
     agents = [
-        LLMAgent(data, context, get_agent_memory_manager) for data in dataset.agents
+        LLMConversationAgent(data, context, get_agent_memory_manager)
+        for data in dataset.agents
     ]
     id_mapping = {i: agent for i, agent in enumerate(agents)}
 
