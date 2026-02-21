@@ -3,6 +3,7 @@ from .types import AgentModelBase, Conversation
 from .utils import OverridableContextVar
 
 
+# TODO: regenerate prompts
 class DefaultConfig:
     __SYSTEM_PROMPT = """You are an intelligent agent in a realistic society simulation. Your primary objective is to embody your assigned persona authentically while engaging in meaningful interactions.
 
@@ -25,7 +26,7 @@ Core principles:
         return self.__SYSTEM_PROMPT
 
     def get_introduction_prompt(self, agent_data: AgentModelBase) -> str:
-        return f"""Your name is {agent_data.full_name}. 
+        return f"""Your name is {agent_data.full_name} and you are an agent in a simulation. 
 
 Your characteristics: {agent_data.agent_characteristics}
 
@@ -47,7 +48,11 @@ This includes (but is not limited to):
 IMPORTANT: Be specific about events, dates, and details. If you're organizing something, mention when, where, and why others should know about it. Your goal is to naturally share information that others might find interesting and worth passing along.
 
 For information you want to actively share in the network, please provide all the relevant details and emphasize your intention to share it with others.
-Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you."""
+Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you.
+Make it lenghty and mouthful, include everything you consider important, as you will not have access to your 
+characteristics later, you will have only access to this introduction.
+Reply in style which is authentic to your characteristics and background, everything considered.
+"""
 
     def conversation_to_text(self, conversation: Conversation) -> str:
         return "\n".join(

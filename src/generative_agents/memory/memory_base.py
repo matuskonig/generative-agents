@@ -1,5 +1,5 @@
 import abc
-from typing import Sequence
+from typing import Iterable, Sequence
 
 from .models import MemoryRecord, MemoryRecordResponse
 
@@ -20,7 +20,7 @@ class MemoryBase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def store_facts(self, facts: Sequence[MemoryRecordResponse]) -> None:
+    async def store_facts(self, facts: Iterable[MemoryRecordResponse]) -> None:
         """Append new facts to the memory."""
 
     @abc.abstractmethod

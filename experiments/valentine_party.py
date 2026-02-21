@@ -158,4 +158,3 @@ if __name__ == "__main__":
     asyncio.run(main())
 
 # TODO" comments
-# TODO: prekopat intro message aby to nebolo fixne definovane

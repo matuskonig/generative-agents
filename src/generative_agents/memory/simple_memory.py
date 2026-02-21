@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Iterable, Sequence
 
 from .memory_base import MemoryBase
 from .models import MemoryRecord, MemoryRecordResponse
@@ -22,7 +22,7 @@ class SimpleMemory(MemoryBase):
         self.__timestamp += 1
         return self.__timestamp
 
-    async def store_facts(self, facts: Sequence[MemoryRecordResponse]) -> None:
+    async def store_facts(self, facts: Iterable[MemoryRecordResponse]) -> None:
         self.__memory.extend(
             [
                 MemoryRecord(

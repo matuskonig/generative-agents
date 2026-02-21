@@ -15,6 +15,7 @@ class MemoryRecordResponse(BaseModel):
 
 class MemoryRecord(MemoryRecordResponse):
     timestamp: int
+    # TODO: rozsirit o typ, nejako rozsirit i query metody a dotiahnut to na Affordable memory. budeme potrebovat i nejaku shared memory
 
 
 class MemoryRecordWithEmbedding(MemoryRecord):

@@ -1,7 +1,7 @@
 import abc
 import logging
 import random
-from typing import Mapping, Protocol, Sequence
+from typing import Mapping, Protocol, Sequence, TypeVar
 
 from ..config import default_config
 from ..llm_backend import LLMBackend
@@ -42,7 +42,18 @@ class MemoryManagerBase(abc.ABC):
         pass
 
 
+BehaviorType = TypeVar(
+    "BehaviorType", bound="CompositeBehaviorFactoryBase.CompositeBehaviorBase"
+)
+
+
 class CompositeBehaviorFactoryBase(abc.ABC):
+    @classmethod
+    @abc.abstractmethod
+    def get_impl_type(
+        cls,
+    ) -> "type[CompositeBehaviorFactoryBase.CompositeBehaviorBase]": ...
+
     @abc.abstractmethod
     def instantizate(
         self,
@@ -85,6 +96,10 @@ class MemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
         return MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl(
             memory, owner, agent, context
         )
+
+    @classmethod
+    def get_impl_type(cls) -> type["MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl"]:
+        return MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl
 
     class MemoryUpdatingBehaviorImpl(
         CompositeBehaviorFactoryBase.CompositeBehaviorBase
@@ -150,6 +165,10 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
         return BDIPlanningBehavior.BDIPlanningBehaviorImpl(
             memory, owner, agent, context
         )
+
+    @classmethod
+    def get_impl_type(cls) -> type["BDIPlanningBehavior.BDIPlanningBehaviorImpl"]:
+        return BDIPlanningBehavior.BDIPlanningBehaviorImpl
 
     class BDIPlanningBehaviorImpl(CompositeBehaviorFactoryBase.CompositeBehaviorBase):
         def __init__(
@@ -254,6 +273,12 @@ def get_record_removal_linear_probability(
 class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
     def __init__(self, get_record_removal_prob: RecordRemovalProbSelector):
         self.get_record_removal_prob = get_record_removal_prob
+
+    @classmethod
+    def get_impl_type(
+        cls,
+    ) -> type["MemoryForgettingBehavior.MemoryForgettingBehaviorImpl"]:
+        return MemoryForgettingBehavior.MemoryForgettingBehaviorImpl
 
     def instantizate(
         self,
@@ -398,3 +423,11 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
     ) -> None:
         for behavior in self._behaviors:
             await behavior.post_conversation_hook(other_agent, conversation, logger)
+
+    def get_behavior(self, behavior_cls: type[BehaviorType]) -> BehaviorType:
+        for behavior in self._behaviors:
+            if isinstance(behavior, behavior_cls):
+                return behavior
+        raise ValueError(
+            f"Behavior of type {behavior_cls} not found in memory manager."
+        )
