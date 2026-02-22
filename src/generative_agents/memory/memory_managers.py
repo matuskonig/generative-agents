@@ -55,9 +55,7 @@ class MemoryManagerBase(abc.ABC):
         pass
 
 
-BehaviorType = TypeVar(
-    "BehaviorType", bound="CompositeBehaviorFactoryBase.CompositeBehaviorBase"
-)
+BehaviorType = TypeVar("BehaviorType", bound="CompositeBehaviorFactoryBase.Impl")
 
 
 class CompositeBehaviorFactoryBase(abc.ABC):
@@ -65,7 +63,7 @@ class CompositeBehaviorFactoryBase(abc.ABC):
     @abc.abstractmethod
     def get_impl_type(
         cls,
-    ) -> "type[CompositeBehaviorFactoryBase.CompositeBehaviorBase]": ...
+    ) -> "type[CompositeBehaviorFactoryBase.Impl]": ...
 
     @abc.abstractmethod
     def instantizate(
@@ -74,10 +72,10 @@ class CompositeBehaviorFactoryBase(abc.ABC):
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-    ) -> "CompositeBehaviorFactoryBase.CompositeBehaviorBase":
+    ) -> "CompositeBehaviorFactoryBase.Impl":
         pass
 
-    class CompositeBehaviorBase(abc.ABC):
+    class Impl(abc.ABC):
 
         @abc.abstractmethod
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
@@ -105,20 +103,16 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-    ) -> "ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl":
-        return ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl(
-            memory, owner, agent, context
-        )
+    ) -> "ConversationMemoryUpdatingBehavior.Impl":
+        return ConversationMemoryUpdatingBehavior.Impl(memory, owner, agent, context)
 
     @classmethod
     def get_impl_type(
         cls,
-    ) -> type["ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl"]:
-        return ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl
+    ) -> type["ConversationMemoryUpdatingBehavior.Impl"]:
+        return ConversationMemoryUpdatingBehavior.Impl
 
-    class MemoryUpdatingBehaviorImpl(
-        CompositeBehaviorFactoryBase.CompositeBehaviorBase
-    ):
+    class Impl(CompositeBehaviorFactoryBase.Impl):
         def __init__(
             self,
             memory: MemoryBase,
@@ -183,20 +177,16 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-    ) -> "UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl":
-        return UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl(
-            memory, owner, agent, context
-        )
+    ) -> "UnitaryAgentNoteUpdatingBehavior.Impl":
+        return UnitaryAgentNoteUpdatingBehavior.Impl(memory, owner, agent, context)
 
     @classmethod
     def get_impl_type(
         cls,
-    ) -> type["UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl"]:
-        return UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl
+    ) -> type["UnitaryAgentNoteUpdatingBehavior.Impl"]:
+        return UnitaryAgentNoteUpdatingBehavior.Impl
 
-    class UnitaryAgentNoteUpdatingBehaviorImpl(
-        CompositeBehaviorFactoryBase.CompositeBehaviorBase
-    ):
+    class Impl(CompositeBehaviorFactoryBase.Impl):
         def __init__(
             self,
             memory: MemoryBase,
@@ -287,16 +277,14 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-    ) -> "BDIPlanningBehavior.BDIPlanningBehaviorImpl":
-        return BDIPlanningBehavior.BDIPlanningBehaviorImpl(
-            memory, owner, agent, context
-        )
+    ) -> "BDIPlanningBehavior.Impl":
+        return BDIPlanningBehavior.Impl(memory, owner, agent, context)
 
     @classmethod
-    def get_impl_type(cls) -> type["BDIPlanningBehavior.BDIPlanningBehaviorImpl"]:
-        return BDIPlanningBehavior.BDIPlanningBehaviorImpl
+    def get_impl_type(cls) -> type["BDIPlanningBehavior.Impl"]:
+        return BDIPlanningBehavior.Impl
 
-    class BDIPlanningBehaviorImpl(CompositeBehaviorFactoryBase.CompositeBehaviorBase):
+    class Impl(CompositeBehaviorFactoryBase.Impl):
         def __init__(
             self,
             memory: MemoryBase,
@@ -403,8 +391,8 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
     @classmethod
     def get_impl_type(
         cls,
-    ) -> type["MemoryForgettingBehavior.MemoryForgettingBehaviorImpl"]:
-        return MemoryForgettingBehavior.MemoryForgettingBehaviorImpl
+    ) -> type["MemoryForgettingBehavior.Impl"]:
+        return MemoryForgettingBehavior.Impl
 
     def instantizate(
         self,
@@ -412,14 +400,12 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-    ) -> "MemoryForgettingBehavior.MemoryForgettingBehaviorImpl":
-        return MemoryForgettingBehavior.MemoryForgettingBehaviorImpl(
+    ) -> "MemoryForgettingBehavior.Impl":
+        return MemoryForgettingBehavior.Impl(
             memory, owner, agent, context, self.get_record_removal_prob
         )
 
-    class MemoryForgettingBehaviorImpl(
-        CompositeBehaviorFactoryBase.CompositeBehaviorBase
-    ):
+    class Impl(CompositeBehaviorFactoryBase.Impl):
         def __init__(
             self,
             memory: MemoryBase,
@@ -492,8 +478,8 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
     @classmethod
     def get_impl_type(
         cls,
-    ) -> type["ConstantContextBehavior.ConstantContextBehaviorImpl"]:
-        return ConstantContextBehavior.ConstantContextBehaviorImpl
+    ) -> type["ConstantContextBehavior.Impl"]:
+        return ConstantContextBehavior.Impl
 
     def instantizate(
         self,
@@ -501,12 +487,10 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-    ) -> "ConstantContextBehavior.ConstantContextBehaviorImpl":
-        return ConstantContextBehavior.ConstantContextBehaviorImpl(self._instructions)
+    ) -> "ConstantContextBehavior.Impl":
+        return ConstantContextBehavior.Impl(self._instructions)
 
-    class ConstantContextBehaviorImpl(
-        CompositeBehaviorFactoryBase.CompositeBehaviorBase
-    ):
+    class Impl(CompositeBehaviorFactoryBase.Impl):
         def __init__(self, instructions: str):
             self.instructions = instructions
 
@@ -615,6 +599,4 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         )
 
 
-# TODO: abstract class property for type + some nicer api
-# TODO: add memory filters here as well
 # TODO: after wrapping up write the tests and set up pipelines

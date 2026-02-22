@@ -31,7 +31,6 @@ def create_memory_filter_predicate(
 
 
 class MemoryBase(abc.ABC):
-    # TODO: get next timestamp as the part of the contract - stateful method, reevaluate
     @abc.abstractmethod
     def current_timestamp(self) -> int:
         pass
@@ -50,7 +49,6 @@ class MemoryBase(abc.ABC):
         """Return a list of facts that match the query."""
         pass
 
-    # TODO: either return timestamps or require timestamps on the input
     @abc.abstractmethod
     async def store_facts(
         self,
@@ -60,7 +58,7 @@ class MemoryBase(abc.ABC):
         """Append new facts to the memory.
 
         Returns:
-            List of timestamps for the newly stored facts.
+            List of unique timestamps for the newly stored facts.
         """
 
     @abc.abstractmethod

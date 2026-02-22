@@ -125,4 +125,3 @@ class LLMConversationAgent(LLMAgentBase):
 
 
 # TODO: in additon to pruning, implement memory compression ?
-# TODO: consider adding what they did in Affordable Generative agents - where for every agent they hold some really short summary

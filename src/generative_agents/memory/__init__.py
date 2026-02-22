@@ -60,7 +60,3 @@ __all__ = [
 ]
 
 # TODO: switch to file-based prompts together with
-
-# TODO: ako vyriesime generalizaciu a context injcetion do jednotlivych agentov (mimo background)
-
-# TODO Affordable memory
