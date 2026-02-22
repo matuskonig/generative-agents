@@ -26,7 +26,7 @@ from generative_agents import (
     SimpleMemory,
     CompositeBehaviorFactoryBase,
     CompositeBehaviorMemoryManager,
-    MemoryUpdatingBehavior,
+    ConversationMemoryUpdatingBehavior,
     BDIPlanningBehavior,
     MemoryForgettingBehavior,
     default_config,
@@ -360,7 +360,7 @@ async def run_experiment(
                     agent,
                     context,
                     [
-                        MemoryUpdatingBehavior(),
+                        ConversationMemoryUpdatingBehavior(),
                     ],
                 )
             case "bdi":
@@ -369,7 +369,7 @@ async def run_experiment(
                     agent,
                     context,
                     [
-                        MemoryUpdatingBehavior(),
+                        ConversationMemoryUpdatingBehavior(),
                         BDIPlanningBehavior(),
                         MemoryForgettingBehavior(
                             get_record_removal_linear_probability(

@@ -17,17 +17,28 @@ from .models import (
     FactResponse,
     MemoryQueryFilter,
     MemoryRecord,
+    MemoryRecordResponse,
     PruneFactsResponse,
 )
 
 
 class MemoryManagerBase(abc.ABC):
     @abc.abstractmethod
-    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
+    def get_tagged_full_memory(
+        self,
+        *,
+        with_full_memory_record: bool = False,
+        query_filter: MemoryQueryFilter | None = None,
+    ) -> str:
         pass
 
     @abc.abstractmethod
-    async def get_tagged_memory_by_query(self, query: str) -> str:
+    async def get_tagged_memory_by_query(
+        self,
+        query: str,
+        *,
+        query_filter: MemoryQueryFilter | None = None,
+    ) -> str:
         pass
 
     @abc.abstractmethod
@@ -87,21 +98,23 @@ class CompositeBehaviorFactoryBase(abc.ABC):
             pass
 
 
-class MemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
+class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
     def instantizate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackend,
-    ) -> "MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl":
-        return MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl(
+    ) -> "ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl":
+        return ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl(
             memory, owner, agent, context
         )
 
     @classmethod
-    def get_impl_type(cls) -> type["MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl"]:
-        return MemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl
+    def get_impl_type(
+        cls,
+    ) -> type["ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl"]:
+        return ConversationMemoryUpdatingBehavior.MemoryUpdatingBehaviorImpl
 
     class MemoryUpdatingBehaviorImpl(
         CompositeBehaviorFactoryBase.CompositeBehaviorBase
@@ -156,6 +169,112 @@ class MemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
             logger: logging.Logger | None = None,
         ) -> None:
             await self._add_new_memory(other_agent, conversation)
+
+        def get_memory_extension_data(self) -> Mapping[str, str] | None:
+            return None
+
+
+class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
+    """You store only a single note about each other agent, which gets updated after every conversation."""
+
+    def instantizate(
+        self,
+        memory: MemoryBase,
+        owner: MemoryManagerBase,
+        agent: LLMAgentBase,
+        context: LLMBackend,
+    ) -> "UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl":
+        return UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl(
+            memory, owner, agent, context
+        )
+
+    @classmethod
+    def get_impl_type(
+        cls,
+    ) -> type["UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl"]:
+        return UnitaryAgentNoteUpdatingBehavior.UnitaryAgentNoteUpdatingBehaviorImpl
+
+    class UnitaryAgentNoteUpdatingBehaviorImpl(
+        CompositeBehaviorFactoryBase.CompositeBehaviorBase
+    ):
+        def __init__(
+            self,
+            memory: MemoryBase,
+            owner: MemoryManagerBase,
+            agent: LLMAgentBase,
+            context: LLMBackend,
+        ):
+            self.memory = memory
+            self._owner = owner
+            self._agent = agent
+            self._context = context
+
+        async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
+            pass
+
+        def _get_existing_notes(self, other_agent_name: str) -> Sequence[MemoryRecord]:
+            query_filter = MemoryQueryFilter(
+                source_types=[BuildInSourceType.UnitaryAgentNoteKnowledge],
+                predicate=lambda record: isinstance(
+                    record.source, BuildInSourceType.UnitaryAgentNoteKnowledge
+                )
+                and record.source.other_agent == other_agent_name,
+            )
+            return self.memory.full_retrieval(query_filter)
+
+        async def _update_agent_note(
+            self, other_agent: LLMAgentBase, conversation: Conversation
+        ) -> None:
+            other_agent_name = other_agent.data.full_name
+
+            existing_notes_timestamps = [
+                note.timestamp for note in self._get_existing_notes(other_agent_name)
+            ]
+
+            omit_other_agent_filter = MemoryQueryFilter(
+                predicate=lambda record: (
+                    record.source.other_agent == other_agent_name
+                    if isinstance(
+                        record.source, BuildInSourceType.UnitaryAgentNoteKnowledge
+                    )
+                    else True
+                )
+            )
+            memory_string = self._owner.get_tagged_full_memory(
+                with_full_memory_record=False,
+                query_filter=omit_other_agent_filter,
+            )
+
+            prompt = default_config().get_agent_note_update_prompt(
+                agent_full_name=self._agent.data.full_name,
+                agent_introduction=await self._agent.get_agent_introduction_message(),
+                other_agent_full_name=other_agent_name,
+                conversation_string=default_config().conversation_to_tagged_text(
+                    conversation
+                ),
+                memory_string=memory_string,
+            )
+            result = await self._context.get_text_response(
+                prompt,
+                params=default_config().get_factual_llm_params(),
+            )
+
+            await self.memory.store_facts(
+                [MemoryRecordResponse(text=result, relevance=1.0)],
+                source=BuildInSourceType.UnitaryAgentNoteKnowledge(
+                    other_agent=other_agent_name
+                ),
+            )
+            if existing_notes_timestamps:
+                self.memory.remove_facts(existing_notes_timestamps)
+
+        async def post_conversation_hook(
+            self,
+            other_agent: LLMAgentBase,
+            conversation: Conversation,
+            logger: logging.Logger | None = None,
+        ) -> None:
+            await self._update_agent_note(other_agent, conversation)
 
         def get_memory_extension_data(self) -> Mapping[str, str] | None:
             return None
@@ -256,8 +375,8 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
             if not self.__bdi_data:
                 return None
             return {
-                "current_desires": "\n".join(self.__bdi_data.desires),
-                "current_intention": self.__bdi_data.intention,
+                "your_current_desires": "\n".join(self.__bdi_data.desires),
+                "your_current_intention": self.__bdi_data.intention,
             }
 
 
@@ -439,7 +558,9 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         ]
 
     def _get_tagged_memory_string(
-        self, records: Sequence[MemoryRecord], with_full_memory_record: bool = False
+        self,
+        records: Sequence[MemoryRecord],
+        with_full_memory_record: bool = False,
     ) -> str:
         tagged_data = {
             key: value
@@ -454,12 +575,22 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
             }
         )
 
-    def get_tagged_full_memory(self, with_full_memory_record: bool = False) -> str:
-        records = self.memory.full_retrieval()
+    def get_tagged_full_memory(
+        self,
+        *,
+        with_full_memory_record: bool = False,
+        query_filter: MemoryQueryFilter | None = None,
+    ) -> str:
+        records = self.memory.full_retrieval(query_filter)
         return self._get_tagged_memory_string(records, with_full_memory_record)
 
-    async def get_tagged_memory_by_query(self, query: str) -> str:
-        records = await self.memory.query_retrieval(query)
+    async def get_tagged_memory_by_query(
+        self,
+        query: str,
+        *,
+        query_filter: MemoryQueryFilter | None = None,
+    ) -> str:
+        records = await self.memory.query_retrieval(query, query_filter)
         return self._get_tagged_memory_string(records)
 
     async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
@@ -485,3 +616,5 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
 
 
 # TODO: abstract class property for type + some nicer api
+# TODO: add memory filters here as well
+# TODO: after wrapping up write the tests and set up pipelines

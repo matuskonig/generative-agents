@@ -15,12 +15,6 @@ class RecordSourceTypeBase(BaseModel):
         pass
 
 
-@dataclass
-class MemoryQueryFilter:
-    source_types: Iterable[type[RecordSourceTypeBase]] | None = None
-    predicate: Callable[["MemoryRecord"], bool] | None = None
-
-
 class BuildInSourceType:
     class System(RecordSourceTypeBase):
         type: str = Field(default="system", init=False, frozen=True)
@@ -36,6 +30,20 @@ class BuildInSourceType:
         @property
         def tag(self) -> str:
             return f"[CONVERSATION: {self.other_agent}]"
+
+    class UnitaryAgentNoteKnowledge(RecordSourceTypeBase):
+        other_agent: str
+        type: str = Field(default="unitary_note", init=False, frozen=True)
+
+        @property
+        def tag(self) -> str:
+            return f"[NOTE: {self.other_agent}]"
+
+
+@dataclass
+class MemoryQueryFilter:
+    source_types: Iterable[type[RecordSourceTypeBase]] | None = None
+    predicate: Callable[["MemoryRecord"], bool] | None = None
 
 
 class PruneFactsResponse(BaseModel):

@@ -9,9 +9,10 @@ from .memory_managers import (
     BDIPlanningBehavior,
     CompositeBehaviorFactoryBase,
     CompositeBehaviorMemoryManager,
+    ConversationMemoryUpdatingBehavior,
     MemoryForgettingBehavior,
     MemoryManagerBase,
-    MemoryUpdatingBehavior,
+    UnitaryAgentNoteUpdatingBehavior,
     get_record_removal_linear_probability,
 )
 from .models import (
@@ -50,7 +51,8 @@ __all__ = [
     "get_record_removal_linear_probability",
     "CompositeBehaviorFactoryBase",
     "CompositeBehaviorMemoryManager",
-    "MemoryUpdatingBehavior",
+    "ConversationMemoryUpdatingBehavior",
+    "UnitaryAgentNoteUpdatingBehavior",
     "BDIPlanningBehavior",
     "MemoryForgettingBehavior",
     "RecordSourceTypeBase",

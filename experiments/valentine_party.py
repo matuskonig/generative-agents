@@ -16,7 +16,7 @@ from generative_agents import (
     CompositeBehaviorMemoryManager,
     CompositeBehaviorFactoryBase,
     BDIPlanningBehavior,
-    MemoryUpdatingBehavior,
+    ConversationMemoryUpdatingBehavior,
     MemoryForgettingBehavior,
     ConversationManager,
     EmbeddingMemory,
@@ -77,7 +77,7 @@ async def main():
         ),
     )
     behaviors: list[CompositeBehaviorFactoryBase] = [
-        MemoryUpdatingBehavior(),
+        ConversationMemoryUpdatingBehavior(),
         BDIPlanningBehavior(),
         MemoryForgettingBehavior(get_record_removal_linear_probability(0.5)),
     ]

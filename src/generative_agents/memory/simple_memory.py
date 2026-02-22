@@ -35,20 +35,21 @@ class SimpleMemory(MemoryBase):
 
     async def store_facts(
         self, facts: Iterable[MemoryRecordResponse], source: RecordSourceTypeBase
-    ) -> None:
-        self.__memory.extend(
-            [
-                MemoryRecord(
-                    text=fact.text,
-                    relevance=fact.relevance,
-                    timestamp=self.__get_next_timestamp(),
-                    source=source,
-                )
-                for fact in facts
-            ]
-        )
+    ) -> list[int]:
+        final_records = [
+            MemoryRecord(
+                text=fact.text,
+                relevance=fact.relevance,
+                timestamp=self.__get_next_timestamp(),
+                source=source,
+            )
+            for fact in facts
+        ]
+        self.__memory.extend(final_records)
+        return [record.timestamp for record in final_records]
 
-    def remove_facts(self, timestamps: list[int]) -> None:
+    def remove_facts(self, timestamps: Iterable[int]) -> None:
+        set_timestamps = set(timestamps)
         self.__memory = [
-            record for record in self.__memory if record.timestamp not in timestamps
+            record for record in self.__memory if record.timestamp not in set_timestamps
         ]

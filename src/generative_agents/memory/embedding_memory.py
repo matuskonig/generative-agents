@@ -125,22 +125,23 @@ class EmbeddingMemory(MemoryBase):
         self,
         facts: Iterable[MemoryRecordResponse],
         source: RecordSourceTypeBase,
-    ) -> None:
+    ) -> list[int]:
         embeddings = await self.__context.embed_text([fact.text for fact in facts])
-        self.__memory.extend(
-            [
-                MemoryRecordWithEmbedding(
-                    timestamp=self.__get_next_timestamp(),
-                    text=fact.text,
-                    relevance=fact.relevance,
-                    embedding=embedding,
-                    source=source,
-                )
-                for fact, embedding in zip(facts, embeddings)
-            ]
-        )
+        final_records = [
+            MemoryRecordWithEmbedding(
+                timestamp=self.__get_next_timestamp(),
+                text=fact.text,
+                relevance=fact.relevance,
+                embedding=embedding,
+                source=source,
+            )
+            for fact, embedding in zip(facts, embeddings)
+        ]
+        self.__memory.extend(final_records)
+        return [record.timestamp for record in final_records]
 
-    def remove_facts(self, timestamps: list[int]) -> None:
+    def remove_facts(self, timestamps: Iterable[int]) -> None:
+        set_timestamps = set(timestamps)
         self.__memory = [
-            record for record in self.__memory if record.timestamp not in timestamps
+            record for record in self.__memory if record.timestamp not in set_timestamps
         ]

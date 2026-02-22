@@ -56,9 +56,13 @@ class MemoryBase(abc.ABC):
         self,
         facts: Iterable[MemoryRecordResponse],
         source: RecordSourceTypeBase,
-    ) -> None:
-        """Append new facts to the memory."""
+    ) -> Iterable[int]:
+        """Append new facts to the memory.
+
+        Returns:
+            List of timestamps for the newly stored facts.
+        """
 
     @abc.abstractmethod
-    def remove_facts(self, timestamps: list[int]) -> None:
+    def remove_facts(self, timestamps: Iterable[int]) -> None:
         pass

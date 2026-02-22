@@ -424,6 +424,55 @@ Respond using this JSON format: {response_format}"""
 
         return base_prompt
 
+    def get_agent_note_update_prompt(
+        self,
+        agent_full_name: str,
+        agent_introduction: str,
+        other_agent_full_name: str,
+        conversation_string: str,
+        memory_string: str | None = None,
+        response_format: str | None = None,
+    ) -> str:
+        memory_section = (
+            self.memory_prompt(memory_string)
+            if memory_string and memory_string.strip()
+            else ""
+        )
+
+        base_prompt = f"""You are {agent_full_name}.
+
+<persona>
+{agent_introduction}
+</persona>
+
+You just completed a conversation with {other_agent_full_name}.
+
+{memory_section}
+
+The conversation:
+{conversation_string}
+
+Based on this conversation, create a SINGLE concise note that captures the essential information about {other_agent_full_name}. This note should:
+
+1. **Summarize your relationship** - How do you know them? What's your connection?
+2. **Key impressions** - What's your overall feeling about this person?
+3. **Important details** - Any significant facts, interests, or topics worth remembering
+4. **Interaction style** - How do they communicate? What's notable about them?
+
+**GUIDELINES:**
+- Keep it to ONE short paragraph (2-5 sentences max)
+- Focus on what's most useful for future interactions
+- The note will COMPLETELY REPLACE any existing notes about this person
+- Include any important updates or changes from this conversation
+- Make it personal - how does {other_agent_full_name} relate to YOU specifically?"""
+
+        if response_format:
+            return f"""{base_prompt}
+
+Respond using this JSON format: {response_format}"""
+
+        return base_prompt
+
 
 default_config = OverridableContextVar("default_config", DefaultConfig())
 # TODO: rewrite it to more prefix-friendly approach
