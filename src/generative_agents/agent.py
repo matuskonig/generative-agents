@@ -122,6 +122,3 @@ class LLMConversationAgent(LLMAgentBase):
 
     async def pre_conversation_hook(self, other: "LLMConversationAgent") -> None:
         await self.memory_manager.pre_conversation_hook(other)
-
-
-# TODO: in additon to pruning, implement memory compression ?

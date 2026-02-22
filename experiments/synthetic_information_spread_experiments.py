@@ -1,3 +1,10 @@
+"""Experiments for testing information spread through a social network.
+
+This module contains experiments that simulate information propagation through
+agent-based social networks, testing how information spreads from seed agents
+to other agents through conversations.
+"""
+
 import asyncio
 import logging
 import os
@@ -14,21 +21,21 @@ from pydantic import BaseModel, Field
 
 from generative_agents import (
     AgentModelBase,
+    BDIPlanningBehavior,
+    CompositeBehaviorFactoryBase,
+    CompositeBehaviorMemoryManager,
     ConversationManager,
+    ConversationMemoryUpdatingBehavior,
     DefaultConfig,
     EmbeddingMemory,
     FullParallelConversationSelector,
     InformationSpreadConversationSelector,
-    LLMConversationAgent,
     LLMBackend,
+    LLMConversationAgent,
+    MemoryForgettingBehavior,
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
     SimpleMemory,
-    CompositeBehaviorFactoryBase,
-    CompositeBehaviorMemoryManager,
-    ConversationMemoryUpdatingBehavior,
-    BDIPlanningBehavior,
-    MemoryForgettingBehavior,
     default_config,
     fixed_count_strategy_factory,
     get_record_removal_linear_probability,
@@ -38,30 +45,42 @@ from generative_agents import (
 
 
 class BDIMemoryManagerType(TypedDict):
+    """Configuration for BDI-based memory management with forgetting mechanism."""
+
     manager_type: Literal["bdi"]
     memory_removal_prob: float
 
 
 class SimpleMemoryManagerType(TypedDict):
+    """Configuration for simple memory management without BDI or forgetting."""
+
     manager_type: Literal["simple"]
 
 
 class SimpleMemoryType(TypedDict):
+    """Configuration for simple memory (no embeddings)."""
+
     memory_type: Literal["simple"]
 
 
 class EmbeddingMemoryType(TypedDict):
+    """Configuration for embedding-based memory with retrieval strategies."""
+
     memory_type: Literal["embedding"]
     strategy: Literal["top_k"] | Literal["mean_std"] | Literal["top_std"]
     value: int | float
 
 
 class QuestionAnswer(BaseModel):
+    """Response model for agent question answering about information received."""
+
     reasoning: str
     final_answer: bool
 
 
 class ExperimentResult(BaseModel):
+    """Results from a single experiment run."""
+
     dataset: Dataset
     experiment_name: str
     memory_manager_config: BDIMemoryManagerType | SimpleMemoryManagerType
@@ -77,8 +96,11 @@ class ExperimentResult(BaseModel):
     epoch_agents_responses: list[list[QuestionAnswer]]
 
 
+# Configuration class with modified prompts for reduced information spread experiments
 # TODO: regenerate as well
 class ReducedInformationSpreadConfig(DefaultConfig):
+    """Configuration with simplified prompts to test information spread with reduced prompting."""
+
     def get_introduction_prompt(self, agent_data):
         return f"""Your name is {agent_data.full_name}. 
 
@@ -334,9 +356,27 @@ async def run_experiment(
     max_utterances=12,
     epochs=5,
 ):
+    """Run a single experiment with the given configuration.
+
+    Args:
+        context: LLM backend for generating responses
+        dataset: Dataset containing agents and social network structure
+        logger: Logger for experiment output
+        experiment_name: Name identifier for the experiment
+        memory_manager_config: Configuration for memory management (BDI or simple)
+        memory_config: Configuration for memory type (simple or embedding)
+        conversation_selector_type: How conversations are selected (information_spread or full_parallel)
+        seed: Random seed for reproducibility
+        max_utterances: Maximum turns per conversation
+        epochs: Number of conversation epochs to run
+
+    Returns:
+        ExperimentResult containing all experiment metrics and responses
+    """
     seed_rng = np.random.default_rng(seed)
 
     def get_agent_memory_manager(agent: LLMConversationAgent):
+        """Create memory manager based on configuration."""
         match memory_config["memory_type"]:
             case "simple":
                 memory = SimpleMemory()
@@ -383,13 +423,14 @@ async def run_experiment(
                     ],
                 )
 
-    # TODO: something smarter in regards to the pruning
+    # Create agents from dataset
     agents = [
         LLMConversationAgent(data, context, get_agent_memory_manager)
         for data in dataset.agents
     ]
     id_mapping = {i: agent for i, agent in enumerate(agents)}
 
+    # Build social network graph from dataset edges
     structure_graph = nx.Graph()
     structure_graph.add_edges_from(
         (id_mapping[first], id_mapping[second]) for (first, second) in dataset.edges
@@ -428,6 +469,7 @@ async def run_experiment(
         print(f"Running epoch {epoch + 1}/{epochs}...")
         await manager.run_simulation_epoch()
         print(f"Epoch {epoch + 1} completed.")
+        # Query all agents about whether they received the information
         agent_responses = await asyncio.gather(
             *[
                 agent.ask_agent_structured(
@@ -448,6 +490,7 @@ Answer positively even if you have received this information partially or indire
 
     manager.reset_epochs()
 
+    # Print usage statistics
     print()
     print("Usage statistics")
     print(f"Total time: {context.total_time:.02f} s")
@@ -459,6 +502,7 @@ Answer positively even if you have received this information partially or indire
     )
     print(f"Avg time per request: {context.total_time/context.total_requests}")
 
+    # Log final memory state for each agent
     for agent in agents:
         logger.debug(
             agent.data.full_name,
@@ -485,6 +529,7 @@ Answer positively even if you have received this information partially or indire
 async def main():
     if not os.path.exists("./logs"):
         os.makedirs("./logs")
+
     with open("./data/synthetic_5.json", "r") as f:
         dataset5 = Dataset.model_validate_json(f.read())
     with open("./data/synthetic_10.json", "r") as f:
@@ -506,6 +551,7 @@ async def main():
             limits=httpx.Limits(max_connections=1000, max_keepalive_connections=20),
         ),
     )
+    # Create LLM backend for generating responses
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
@@ -519,6 +565,7 @@ async def main():
     if not os.path.exists("./results"):
         os.makedirs("./results")
 
+    # Run experiment with 5 agents, BDI memory, embedding memory, information spread selector
     result5 = await run_experiment(
         context,
         dataset5,
@@ -552,7 +599,7 @@ async def main():
     with open("./results/synthetic_5_bdi_is_reduced.json", "w") as f:
         f.write(result5_reduced.model_dump_json(indent=1))
 
-    # Same as result5, but with simple memory
+    # Same as result5, but with simple memory (no embeddings)
     result5_simple = await run_experiment(
         context,
         dataset5,
@@ -570,7 +617,7 @@ async def main():
     with open("./results/synthetic_5_bdi_is_simple.json", "w") as f:
         f.write(result5_simple.model_dump_json(indent=1))
 
-    # Same as result5, but with crippled prompt engineering
+    # Same as result5, but with reduced prompt engineering
     with default_config.override(ReducedInformationSpreadConfig()):
         result5_reduced_prompt = await run_experiment(
             context,
@@ -589,6 +636,7 @@ async def main():
         with open("./results/synthetic_5_bdi_is_reduced_prompt.json", "w") as f:
             f.write(result5_reduced_prompt.model_dump_json(indent=1))
 
+    # Run experiment with 10 agents
     result10 = await run_experiment(
         context,
         dataset10,
@@ -604,6 +652,7 @@ async def main():
     with open("./results/synthetic_10_bdi_is.json", "w") as f:
         f.write(result10.model_dump_json(indent=1))
 
+    # Run experiment with 25 agents
     result25 = await run_experiment(
         context,
         dataset25,
