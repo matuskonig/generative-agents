@@ -333,6 +333,8 @@ async def run_experiment(
     max_utterances=12,
     epochs=5,
 ):
+    seed_rng = np.random.default_rng(seed)
+
     def get_agent_memory_manager(agent: LLMConversationAgent):
         match memory_config["memory_type"]:
             case "simple":
@@ -374,7 +376,8 @@ async def run_experiment(
                         MemoryForgettingBehavior(
                             get_record_removal_linear_probability(
                                 memory_manager_config["memory_removal_prob"]
-                            )
+                            ),
+                            seed=seed_rng,
                         ),
                     ],
                 )

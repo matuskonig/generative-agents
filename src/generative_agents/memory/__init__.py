@@ -59,4 +59,3 @@ __all__ = [
     "BuildInSourceType",
 ]
 
-# TODO: switch to file-based prompts together with

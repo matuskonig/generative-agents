@@ -53,6 +53,7 @@ class ExperimentData(BaseModel):
 
 
 async def main():
+    seed = np.random.default_rng(42)
     if not os.path.exists("logs"):
         os.makedirs("logs")
     logger = get_xml_file_logger("logs/valentine_party.log", level=logging.DEBUG)
@@ -79,7 +80,7 @@ async def main():
     behaviors: list[CompositeBehaviorFactoryBase] = [
         ConversationMemoryUpdatingBehavior(),
         BDIPlanningBehavior(),
-        MemoryForgettingBehavior(get_record_removal_linear_probability(0.5)),
+        MemoryForgettingBehavior(get_record_removal_linear_probability(0.5), seed=seed),
     ]
 
     with open("./data/valentine_party.json", "r") as f:

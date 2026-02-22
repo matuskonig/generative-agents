@@ -1,9 +1,8 @@
 import abc
 import asyncio
 import logging
-from typing import Generator, Iterable
+from typing import Iterable
 
-# TODO: replace Generator with iterable ??
 import networkx as nx
 import numpy as np
 
@@ -70,7 +69,7 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
 
     def generate_epoch_pairs(
         self,
-    ) -> Generator[list[tuple[LLMConversationAgent, LLMConversationAgent]], None, None]:
+    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         # remove agents from the structure during the progression of the algorithm
         structure = self._get_generator_structure()
 
@@ -168,7 +167,7 @@ class ConversationRandomRestrictionAdapter(ConversationSelectorABC):
 
     def generate_epoch_pairs(
         self,
-    ) -> Generator[list[tuple[LLMConversationAgent, LLMConversationAgent]], None, None]:
+    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         """Selects a random subset of conversations, controled using probability."""
         for pairs_in_parallel in self.__base_selector.generate_epoch_pairs():
             yield [
@@ -208,7 +207,7 @@ class SequentialConversationSelector(ConversationSelectorABC):
 
     def generate_epoch_pairs(
         self,
-    ) -> Generator[list[tuple[LLMConversationAgent, LLMConversationAgent]], None, None]:
+    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         initialization = (
             self.__initial_conversation if self.__generated_epochs == 0 else []
         )

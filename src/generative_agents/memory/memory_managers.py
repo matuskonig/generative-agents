@@ -1,7 +1,8 @@
 import abc
 import logging
-import random
 from typing import Mapping, Protocol, Sequence, TypeVar
+
+import numpy as np
 
 from ..config import default_config
 from ..llm_backend import LLMBackend
@@ -385,8 +386,13 @@ def get_record_removal_linear_probability(
 
 
 class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
-    def __init__(self, get_record_removal_prob: RecordRemovalProbSelector):
+    def __init__(
+        self,
+        get_record_removal_prob: RecordRemovalProbSelector,
+        seed: np.random.Generator | None = None,
+    ):
         self.get_record_removal_prob = get_record_removal_prob
+        self._seed = seed or np.random.default_rng()
 
     @classmethod
     def get_impl_type(
@@ -402,7 +408,7 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
         context: LLMBackend,
     ) -> "MemoryForgettingBehavior.Impl":
         return MemoryForgettingBehavior.Impl(
-            memory, owner, agent, context, self.get_record_removal_prob
+            memory, owner, agent, context, self.get_record_removal_prob, self._seed
         )
 
     class Impl(CompositeBehaviorFactoryBase.Impl):
@@ -413,11 +419,13 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
             agent: LLMAgentBase,
             context: LLMBackend,
             get_record_removal_prob: RecordRemovalProbSelector,
+            seed: np.random.Generator,
         ):
             self.memory = memory
             self._agent = agent
             self._context = context
             self._get_record_removal_prob = get_record_removal_prob
+            self._seed = seed
 
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             pass
@@ -430,7 +438,7 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
                         source_types=[BuildInSourceType.Conversation]
                     )
                 )
-                if random.random()  # TODO: Seed support
+                if self._seed.random()
                 <= self._get_record_removal_prob(
                     self.memory.current_timestamp(), record
                 )
