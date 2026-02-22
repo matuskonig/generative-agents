@@ -124,7 +124,7 @@ Generate the agent using this schema: {SocietyAgent.model_json_schema()}"""
         assert response is not None, "Response parsing failed."
         return response
 
-    (init_node, v) = max(centrality_mapping.items(), key=lambda item: item[1])
+    init_node, v = max(centrality_mapping.items(), key=lambda item: item[1])
 
     result_mapping[init_node] = await generate_single(init_node)
     while len(result_mapping) < len(graph.nodes):

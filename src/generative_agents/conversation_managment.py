@@ -3,6 +3,7 @@ import asyncio
 import logging
 from typing import Generator, Iterable
 
+# TODO: replace Generator with iterable ??
 import networkx as nx
 import numpy as np
 

@@ -13,7 +13,9 @@ from .models import (
     BDIFullChange,
     BDINoChanges,
     BDIResponse,
+    BuildInSourceType,
     FactResponse,
+    MemoryQueryFilter,
     MemoryRecord,
     PruneFactsResponse,
 )
@@ -140,7 +142,12 @@ class MemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
                 response_format=FactResponse,
                 params=default_config().get_factual_llm_params(),
             )
-            await self.memory.store_facts(result.facts)
+            await self.memory.store_facts(
+                result.facts,
+                source=BuildInSourceType.Conversation(
+                    other_agent=other_agent.data.full_name
+                ),
+            )
 
         async def post_conversation_hook(
             self,
@@ -313,7 +320,11 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
         async def _prune_old_memory(self) -> None:
             records_to_prune = [
                 record
-                for record in self.memory.full_retrieval()
+                for record in self.memory.full_retrieval(
+                    query_filter=MemoryQueryFilter(
+                        source_types=[BuildInSourceType.Conversation]
+                    )
+                )
                 if random.random()  # TODO: Seed support
                 <= self._get_record_removal_prob(
                     self.memory.current_timestamp(), record
@@ -355,6 +366,46 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
             return None
 
 
+class ConstantContextBehavior(CompositeBehaviorFactoryBase):
+    def __init__(self, instructions: str):
+        self._instructions = instructions
+
+    @classmethod
+    def get_impl_type(
+        cls,
+    ) -> type["ConstantContextBehavior.ConstantContextBehaviorImpl"]:
+        return ConstantContextBehavior.ConstantContextBehaviorImpl
+
+    def instantizate(
+        self,
+        memory: MemoryBase,
+        owner: MemoryManagerBase,
+        agent: LLMAgentBase,
+        context: LLMBackend,
+    ) -> "ConstantContextBehavior.ConstantContextBehaviorImpl":
+        return ConstantContextBehavior.ConstantContextBehaviorImpl(self._instructions)
+
+    class ConstantContextBehaviorImpl(
+        CompositeBehaviorFactoryBase.CompositeBehaviorBase
+    ):
+        def __init__(self, instructions: str):
+            self.instructions = instructions
+
+        async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
+            pass
+
+        async def post_conversation_hook(
+            self,
+            other_agent: LLMAgentBase,
+            conversation: Conversation,
+            logger: logging.Logger | None = None,
+        ) -> None:
+            pass
+
+        def get_memory_extension_data(self) -> Mapping[str, str] | None:
+            return {"instructions": self.instructions}
+
+
 def get_memory_string(
     records: Sequence[MemoryRecord], with_full_memory_record: bool = False
 ) -> str:
@@ -362,7 +413,7 @@ def get_memory_string(
         (
             record.model_dump_json(include=set(MemoryRecord.model_fields))
             if with_full_memory_record
-            else record.text
+            else f"{record.source.tag}: {record.text}"
         )
         for record in records
     )
@@ -431,3 +482,6 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         raise ValueError(
             f"Behavior of type {behavior_cls} not found in memory manager."
         )
+
+
+# TODO: abstract class property for type + some nicer api

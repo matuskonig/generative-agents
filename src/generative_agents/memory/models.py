@@ -1,7 +1,41 @@
-from typing import Literal, Union
+import abc
+from dataclasses import dataclass
+from typing import Callable, Iterable, Literal, Union
 
 from numpydantic import NDArray
 from pydantic import BaseModel, Field
+
+
+class RecordSourceTypeBase(BaseModel):
+    type: str
+
+    @property
+    @abc.abstractmethod
+    def tag(self) -> str:
+        pass
+
+
+@dataclass
+class MemoryQueryFilter:
+    source_types: Iterable[type[RecordSourceTypeBase]] | None = None
+    predicate: Callable[["MemoryRecord"], bool] | None = None
+
+
+class BuildInSourceType:
+    class System(RecordSourceTypeBase):
+        type: str = Field(default="system", init=False, frozen=True)
+
+        @property
+        def tag(self) -> str:
+            return "[SYSTEM]"
+
+    class Conversation(RecordSourceTypeBase):
+        other_agent: str
+        type: str = Field(default="conversation", init=False, frozen=True)
+
+        @property
+        def tag(self) -> str:
+            return f"[CONVERSATION: {self.other_agent}]"
 
 
 class PruneFactsResponse(BaseModel):
@@ -15,7 +49,7 @@ class MemoryRecordResponse(BaseModel):
 
 class MemoryRecord(MemoryRecordResponse):
     timestamp: int
-    # TODO: rozsirit o typ, nejako rozsirit i query metody a dotiahnut to na Affordable memory. budeme potrebovat i nejaku shared memory
+    source: RecordSourceTypeBase
 
 
 class MemoryRecordWithEmbedding(MemoryRecord):

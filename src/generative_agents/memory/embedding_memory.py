@@ -3,8 +3,14 @@ from typing import Callable, Iterable, Sequence
 import numpy as np
 
 from ..llm_backend import LLMBackend
-from .memory_base import MemoryBase
-from .models import MemoryRecord, MemoryRecordResponse, MemoryRecordWithEmbedding
+from .memory_base import MemoryBase, create_memory_filter_predicate
+from .models import (
+    MemoryQueryFilter,
+    MemoryRecord,
+    MemoryRecordResponse,
+    MemoryRecordWithEmbedding,
+    RecordSourceTypeBase,
+)
 
 
 def fixed_count_strategy_factory(
@@ -73,8 +79,11 @@ class EmbeddingMemory(MemoryBase):
     def current_timestamp(self) -> int:
         return self.__timestamp
 
-    def full_retrieval(self) -> list[MemoryRecordWithEmbedding]:
-        return self.__memory
+    def full_retrieval(
+        self, query_filter: MemoryQueryFilter | None = None
+    ) -> list[MemoryRecordWithEmbedding]:
+        predicate = create_memory_filter_predicate(query_filter)
+        return [record for record in self.__memory if predicate(record)]
 
     def __get_memory_record_score(
         self, query_emb: np.ndarray, record: MemoryRecordWithEmbedding
@@ -91,15 +100,20 @@ class EmbeddingMemory(MemoryBase):
             + self.__similarity_weight * cosine_similarity
         )
 
-    async def query_retrieval(self, query: str) -> list[MemoryRecordWithEmbedding]:
-        if len(self.__memory) == 0:
+    async def query_retrieval(
+        self, query: str, query_filter: MemoryQueryFilter | None = None
+    ) -> list[MemoryRecordWithEmbedding]:
+        predicate = create_memory_filter_predicate(query_filter)
+        filtered_memory = [record for record in self.__memory if predicate(record)]
+
+        if len(filtered_memory) == 0:
             return []
 
         query_embedding = await self.__context.embed_text(query)
         scored_records = sorted(
             [
                 (self.__get_memory_record_score(query_embedding, record), record)
-                for record in self.__memory
+                for record in filtered_memory
             ],
             reverse=True,
         )
@@ -107,7 +121,11 @@ class EmbeddingMemory(MemoryBase):
         selected_count = self.__count_selector(scored_records)
         return [record for _, record in scored_records[:selected_count]]
 
-    async def store_facts(self, facts: Iterable[MemoryRecordResponse]) -> None:
+    async def store_facts(
+        self,
+        facts: Iterable[MemoryRecordResponse],
+        source: RecordSourceTypeBase,
+    ) -> None:
         embeddings = await self.__context.embed_text([fact.text for fact in facts])
         self.__memory.extend(
             [
@@ -116,6 +134,7 @@ class EmbeddingMemory(MemoryBase):
                     text=fact.text,
                     relevance=fact.relevance,
                     embedding=embedding,
+                    source=source,
                 )
                 for fact, embedding in zip(facts, embeddings)
             ]

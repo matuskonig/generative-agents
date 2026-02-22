@@ -20,11 +20,14 @@ from .models import (
     BDIFullChange,
     BDINoChanges,
     BDIResponse,
+    BuildInSourceType,
     FactResponse,
+    MemoryQueryFilter,
     MemoryRecord,
     MemoryRecordResponse,
     MemoryRecordWithEmbedding,
     PruneFactsResponse,
+    RecordSourceTypeBase,
 )
 from .simple_memory import SimpleMemory
 
@@ -38,6 +41,7 @@ __all__ = [
     "MemoryRecord",
     "MemoryRecordResponse",
     "MemoryRecordWithEmbedding",
+    "MemoryQueryFilter",
     "BDIData",
     "BDIResponse",
     "fixed_count_strategy_factory",
@@ -49,6 +53,8 @@ __all__ = [
     "MemoryUpdatingBehavior",
     "BDIPlanningBehavior",
     "MemoryForgettingBehavior",
+    "RecordSourceTypeBase",
+    "BuildInSourceType",
 ]
 
 # TODO: switch to file-based prompts together with
