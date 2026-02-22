@@ -77,6 +77,7 @@ class ExperimentResult(BaseModel):
     epoch_agents_responses: list[list[QuestionAnswer]]
 
 
+# TODO: regenerate as well
 class ReducedInformationSpreadConfig(DefaultConfig):
     def get_introduction_prompt(self, agent_data):
         return f"""Your name is {agent_data.full_name}. 
