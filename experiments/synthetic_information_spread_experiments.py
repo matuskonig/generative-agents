@@ -97,7 +97,6 @@ class ExperimentResult(BaseModel):
 
 
 # Configuration class with modified prompts for reduced information spread experiments
-# TODO: regenerate as well
 class ReducedInformationSpreadConfig(DefaultConfig):
     """Configuration with simplified prompts to test information spread with reduced prompting."""
 
@@ -119,7 +118,9 @@ In this introduction include information about yourself such as:
 - recent news or developments in your life
 - topics you're passionate about discussing
 
-Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you."""
+Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you.
+
+Do not mention being an AI, agent, or simulation. Write as a real person."""
 
     def start_conversation_prompt(
         self,
@@ -146,6 +147,8 @@ You are about to meet {second_agent_full_name}. Based on your personality and an
 2. Think about what kind of conversation starter fits your character
 3. Be authentic to your communication style
 4. Make the greeting feel natural and engaging
+
+Keep your greeting concise but engaging - a few sentences that establish connection.
 
 How would you initiate this conversation?"""
 
@@ -183,7 +186,10 @@ Guidelines:
 - Stay true to your character
 - Respond appropriately to what was just said
 - If the conversation feels stagnant or complete, you may gracefully end it
-- Keep responses natural and engaging
+- Keep responses natural and conversational - match the flow of the conversation
+- Keep responses concise (1-3 sentences for typical turns)
+- Don't add filler or repeat what's already been said
+- Add new information or perspective - don't just acknowledge what was said
 - Address any direct questions or comments"""
 
         if response_format:

@@ -46,7 +46,9 @@ Core principles:
             "Your goal is to naturally share information that others might find interesting and worth passing along.\n\n"
             "For information you want to actively share in the network, please provide all the relevant details and emphasize your intention to share it with others.\n"
             "Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you.\n"
-            "Make it lenghty and mouthful, include everything you consider important, as you will not have access to your \n"
+            "Use a natural, conversational tone - write as if you're introducing yourself to someone new.\n"
+            "Do not mention being an AI, agent, or simulation. Write as a real person.\n\n"
+            "Make it lengthy and detailed, include everything you consider important, as you will not have access to your "
             "characteristics later, you will have only access to this introduction.\n"
             "Reply in style which is authentic to your characteristics and background, everything considered.\n"
         )
@@ -101,6 +103,7 @@ Core principles:
             "- Interesting information you've learned\n"
             "- Events or opportunities others might be interested in\n"
             "- Topics that align with your interests and goals\n\n"
+            "Keep your greeting concise but engaging - a few sentences that establish connection.\n\n"
             "How would you initiate this conversation?"
         )
 
@@ -132,7 +135,10 @@ Core principles:
             "- Stay true to your character\n"
             "- Respond appropriately to what was just said\n"
             "- If the conversation feels stagnant or complete, you may gracefully end it\n"
-            "- Keep responses natural and engaging\n"
+            "- Keep responses natural and conversational - match the flow of the conversation\n"
+            "- Keep responses concise (1-3 sentences for typical turns)\n"
+            "- Don't add filler or repeat what's already been said\n"
+            "- Add new information or perspective - don't just acknowledge what was said\n"
             "- Address any direct questions or comments\n\n"
             "INFORMATION SHARING PRIORITIES:\n"
             "- Actively share interesting information from your persona, memories, or recent experiences\n"
