@@ -3,7 +3,6 @@ from .types import AgentModelBase, Conversation
 from .utils import OverridableContextVar
 
 
-# TODO: regenerate prompts
 class DefaultConfig:
     __SYSTEM_PROMPT = """You are an intelligent agent in a realistic society simulation. Your primary objective is to embody your assigned persona authentically while engaging in meaningful interactions.
 
