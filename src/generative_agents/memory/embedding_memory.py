@@ -25,6 +25,15 @@ def fixed_count_strategy_factory(
 def mean_std_count_strategy_factory(
     std_coef: float = 0.5,
 ) -> Callable[[Sequence[tuple[float, MemoryRecord]]], int]:
+    """Selects memories with scores above mean + (std_dev * std_coef).
+
+    Uses statistical threshold to select only statistically significant memories.
+    Memories with scores significantly above average are selected.
+
+    Args:
+        std_coef: Multiplier for standard deviation (0.5 = half std dev above mean)
+    """
+
     def inner(records: Sequence[tuple[float, MemoryRecord]]) -> int:
         if len(records) == 0:
             return 0
@@ -40,6 +49,15 @@ def mean_std_count_strategy_factory(
 def top_std_count_strategy_factory(
     std_coef: float = 1.0,
 ) -> Callable[[Sequence[tuple[float, MemoryRecord]]], int]:
+    """Selects memories with scores within std_dev of the maximum score.
+
+    Keeps memories that are close to the highest-scoring memory, filtering out
+    those significantly below the peak.
+
+    Args:
+        std_coef: Distance from max score in terms of std_dev (1.0 = within 1 std_dev)
+    """
+
     def inner(records: Sequence[tuple[float, MemoryRecord]]) -> int:
         if len(records) == 0:
             return 0
@@ -88,6 +106,17 @@ class EmbeddingMemory(MemoryBase):
     def __get_memory_record_score(
         self, query_emb: np.ndarray, record: MemoryRecordWithEmbedding
     ) -> float:
+        """Computes composite score for memory retrieval ranking.
+
+        Combines three factors:
+        - Time similarity: newer memories score higher (exponentially decayed)
+        - Relevance: LLM-assigned importance of the memory
+        - Cosine similarity: semantic similarity to query
+
+        Args:
+            query_emb: Embedding vector of the query
+            record: Memory record with embedding to score
+        """
         time_similarity: float = (
             record.timestamp / self.__timestamp
         ) ** self.__time_smoothing

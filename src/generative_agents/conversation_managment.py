@@ -27,6 +27,17 @@ class ConversationSelectorABC(abc.ABC):
 
 
 class BFSFrontierGraph[T]:
+    """BFS-based frontier graph for information spread simulation.
+
+    Implements breadth-first search layers from seed nodes to track information
+    propagation distance. Used to restrict conversations to agents at relevant
+    distances from information sources.
+
+    The frontier extends the core nodes to include adjacent edges, simulating
+    the "frontier" of information spread where agents at the edge can receive
+    information from those closer to the source.
+    """
+
     def __init__(self, graph: "nx.Graph[T]", sources: Iterable[T]) -> None:
         self._graph = graph
         self._sources = sources
@@ -50,10 +61,16 @@ class BFSFrontierGraph[T]:
 
 
 class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
-    """Base class for creating parallel conversation selector. Algorithm is expecting structure generator implementation,
-    which is used to generate the conversation pairs in each epoch. From the structure, nodes are selected randomly.
-    For each selected node, a random neighbor is selected to form a conversation pair until there are no more possible choices.
-    Each agent is selected at most once in single epoch."""
+    """Base for parallel conversation pair selection from a graph structure.
+
+    Algorithm: For each epoch, shuffles all agents and pairs each agent with a
+    random neighbor who hasn't been paired yet. Each agent participates in at most
+    one conversation per epoch. The graph structure defines valid conversation
+    pairs (edges = possible conversations).
+
+    Subclasses define the graph structure via _get_generator_structure(), which
+    can be static (FullParallel) or dynamic based on epoch (InformationSpread).
+    """
 
     def __init__(
         self,
@@ -101,10 +118,19 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
 
 
 class InformationSpreadConversationSelector(GeneralParallelSelectorBase):
-    """Only nodes consistent with possible spread of information are considered for selection.
-    It is strcitly following BFS distance from the seed nodes. That means a complete subgraph withing the epoch distance is considered to own measured information.
-    The graph is extended to include adjacent edges to the nodes in the specified distance, simulating the frontier of the information spread.
-    This measure is to restrict the conversations to only those agents, which are relevant for the information spread.
+    """Selects conversation pairs based on BFS distance from seed nodes.
+
+    Models information spread by restricting conversations to agents within
+    a specific distance from seed nodes (where information originates). As epochs
+    progress, the frontier expands outward, simulating information propagating
+    through the network.
+
+    In epoch 0, only seed nodes can participate. In epoch 1, seed nodes and
+    their immediate neighbors, etc. This creates realistic information flow patterns
+    where agents closer to the source have earlier access to information.
+
+    This simulates the most optimistic scenario of information spread, effectively reducing
+    costs of the simulation.
     """
 
     def __init__(

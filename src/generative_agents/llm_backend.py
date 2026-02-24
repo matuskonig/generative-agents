@@ -13,7 +13,15 @@ ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
 
 
 class EmbeddingProvider(abc.ABC):
-    """Abstract base class for embedding implementations."""
+    """Abstract base class for text embedding implementations.
+
+    Provides unified interface for embedding generation with support for both
+    single strings and batch processing. Implementations can use different backends
+    (OpenAI API, local models like SentenceTransformer, etc.).
+
+    The embed_text method is overloaded to accept either str or list[str],
+    returning single embedding or list respectively.
+    """
 
     @abc.abstractmethod
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]: ...
@@ -97,6 +105,17 @@ def create_completion_params(
 def rate_limit_repeated[**P, R](
     delay_sec: float = 1, exp_backoff: float = 1.5
 ) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
+    """Decorator that retries failed API calls with exponential backoff.
+
+    Specifically handles RateLimitError and APITimeoutError from OpenAI API.
+    Uses exponential backoff: delay = delay_sec * (exp_backoff ^ retry_count)
+    Retries indefinitely until success (no max retry limit).
+
+    Args:
+        delay_sec: Initial delay in seconds before first retry
+        exp_backoff: Multiplier for exponential backoff (1.5 = 1.5x increase per retry)
+    """
+
     def decorator(
         func: Callable[P, Awaitable[R]],
     ) -> Callable[P, Awaitable[R]]:

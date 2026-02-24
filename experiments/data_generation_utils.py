@@ -7,11 +7,15 @@ from openai import AsyncOpenAI
 from generative_agents import AgentModelBase
 
 
+# TODO: have a look on it and adjust it, regenerate syhtnetic datasets
 class SocietyAgent(AgentModelBase):
     first_name: str = pydantic.Field(description="First name")
     last_name: str = pydantic.Field(description="Last name")
     sex: Literal["F", "M"] = pydantic.Field(description="Sex")
     age: int = pydantic.Field(description="Age of the agent in years")
+    personality_type: str = pydantic.Field(
+        description="Personality type of the agent, e.g. 'Introvert', 'Extrovert', 'Ambivert'"
+    )
     nationality: str = pydantic.Field(
         description="Nationality of the agent, e.g. 'American', 'Russian', 'Chinese'"
     )

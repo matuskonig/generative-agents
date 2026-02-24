@@ -7,11 +7,19 @@ from pydantic import BaseModel, Field
 
 
 class RecordSourceTypeBase(BaseModel):
+    """Base class for memory record sources with tagged string representation.
+
+    Uses tag property for discriminated union-style string serialization in
+    memory output. Each subclass represents a different type of memory source
+    (for example system, conversation, agent note) with distinct tags for display.
+    """
+
     type: str
 
     @property
     @abc.abstractmethod
     def tag(self) -> str:
+        """String tag for serialization in memory output."""
         pass
 
 
@@ -89,6 +97,16 @@ class BDIFullChange(BDIData):
 
 
 class BDIResponse(BaseModel):
+    """BDI (Belief-Desire-Intention) model update response.
+
+    Uses Pydantic discriminated union to handle three possible update types:
+    - BDINoChanges: Keep existing desires and intention
+    - BDIChangeIntention: Keep desires, change only intention
+    - BDIFullChange: Update desires, notes, and intention
+
+    The discriminator field is 'tag' which identifies which variant was returned.
+    """
+
     data: Union[BDINoChanges, BDIChangeIntention, BDIFullChange] = Field(
         discriminator="tag"
     )

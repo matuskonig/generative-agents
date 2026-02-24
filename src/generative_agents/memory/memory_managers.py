@@ -60,6 +60,17 @@ BehaviorType = TypeVar("BehaviorType", bound="CompositeBehaviorFactoryBase.Impl"
 
 
 class CompositeBehaviorFactoryBase(abc.ABC):
+    """Factory pattern for composing multiple memory behaviors.
+
+    Uses decorator/strategy pattern to combine different memory management behaviors
+    (e.g., conversation memory updating, BDI planning, forgetting) into a single
+    CompositeBehaviorMemoryManager. Each behavior implements pre/post conversation hooks.
+    This makes the behaviors effectively a plugins.
+
+    The Impl subclass defines the actual behavior, while the factory handles
+    instantiation with required dependencies.
+    """
+
     @classmethod
     @abc.abstractmethod
     def get_impl_type(
@@ -374,10 +385,21 @@ class RecordRemovalProbSelector(Protocol):
         self, current_timestamp: int, target_memory_record: MemoryRecord
     ) -> float: ...
 
-
+#TODO: maybe some exponential or something like that ?
 def get_record_removal_linear_probability(
     max_prob_coef: float,
 ) -> "RecordRemovalProbSelector":
+    """Creates a linear probability function for memory removal.
+
+    Probability increases linearly from 0 (at current timestamp) to max_prob_coef
+    (at timestamp 0). Older memories have higher removal probability.
+
+    Formula: probability = max_prob_coef * (1 - record_timestamp / current_timestamp)
+
+    Args:
+        max_prob_coef: Maximum probability coefficient (typically 0.0-1.0)
+    """
+
     def inner(current_timestamp: int, target_memory_record: MemoryRecord) -> float:
         linear_prob = 1 - (target_memory_record.timestamp / current_timestamp)
         return max_prob_coef * linear_prob
@@ -386,6 +408,16 @@ def get_record_removal_linear_probability(
 
 
 class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
+    """Probabilistic memory forgetting behavior.
+
+    Implements forgetting by probabilistically selecting memories for pruning based on
+    their age (timestamp). Older memories have higher probability of removal. The actual
+    removal is validated by LLM to ensure only unimportant memories are deleted.
+
+    The probability function should return higher values for older memories (lower
+    timestamps relative to current time). Uses seeded randomness for reproducibility.
+    """
+
     def __init__(
         self,
         get_record_removal_prob: RecordRemovalProbSelector,

@@ -4,6 +4,13 @@ import time
 
 
 class Throttler:
+    """Rate limiter using sliding window algorithm with heap-based request tracking.
+
+    Implements requests-per-second throttling by tracking request timestamps in a
+    min-heap. For rates >= 1 RPS, enforces integer RPS only. Uses a sliding time
+    window to determine which requests are still "active" within the rate period.
+    """
+
     def __init__(self, requests_per_second: int | float) -> None:
         if requests_per_second >= 1:
             assert isinstance(
