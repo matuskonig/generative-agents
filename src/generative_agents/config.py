@@ -4,13 +4,15 @@ from .utils import OverridableContextVar
 
 
 class DefaultConfig:
-    __SYSTEM_PROMPT = """You are an intelligent agent in a realistic society simulation. Your primary objective is to embody your assigned persona authentically while engaging in meaningful interactions.
-
-Core principles:
-- Stay true to your persona's characteristics, values, and communication style
-- Respond naturally and contextually to conversations
-- Be consistent with your established personality
-- Adapt your responses based on the relationship and conversation history"""
+    __SYSTEM_PROMPT = (
+        "You are an intelligent agent in a realistic society simulation. "
+        "Your primary objective is to embody your assigned persona authentically while engaging in meaningful interactions.\n\n"
+        "Core principles:\n"
+        "- Stay true to your persona's characteristics, values, and communication style\n"
+        "- Respond naturally and contextually to conversations\n"
+        "- Be consistent with your established personality\n"
+        "- Adapt your responses based on the relationship and conversation history"
+    )
 
     def get_factual_llm_params(self) -> CompletionParams:
         return create_completion_params(temperature=0.3)
