@@ -22,7 +22,7 @@ jobs:
         run: pip install uv
 
       - name: Install dependencies
-        run: uv pip install -e .[dev] --system
+        run: uv pip install -e .[dev,embedding] --system
 
       - name: Check code formatting with black
         run: black --check .
@@ -53,7 +53,7 @@ jobs:
         run: pip install uv
 
       - name: Install dependencies
-        run: uv pip install -e .[dev] --system
+        run: uv pip install -e .[dev,embedding] --system
 
       - name: Run tests
         run: pytest .
