@@ -5,7 +5,7 @@ from typing import Mapping, Protocol, Sequence, TypeVar
 import numpy as np
 
 from ..config import default_config
-from ..llm_backend import LLMBackend
+from ..llm_backend import LLMBackendBase
 from ..types import Conversation, LLMAgentBase
 from .memory_base import MemoryBase
 from .models import (
@@ -83,12 +83,11 @@ class CompositeBehaviorFactoryBase(abc.ABC):
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
     ) -> "CompositeBehaviorFactoryBase.Impl":
         pass
 
     class Impl(abc.ABC):
-
         @abc.abstractmethod
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             pass
@@ -114,7 +113,7 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
     ) -> "ConversationMemoryUpdatingBehavior.Impl":
         return ConversationMemoryUpdatingBehavior.Impl(memory, owner, agent, context)
 
@@ -130,7 +129,7 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
             memory: MemoryBase,
             owner: MemoryManagerBase,
             agent: LLMAgentBase,
-            context: LLMBackend,
+            context: LLMBackendBase,
         ):
             self.memory = memory
             self._owner = owner
@@ -188,7 +187,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
     ) -> "UnitaryAgentNoteUpdatingBehavior.Impl":
         return UnitaryAgentNoteUpdatingBehavior.Impl(memory, owner, agent, context)
 
@@ -204,7 +203,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
             memory: MemoryBase,
             owner: MemoryManagerBase,
             agent: LLMAgentBase,
-            context: LLMBackend,
+            context: LLMBackendBase,
         ):
             self.memory = memory
             self._owner = owner
@@ -288,7 +287,7 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
     ) -> "BDIPlanningBehavior.Impl":
         return BDIPlanningBehavior.Impl(memory, owner, agent, context)
 
@@ -302,7 +301,7 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
             memory: MemoryBase,
             owner: MemoryManagerBase,
             agent: LLMAgentBase,
-            context: LLMBackend,
+            context: LLMBackendBase,
         ):
             self.memory = memory
             self._owner = owner
@@ -437,7 +436,7 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
     ) -> "MemoryForgettingBehavior.Impl":
         return MemoryForgettingBehavior.Impl(
             memory, owner, agent, context, self.get_record_removal_prob, self._seed
@@ -449,7 +448,7 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
             memory: MemoryBase,
             owner: MemoryManagerBase,
             agent: LLMAgentBase,
-            context: LLMBackend,
+            context: LLMBackendBase,
             get_record_removal_prob: RecordRemovalProbSelector,
             seed: np.random.Generator,
         ):
@@ -526,7 +525,7 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
     ) -> "ConstantContextBehavior.Impl":
         return ConstantContextBehavior.Impl(self._instructions)
 
@@ -571,7 +570,7 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         self,
         memory: MemoryBase,
         agent: LLMAgentBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
         behaviors: Sequence[CompositeBehaviorFactoryBase],
     ) -> None:
         self.memory = memory

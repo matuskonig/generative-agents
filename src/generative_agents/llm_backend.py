@@ -1,7 +1,15 @@
 import abc
 import asyncio
 import time
-from typing import Awaitable, Callable, Type, TypedDict, TypeVar, overload
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+    Type,
+    TypedDict,
+    TypeVar,
+    overload,
+)
 
 import numpy as np
 from openai import APITimeoutError, AsyncClient, Omit, RateLimitError, omit
@@ -10,6 +18,39 @@ from pydantic import BaseModel
 from .async_helpers import Throttler
 
 ResponseFormatType = TypeVar("ResponseFormatType", bound="BaseModel")
+
+
+class LLMBackendBase(abc.ABC):
+    """Base class defining the interface for LLM backend implementations.
+
+    This base class allows for mock implementations in tests without requiring
+    the concrete LLMBackend class.
+    """
+
+    @abc.abstractmethod
+    async def get_text_response(
+        self,
+        prompt: str,
+        params: "CompletionParams" = ...,
+    ) -> str:
+        pass
+
+    @abc.abstractmethod
+    async def get_structued_response(
+        self,
+        prompt: str,
+        response_format: Type[ResponseFormatType],
+        params: "CompletionParams" = ...,
+    ) -> ResponseFormatType:
+        pass
+
+    @overload
+    async def embed_text(self, input: str) -> np.ndarray: ...
+    @overload
+    async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
+    @abc.abstractmethod
+    async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
+        pass
 
 
 class EmbeddingProvider(abc.ABC):
@@ -104,7 +145,9 @@ def create_completion_params(
 
 def rate_limit_repeated[**P, R](
     delay_sec: float = 1, exp_backoff: float = 1.5
-) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
+) -> Callable[
+    [Callable[P, Coroutine[Any, Any, R]]], Callable[P, Coroutine[Any, Any, R]]
+]:
     """Decorator that retries failed API calls with exponential backoff.
 
     Specifically handles RateLimitError and APITimeoutError from OpenAI API.
@@ -117,8 +160,8 @@ def rate_limit_repeated[**P, R](
     """
 
     def decorator(
-        func: Callable[P, Awaitable[R]],
-    ) -> Callable[P, Awaitable[R]]:
+        func: Callable[P, Coroutine[Any, Any, R]],
+    ) -> Callable[P, Coroutine[Any, Any, R]]:
         async def inner(*args: P.args, **kwargs: P.kwargs) -> R:
             retry_count = 0
             while True:
@@ -134,7 +177,7 @@ def rate_limit_repeated[**P, R](
     return decorator
 
 
-class LLMBackend:
+class LLMBackend(LLMBackendBase):
 
     def __init__(
         self,

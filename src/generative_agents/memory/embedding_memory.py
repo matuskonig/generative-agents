@@ -2,7 +2,7 @@ from typing import Callable, Iterable, Sequence
 
 import numpy as np
 
-from ..llm_backend import LLMBackend
+from ..llm_backend import LLMBackendBase
 from .memory_base import MemoryBase, create_memory_filter_predicate
 from .models import (
     MemoryQueryFilter,
@@ -73,7 +73,7 @@ def top_std_count_strategy_factory(
 class EmbeddingMemory(MemoryBase):
     def __init__(
         self,
-        context: LLMBackend,
+        context: LLMBackendBase,
         count_selector: Callable[[Sequence[tuple[float, MemoryRecord]]], int],
         time_weight: float = 1.0,
         time_smoothing: float = 0.7,

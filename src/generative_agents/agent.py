@@ -2,7 +2,7 @@ import logging
 from typing import Callable, Type
 
 from .config import default_config
-from .llm_backend import LLMBackend, ResponseFormatType
+from .llm_backend import LLMBackendBase, ResponseFormatType
 from .memory import MemoryManagerBase
 from .types import AgentModelBase, Conversation, LLMAgentBase, Utterance
 
@@ -11,7 +11,7 @@ class LLMConversationAgent(LLMAgentBase):
     def __init__(
         self,
         data: AgentModelBase,
-        context: LLMBackend,
+        context: LLMBackendBase,
         create_memory_manager: Callable[["LLMConversationAgent"], MemoryManagerBase],
     ) -> None:
         self._data = data
