@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Iterable, Sequence, cast
 
 import numpy as np
 
@@ -120,8 +120,9 @@ class EmbeddingMemory(MemoryBase):
         time_similarity: float = (
             record.timestamp / self.__timestamp
         ) ** self.__time_smoothing
-        cosine_similarity: float = np.dot(record.embedding, query_emb) / (
-            np.linalg.norm(record.embedding) * np.linalg.norm(query_emb)
+        embedding = cast(np.ndarray, record.embedding)
+        cosine_similarity: float = np.dot(embedding, query_emb) / (
+            np.linalg.norm(embedding) * np.linalg.norm(query_emb)
         )
         return (
             self.__time_weight * time_similarity
