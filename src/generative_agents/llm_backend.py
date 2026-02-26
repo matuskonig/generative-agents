@@ -105,7 +105,9 @@ class SentenceTransformerProvider(EmbeddingProvider):
 
     def __init__(self, model_name: str, device: str = "cpu"):
         try:
-            from sentence_transformers import SentenceTransformer
+            from sentence_transformers import (  # type: ignore [import-not-found]
+                SentenceTransformer,
+            )
         except ImportError:
             raise ImportError(
                 "sentence-transformers is not installed. "
