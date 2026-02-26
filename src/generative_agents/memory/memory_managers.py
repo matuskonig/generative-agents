@@ -384,7 +384,8 @@ class RecordRemovalProbSelector(Protocol):
         self, current_timestamp: int, target_memory_record: MemoryRecord
     ) -> float: ...
 
-#TODO: maybe some exponential or something like that ?
+
+# TODO: maybe some exponential or something like that ?
 def get_record_removal_linear_probability(
     max_prob_coef: float,
 ) -> "RecordRemovalProbSelector":
