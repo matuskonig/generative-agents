@@ -385,9 +385,8 @@ class RecordRemovalProbSelector(Protocol):
     ) -> float: ...
 
 
-# TODO: maybe some exponential or something like that ?
 def get_record_removal_linear_probability(
-    max_prob_coef: float,
+    max_prob: float,
 ) -> "RecordRemovalProbSelector":
     """Creates a linear probability function for memory removal.
 
@@ -402,7 +401,7 @@ def get_record_removal_linear_probability(
 
     def inner(current_timestamp: int, target_memory_record: MemoryRecord) -> float:
         linear_prob = 1 - (target_memory_record.timestamp / current_timestamp)
-        return max_prob_coef * linear_prob
+        return max_prob * linear_prob
 
     return inner
 
@@ -637,6 +636,3 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         raise ValueError(
             f"Behavior of type {behavior_cls} not found in memory manager."
         )
-
-
-# TODO: after wrapping up write the tests and set up pipelines
