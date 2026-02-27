@@ -310,7 +310,9 @@ Generate the agent using this schema: {SocietyAgent.model_json_schema()}"""
         extension_node = max(possible_choices, key=lambda n: centrality_mapping[n])
 
         response, single_stats = await generate_single(extension_node)
-        print(f"{len(result_mapping)} / {len(graph.nodes)} agents generated. Using {single_stats.input_tokens} / {single_stats.output_tokens} in {single_stats.time_seconds:.2f} s.")
+        print(
+            f"{len(result_mapping)} / {len(graph.nodes)} agents generated. Using {single_stats.input_tokens} / {single_stats.output_tokens} in {single_stats.time_seconds:.2f} s."
+        )
         result_mapping[extension_node] = response
         stats += single_stats
     return result_mapping, stats
