@@ -15,13 +15,13 @@ class DefaultConfig:
     )
 
     def get_factual_llm_params(self) -> CompletionParams:
-        return create_completion_params(temperature=0.3)
+        return create_completion_params(temperature=0.1, top_p=0.9)
 
     def get_neutral_default_llm_params(self) -> CompletionParams:
         return create_completion_params()
 
     def get_creative_llm_params(self) -> CompletionParams:
-        return create_completion_params(temperature=1.3, frequency_penalty=0.8)
+        return create_completion_params(temperature=0.35, frequency_penalty=0.8)
 
     def get_system_prompt(self) -> str:
         return self.__SYSTEM_PROMPT
@@ -52,6 +52,7 @@ class DefaultConfig:
             "Make it lengthy and detailed, include everything you consider important, as you will not have access to your "
             "characteristics later, you will have only access to this introduction.\n"
             "Reply in style which is authentic to your characteristics and background, everything considered.\n"
+            "Capture everything in the description you have encountered.\n"
         )
 
     def conversation_to_text(self, conversation: Conversation) -> str:
