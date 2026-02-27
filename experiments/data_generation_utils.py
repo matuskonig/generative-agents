@@ -1,9 +1,10 @@
+import time
 from typing import Literal, Mapping
 
 import networkx as nx
 import pydantic
 from openai import AsyncOpenAI
-import time
+
 from generative_agents import AgentModelBase
 from generative_agents.llm_backend import rate_limit_repeated
 
