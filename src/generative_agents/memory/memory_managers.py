@@ -406,7 +406,7 @@ def get_record_removal_linear_probability(
     return inner
 
 
-class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
+class ConversationMemoryForgettingBehavior(CompositeBehaviorFactoryBase):
     """Probabilistic memory forgetting behavior.
 
     Implements forgetting by probabilistically selecting memories for pruning based on
@@ -428,8 +428,8 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
     @classmethod
     def get_impl_type(
         cls,
-    ) -> type["MemoryForgettingBehavior.Impl"]:
-        return MemoryForgettingBehavior.Impl
+    ) -> type["ConversationMemoryForgettingBehavior.Impl"]:
+        return ConversationMemoryForgettingBehavior.Impl
 
     def instantizate(
         self,
@@ -437,8 +437,8 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
-    ) -> "MemoryForgettingBehavior.Impl":
-        return MemoryForgettingBehavior.Impl(
+    ) -> "ConversationMemoryForgettingBehavior.Impl":
+        return ConversationMemoryForgettingBehavior.Impl(
             memory, owner, agent, context, self.get_record_removal_prob, self._seed
         )
 

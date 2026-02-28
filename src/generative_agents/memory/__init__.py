@@ -10,7 +10,7 @@ from .memory_managers import (
     CompositeBehaviorFactoryBase,
     CompositeBehaviorMemoryManager,
     ConversationMemoryUpdatingBehavior,
-    MemoryForgettingBehavior,
+    ConversationMemoryForgettingBehavior,
     MemoryManagerBase,
     UnitaryAgentNoteUpdatingBehavior,
     get_record_removal_linear_probability,
@@ -54,7 +54,7 @@ __all__ = [
     "ConversationMemoryUpdatingBehavior",
     "UnitaryAgentNoteUpdatingBehavior",
     "BDIPlanningBehavior",
-    "MemoryForgettingBehavior",
+    "ConversationMemoryForgettingBehavior",
     "RecordSourceTypeBase",
     "BuildInSourceType",
 ]

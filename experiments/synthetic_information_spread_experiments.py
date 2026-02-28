@@ -32,7 +32,7 @@ from generative_agents import (
     InformationSpreadConversationSelector,
     LLMBackend,
     LLMConversationAgent,
-    MemoryForgettingBehavior,
+    ConversationMemoryForgettingBehavior,
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
     SimpleMemory,
@@ -420,7 +420,7 @@ async def run_experiment(
                     [
                         ConversationMemoryUpdatingBehavior(),
                         BDIPlanningBehavior(),
-                        MemoryForgettingBehavior(
+                        ConversationMemoryForgettingBehavior(
                             get_record_removal_linear_probability(
                                 memory_manager_config["memory_removal_prob"]
                             ),
