@@ -25,6 +25,8 @@ class GenerationStats(pydantic.BaseModel):
 
 
 class SocietyAgent(AgentModelBase):
+    model_config = pydantic.ConfigDict(frozen=True)
+
     first_name: str = pydantic.Field(description="First name")
     last_name: str = pydantic.Field(description="Last name")
     sex: Literal["F", "M"] = pydantic.Field(description="Sex")
