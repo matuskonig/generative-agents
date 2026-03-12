@@ -1,5 +1,7 @@
-import pydantic
 from typing import Literal, Optional
+
+import pydantic
+
 from generative_agents import AgentModelBase
 
 
