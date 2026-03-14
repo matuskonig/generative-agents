@@ -511,8 +511,9 @@ class ConversationMemoryForgettingBehavior(CompositeBehaviorFactoryBase):
 
 
 class ConstantContextBehavior(CompositeBehaviorFactoryBase):
-    def __init__(self, instructions: str):
+    def __init__(self, instructions: str, tag: str = "instructions"):
         self._instructions = instructions
+        self._tag = tag
 
     @classmethod
     def get_impl_type(
@@ -527,11 +528,12 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
         agent: LLMAgentBase,
         context: LLMBackendBase,
     ) -> "ConstantContextBehavior.Impl":
-        return ConstantContextBehavior.Impl(self._instructions)
+        return ConstantContextBehavior.Impl(self._instructions, self._tag)
 
     class Impl(CompositeBehaviorFactoryBase.Impl):
-        def __init__(self, instructions: str):
+        def __init__(self, instructions: str, tag: str):
             self.instructions = instructions
+            self.tag = tag
 
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             pass
@@ -545,7 +547,7 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
             pass
 
         def get_memory_extension_data(self) -> Mapping[str, str] | None:
-            return {"instructions": self.instructions}
+            return {self.tag: self.instructions}
 
 
 def get_memory_string(
