@@ -72,9 +72,7 @@ class TestSequentialConversationSelector:
         list(selector.generate_epoch_pairs())
         list(selector.generate_epoch_pairs())
         selector.reset()
-        first_epoch_after_reset: list[
-            tuple[LLMConversationAgent, LLMConversationAgent]
-        ] = next(iter(selector.generate_epoch_pairs()))
+        first_epoch_after_reset = next(iter(selector.generate_epoch_pairs()))
         assert len(first_epoch_after_reset) == 1
 
 

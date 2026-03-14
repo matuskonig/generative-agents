@@ -7,10 +7,10 @@ from .memory import MemoryManagerBase
 from .types import AgentModelBase, Conversation, LLMAgentBase, Utterance
 
 
-class LLMConversationAgent(LLMAgentBase):
+class LLMConversationAgent[TAgent: AgentModelBase = AgentModelBase](LLMAgentBase):
     def __init__(
         self,
-        data: AgentModelBase,
+        data: TAgent,
         context: LLMBackendBase,
         create_memory_manager: Callable[["LLMConversationAgent"], MemoryManagerBase],
     ) -> None:

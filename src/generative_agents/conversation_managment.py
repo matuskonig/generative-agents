@@ -1,7 +1,7 @@
 import abc
 import asyncio
 import logging
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import networkx as nx
 import numpy as np
@@ -14,7 +14,7 @@ class ConversationSelectorABC(abc.ABC):
     @abc.abstractmethod
     def generate_epoch_pairs(
         self,
-    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         """Each tick of the iterable provides a list of agent pairs, which should have a conversation together.
         Conversations in the single tick are performed concurrently.
         """
@@ -86,7 +86,7 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
 
     def generate_epoch_pairs(
         self,
-    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         # remove agents from the structure during the progression of the algorithm
         structure = self._get_generator_structure()
 
@@ -193,7 +193,7 @@ class ConversationRandomRestrictionAdapter(ConversationSelectorABC):
 
     def generate_epoch_pairs(
         self,
-    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         """Selects a random subset of conversations, controled using probability."""
         for pairs_in_parallel in self.__base_selector.generate_epoch_pairs():
             yield [
@@ -217,7 +217,7 @@ class SequentialConversationSelector(ConversationSelectorABC):
         self,
         structure: "nx.Graph[LLMConversationAgent]",
         seed: np.random.Generator | None = None,
-        initial_conversation: list[
+        initial_conversation: Sequence[
             tuple[LLMConversationAgent, LLMConversationAgent]
         ] = [],
     ):
@@ -233,7 +233,7 @@ class SequentialConversationSelector(ConversationSelectorABC):
 
     def generate_epoch_pairs(
         self,
-    ) -> Iterable[list[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         initialization = (
             self.__initial_conversation if self.__generated_epochs == 0 else []
         )
@@ -250,9 +250,9 @@ class SequentialConversationSelector(ConversationSelectorABC):
             for (first, second) in conversation_pairs
         ]
 
-        total_pairs = initialization + [
-            pair for pair in conversation_pairs if pair not in initialization_set
-        ]
+        total_pairs = list(initialization) + list(
+            [pair for pair in conversation_pairs if pair not in initialization_set]
+        )
         for pair in total_pairs:
             yield [pair]
 
@@ -260,6 +260,26 @@ class SequentialConversationSelector(ConversationSelectorABC):
 
     def reset(self) -> None:
         self.__generated_epochs = 0
+
+
+class FixedConversationSelector(ConversationSelectorABC):
+    """Always returns predefined sequence of conversation pairs."""
+
+    def __init__(
+        self,
+        conversation_pairs: Iterable[
+            Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]
+        ],
+    ):
+        self.__conversation_pairs = list(conversation_pairs)
+
+    def generate_epoch_pairs(
+        self,
+    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+        return self.__conversation_pairs
+
+    def reset(self) -> None:
+        pass
 
 
 INITIAL_GREETING_ACTION = "initial greeting"
