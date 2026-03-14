@@ -9,6 +9,7 @@ from .memory_managers import (
     BDIPlanningBehavior,
     CompositeBehaviorFactoryBase,
     CompositeBehaviorMemoryManager,
+    ConstantContextBehavior,
     ConversationMemoryForgettingBehavior,
     ConversationMemoryUpdatingBehavior,
     MemoryManagerBase,
@@ -57,4 +58,5 @@ __all__ = [
     "ConversationMemoryForgettingBehavior",
     "RecordSourceTypeBase",
     "BuildInSourceType",
+    "ConstantContextBehavior",
 ]
