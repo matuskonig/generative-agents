@@ -21,7 +21,7 @@ class LLMConversationAgent[TAgent: AgentModelBase = AgentModelBase](LLMAgentBase
         self.__intro_message: str | None = None
 
     @property
-    def data(self) -> AgentModelBase:
+    def data(self) -> TAgent:
         return self._data
 
     async def get_agent_introduction_message(self) -> str:
