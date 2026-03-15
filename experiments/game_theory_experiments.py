@@ -29,7 +29,8 @@ def build_prisoners_dilemma_context(with_cheap_talk: bool) -> str:
         "If both betray: you get 2 years, opponent gets 2 years. "
         "You will later be asked to make a decision. Think carefully about your strategy. "
         "In your reasoning, consider the strategies and incentives of both you and the opponent. "
-        "It is okay to be greedy, as you are maximizing your own payoff."
+        "It is okay to be greedy, as you are maximizing your own payoff. "
+        "After the game, you will serve your sencence (if applicable)."
     )
     if with_cheap_talk:
         context += (
@@ -60,7 +61,8 @@ def build_battle_of_sexes_context(
         f"You prefer {preferred_action} over {opponent_action}. "
         f"However, you prefer any coordinated outcome over miscoordinating. "
         f"You will later be asked to make a decision. Think carefully about your strategy. "
-        "In your reasoning, consider the strategies and incentives of both you and the opponent. "
+        "It is okay to be greedy, as you are maximizing your own payoff. "
+        "You will get your payoff right after the game."
         "It is okay to be greedy, as you are maximizing your own payoff."
     )
     if with_cheap_talk:
