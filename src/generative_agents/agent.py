@@ -1,10 +1,14 @@
 import logging
 from typing import Callable, Type
 
+from pydantic import ValidationError
+
 from .config import default_config
 from .llm_backend import LLMBackendBase, ResponseFormatType
 from .memory import MemoryManagerBase
 from .types import AgentModelBase, Conversation, LLMAgentBase, Utterance
+
+NUM_VALIDATION_ATTEMPTS = 3
 
 
 class LLMConversationAgent[TAgent: AgentModelBase = AgentModelBase](LLMAgentBase):
@@ -93,6 +97,7 @@ class LLMConversationAgent[TAgent: AgentModelBase = AgentModelBase](LLMAgentBase
         question: str,
         response_format: Type[ResponseFormatType],
         use_full_memory: bool = True,
+        repeat_on_validation_failure: bool = False,
     ) -> ResponseFormatType:
         memory = (
             self.memory_manager.get_tagged_full_memory()
@@ -106,11 +111,25 @@ class LLMConversationAgent[TAgent: AgentModelBase = AgentModelBase](LLMAgentBase
             question,
             response_format=str(response_format.model_json_schema()),
         )
-        return await self.context.get_structued_response(
-            prompt,
-            response_format=response_format,
-            params=default_config().get_factual_llm_params(),
-        )
+
+        def get_response():
+            return self.context.get_structued_response(
+                prompt,
+                response_format=response_format,
+                params=default_config().get_factual_llm_params(),
+            )
+
+        if repeat_on_validation_failure:
+            for _ in range(NUM_VALIDATION_ATTEMPTS):
+                try:
+                    return await get_response()
+                except (ValidationError, ValueError):
+                    pass
+            raise ValueError(
+                "Failed to get valid structured response after multiple attempts."
+            )
+
+        return await get_response()
 
     async def post_conversation_hook(
         self,
