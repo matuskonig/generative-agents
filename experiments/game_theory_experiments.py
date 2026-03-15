@@ -366,6 +366,276 @@ async def run_battle_of_sexes(
     )
 
 
+# --- Dictatorship & Ultimatum Game Types & Models ---
+
+
+class DictatorshipGameResponse(pydantic.BaseModel):
+    reasoning_notes: str = pydantic.Field(
+        ...,
+        description="Reasoning for the decision",
+    )
+    amount_given: float = pydantic.Field(
+        ...,
+        description="Amount to give to the second player (0-5, will be clamped)",
+    )
+
+
+class UltimatumGameProposeResponse(pydantic.BaseModel):
+    reasoning_notes: str = pydantic.Field(
+        ...,
+        description="Reasoning for the offer",
+    )
+    offer: float = pydantic.Field(
+        ...,
+        description="Amount to offer to the second player (0-5, will be clamped)",
+    )
+
+
+class UltimatumGameRespondResponse(pydantic.BaseModel):
+    reasoning_notes: str = pydantic.Field(
+        ...,
+        description="Reasoning for accept/reject",
+    )
+    decision: Literal["accept", "reject"]
+
+
+class DictatorshipGameSingleResult(pydantic.BaseModel):
+    dictator: SocietyAgent
+    response: DictatorshipGameResponse
+
+
+class UltimatumGameSingleResult(pydantic.BaseModel):
+    proposer: SocietyAgent
+    responder: SocietyAgent
+    propose_response: UltimatumGameProposeResponse
+    respond_response: UltimatumGameRespondResponse
+
+
+class DictatorshipGameResult(pydantic.BaseModel):
+    game_name: str = "dictatorship_game"
+    results: list[DictatorshipGameSingleResult]
+    total_time_seconds: float
+    prompt_tokens: int
+    completion_tokens: int
+    total_tokens: int
+
+
+class UltimatumGameResult(pydantic.BaseModel):
+    game_name: str = "ultimatum_game"
+    results: list[UltimatumGameSingleResult]
+    total_time_seconds: float
+    prompt_tokens: int
+    completion_tokens: int
+    total_tokens: int
+
+
+# --- Dictatorship & Ultimatum Game Context Builders ---
+
+
+def build_dictatorship_game_context(budget: int = 5) -> str:
+    """Build context for Dictatorship game."""
+    return (
+        "You are participating in a Dictatorship game. "
+        f"You have been given ${budget} to split between yourself and another player. "
+        "As the first player (the dictator), you decide how much to give to the second player. "
+        "The second player has no power to accept or reject your decision - they simply receive whatever you give them. "
+        "Both players will be paid the amount they receive in this game. "
+        "You will later be asked to make a decision. Think carefully about your strategy."
+    )
+
+
+def build_ultimatum_game_context(budget: int = 5) -> str:
+    """Build context for Ultimatum game."""
+    return (
+        "You are participating in an Ultimatum game. "
+        f"You have been given ${budget} to split between yourself and another player. "
+        "The first player (the proposer) decides how much to offer to the second player. "
+        "The second player (the responder) can either accept or reject your offer. "
+        "If the responder accepts, the split is executed as proposed. "
+        "If the responder rejects, both players receive $0 - nobody gets anything. "
+        "Both players will be paid the amount they receive in this game. "
+        "You will later be asked to make a decision. Think carefully about your strategy."
+    )
+
+
+# --- Dictatorship & Ultimatum Game Run Functions ---
+
+
+async def run_dictatorship_game(
+    dataset: Dataset,
+    get_context: Callable[[], generative_agents.LLMBackend],
+    seed: np.random.Generator,
+) -> DictatorshipGameResult:
+    """Run Dictatorship game experiment.
+
+    Each agent in the dataset acts as a dictator and decides how much to give.
+
+    Args:
+        dataset: The dataset containing agents
+        get_context: Factory function to create LLM backend
+        seed: Random generator for shuffling agents (unused, kept for API consistency)
+    """
+    agents = list(dataset.agents)
+    seed.shuffle(agents)
+
+    context = get_context()
+
+    base_context = build_dictatorship_game_context()
+    decision_prompt = (
+        "Based on the Dictatorship game description in your context, "
+        "decide how much to give to the second player. "
+        "Provide a number between 0 and 5 (inclusive) representing the amount in $. "
+        "Remember, you will receive the amoutn right after the game. "
+        "Provide your reasoning and final answer."
+    )
+
+    # Build agents
+    behaviors = [
+        generative_agents.ConversationMemoryUpdatingBehavior(),
+        generative_agents.ConstantContextBehavior(base_context),
+    ]
+
+    llm_agents = [get_agent(agent_data, context, behaviors) for agent_data in agents]
+
+    # Query each agent individually
+    responses_promises = [
+        agent.ask_agent_structured(
+            decision_prompt,
+            DictatorshipGameResponse,
+            use_full_memory=True,
+            repeat_on_validation_failure=True,
+        )
+        for agent in llm_agents
+    ]
+    responses = await asyncio.gather(*responses_promises)
+
+    # Clamp amounts to 0-5 range
+    clamped_responses = [
+        DictatorshipGameResponse(
+            reasoning_notes=r.reasoning_notes,
+            amount_given=min(5.0, max(0.0, r.amount_given)),
+        )
+        for r in responses
+    ]
+
+    return DictatorshipGameResult(
+        results=[
+            DictatorshipGameSingleResult(dictator=agent_data, response=response)
+            for agent_data, response in zip(agents, clamped_responses)
+        ],
+        total_time_seconds=context.total_time,
+        prompt_tokens=context.prompt_tokens,
+        completion_tokens=context.completion_tokens,
+        total_tokens=context.prompt_tokens + context.completion_tokens,
+    )
+
+
+async def run_ultimatum_game(
+    dataset: Dataset,
+    get_context: Callable[[], generative_agents.LLMBackend],
+    seed: np.random.Generator,
+    budget: int = 5,
+) -> UltimatumGameResult:
+    """Run Ultimatum game experiment.
+
+    Args:
+        dataset: The dataset containing agents
+        get_context: Factory function to create LLM backend
+        seed: Random generator for shuffling agents
+    """
+    agents = list(dataset.agents)
+    seed.shuffle(agents)
+
+    # Split into two groups and pair them
+    mid = len(agents) // 2
+    first_group = agents[:mid]
+    second_group = agents[mid:]
+    pairs = list(zip(first_group, second_group))
+
+    context = get_context()
+
+    base_context = build_ultimatum_game_context(budget)
+
+    propose_prompt = (
+        "Based on the Ultimatum game description in your context, "
+        "decide how much to offer to the second player. "
+        "Provide a number between 0 and 5 (inclusive) representing the amount in dollars. "
+        "As mentioned, you will receive your payoff right after the game if the responder accepts. "
+        "Provide your reasoning and final answer."
+    )
+
+    respond_prompt_template = (
+        "The proposer has offered you ${offer:.1f} out of 5 dollars. "
+        "Based on the Ultimatum game description in your context, "
+        "decide whether to accept or reject this offer. "
+        "As mentioned, if you accept, you will receive the offered amount at that specific moment and the proposer will receive the remainder. "
+        "Remember: if you reject, both players receive $0 - nobody gets anything. "
+        "Provide your reasoning and final answer."
+    )
+
+    # Build agents
+    behaviors = [
+        generative_agents.ConversationMemoryUpdatingBehavior(),
+        generative_agents.ConstantContextBehavior(base_context),
+    ]
+
+    async def process_pair(
+        proposer_data: SocietyAgent,
+        responder_data: SocietyAgent,
+    ) -> UltimatumGameSingleResult:
+        """Process a single agent pair: get proposal then response."""
+        proposer_agent = get_agent(proposer_data, context, behaviors)
+        responder_agent = get_agent(responder_data, context, behaviors)
+
+        # First: proposer makes an offer
+        propose_response = await proposer_agent.ask_agent_structured(
+            propose_prompt,
+            UltimatumGameProposeResponse,
+            use_full_memory=True,
+            repeat_on_validation_failure=True,
+        )
+
+        # Clamp offer to 0-5 range
+        clamped_offer = min(budget, max(0.0, propose_response.offer))
+
+        # Second: responder decides to accept or reject
+        respond_response = await responder_agent.ask_agent_structured(
+            respond_prompt_template.format(offer=clamped_offer),
+            UltimatumGameRespondResponse,
+            use_full_memory=True,
+            repeat_on_validation_failure=True,
+        )
+        return UltimatumGameSingleResult(
+            proposer=proposer_data,
+            responder=responder_data,
+            propose_response=UltimatumGameProposeResponse(
+                reasoning_notes=propose_response.reasoning_notes,
+                offer=clamped_offer,
+            ),
+            respond_response=respond_response,
+        )
+
+    # Process all pairs in parallel
+    results = await asyncio.gather(
+        *[
+            single_result
+            for first, second in pairs
+            for single_result in (
+                process_pair(first, second),
+                process_pair(second, first),
+            )
+        ]
+    )
+
+    return UltimatumGameResult(
+        results=results,
+        total_time_seconds=context.total_time,
+        prompt_tokens=context.prompt_tokens,
+        completion_tokens=context.completion_tokens,
+        total_tokens=context.prompt_tokens + context.completion_tokens,
+    )
+
+
 async def main():
     seed = np.random.default_rng(42)
 
@@ -427,6 +697,16 @@ async def main():
     )
     with open("./results/battle_of_sexes_cheap_talk.json", "w") as f:
         f.write(battle_of_sexes_cheap_talk.model_dump_json(indent=1))
+
+    print("Running Dictatorship game...")
+    dictatorship_result = await run_dictatorship_game(dataset5, get_context, seed)
+    with open("./results/dictatorship_game.json", "w") as f:
+        f.write(dictatorship_result.model_dump_json(indent=1))
+
+    print("Running Ultimatum game...")
+    ultimatum_result = await run_ultimatum_game(dataset5, get_context, seed)
+    with open("./results/ultimatum_game.json", "w") as f:
+        f.write(ultimatum_result.model_dump_json(indent=1))
 
     print("All experiments completed!")
 

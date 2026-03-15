@@ -112,8 +112,8 @@ class LLMConversationAgent[TAgent: AgentModelBase = AgentModelBase](LLMAgentBase
             response_format=str(response_format.model_json_schema()),
         )
 
-        def get_response():
-            return self.context.get_structued_response(
+        async def get_response() -> ResponseFormatType:
+            return await self.context.get_structued_response(
                 prompt,
                 response_format=response_format,
                 params=default_config().get_factual_llm_params(),
