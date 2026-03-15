@@ -61,6 +61,7 @@ def build_battle_of_sexes_context(
         f"You prefer {preferred_action} over {opponent_action}. "
         f"However, you prefer any coordinated outcome over miscoordinating. "
         f"You will later be asked to make a decision. Think carefully about your strategy. "
+        "In your reasoning, consider the strategies and incentives of both you and the opponent. "
         "It is okay to be greedy, as you are maximizing your own payoff. "
         "You will get your payoff right after the game."
         "It is okay to be greedy, as you are maximizing your own payoff."
