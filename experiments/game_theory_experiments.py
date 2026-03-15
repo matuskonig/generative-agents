@@ -64,7 +64,6 @@ def build_battle_of_sexes_context(
         "In your reasoning, consider the strategies and incentives of both you and the opponent. "
         "It is okay to be greedy, as you are maximizing your own payoff. "
         "You will get your payoff right after the game."
-        "It is okay to be greedy, as you are maximizing your own payoff."
     )
     if with_cheap_talk:
         context += (
