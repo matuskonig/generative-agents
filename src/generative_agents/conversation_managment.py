@@ -1,7 +1,7 @@
 import abc
 import asyncio
 import logging
-from typing import Iterable, Sequence
+from typing import AsyncIterable, Iterable, Sequence
 
 import networkx as nx
 import numpy as np
@@ -12,13 +12,13 @@ from .agent import Conversation, LLMConversationAgent, Utterance, default_config
 class ConversationSelectorABC(abc.ABC):
 
     @abc.abstractmethod
-    def generate_epoch_pairs(
+    async def generate_epoch_pairs(
         self,
-    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> AsyncIterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         """Each tick of the iterable provides a list of agent pairs, which should have a conversation together.
         Conversations in the single tick are performed concurrently.
         """
-        pass
+        yield []
 
     @abc.abstractmethod
     def reset(self) -> None:
@@ -84,9 +84,9 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
         """Structure used as a source for the conversation pairs. Only nodes in the structure are considered for the conversation pairs."""
         pass
 
-    def generate_epoch_pairs(
+    async def generate_epoch_pairs(
         self,
-    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> AsyncIterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         # remove agents from the structure during the progression of the algorithm
         structure = self._get_generator_structure()
 
@@ -191,11 +191,11 @@ class ConversationRandomRestrictionAdapter(ConversationSelectorABC):
         self.__selection_probability = selection_probability
         self.__seed = seed or np.random.default_rng()
 
-    def generate_epoch_pairs(
+    async def generate_epoch_pairs(
         self,
-    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> AsyncIterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         """Selects a random subset of conversations, controled using probability."""
-        for pairs_in_parallel in self.__base_selector.generate_epoch_pairs():
+        async for pairs_in_parallel in self.__base_selector.generate_epoch_pairs():
             yield [
                 pair
                 for pair in pairs_in_parallel
@@ -231,9 +231,9 @@ class SequentialConversationSelector(ConversationSelectorABC):
         self.__initial_conversation = initial_conversation
         self.seed = seed or np.random.default_rng()
 
-    def generate_epoch_pairs(
+    async def generate_epoch_pairs(
         self,
-    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+    ) -> AsyncIterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
         initialization = (
             self.__initial_conversation if self.__generated_epochs == 0 else []
         )
@@ -273,10 +273,11 @@ class FixedConversationSelector(ConversationSelectorABC):
     ):
         self.__conversation_pairs = list(conversation_pairs)
 
-    def generate_epoch_pairs(
+    async def generate_epoch_pairs(
         self,
-    ) -> Iterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
-        return self.__conversation_pairs
+    ) -> AsyncIterable[Sequence[tuple[LLMConversationAgent, LLMConversationAgent]]]:
+        for pairs in self.__conversation_pairs:
+            yield pairs
 
     def reset(self) -> None:
         pass
@@ -347,7 +348,7 @@ class ConversationManager:
         )
 
     async def run_simulation_epoch(self) -> None:
-        for pairs in self.conversation_selector.generate_epoch_pairs():
+        async for pairs in self.conversation_selector.generate_epoch_pairs():
             await asyncio.gather(
                 *[self.__process_conversation_pair(*pair) for pair in pairs]
             )
