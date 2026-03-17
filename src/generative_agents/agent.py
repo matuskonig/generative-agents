@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Type
+from typing import Callable, Generic, Type, TypeVar
 
 from pydantic import ValidationError
 
@@ -10,13 +10,18 @@ from .types import AgentModelBase, Conversation, LLMAgentBase, Utterance
 
 NUM_VALIDATION_ATTEMPTS = 3
 
+TAgent = TypeVar("TAgent", bound=AgentModelBase)
+TMemoryManager = TypeVar("TMemoryManager", bound=MemoryManagerBase)
 
-class LLMConversationAgent[TAgent: AgentModelBase = AgentModelBase](LLMAgentBase):
+
+class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
     def __init__(
         self,
         data: TAgent,
         context: LLMBackendBase,
-        create_memory_manager: Callable[["LLMConversationAgent"], MemoryManagerBase],
+        create_memory_manager: Callable[
+            ["LLMConversationAgent[TAgent, TMemoryManager]"], TMemoryManager
+        ],
     ) -> None:
         self._data = data
         self.context = context
