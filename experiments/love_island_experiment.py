@@ -1,8 +1,8 @@
-import abc
 import asyncio
 import enum
 import logging
 import os
+import time
 from collections.abc import AsyncIterator
 from typing import Literal, Sequence
 
@@ -24,6 +24,14 @@ NUMBER_OF_CONVERSATIONS_BETWEEN_RECOUPLINGS = 4
 PARTNER_SELECTION_BONUS = 0.2
 
 
+class ExperimentMetrics(pydantic.BaseModel):
+    wallclock_time_seconds: float
+    input_tokens: int
+    output_tokens: int
+    api_time_seconds: float
+    total_requests: int
+
+
 class EpochResult(pydantic.BaseModel):
     epoch: int
     agent_preferences: dict[str, dict[str, float]]
@@ -36,6 +44,7 @@ class LoveIslandExperimentResults(pydantic.BaseModel):
     agents: list[LoveIslandPerson]
     finale_pairs: list[tuple[str, str]]
     epoch_results: list[EpochResult]
+    metrics: ExperimentMetrics
 
 
 Agent = generative_agents.LLMConversationAgent[
@@ -396,7 +405,9 @@ async def main():
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
-        embedding_provider=None,
+        embedding_provider=generative_agents.OpenAIEmbeddingProvider(
+            client, model=os.getenv("OPENAI_EMBEDDINGS_MODEL")  # type: ignore
+        ),
     )
 
     finale_pairs = [
@@ -443,6 +454,9 @@ async def main():
     # List to store results from each epoch
     epoch_results_list: list[EpochResult] = []
 
+    # Start wallclock timing
+    experiment_start_time = time.time()
+
     for epoch in range(EPOCH_COUNT):
         # Let the agents converse
         await conversation_manager.run_simulation_epoch()
@@ -464,7 +478,6 @@ async def main():
             agent.data.id: reasoning
             for agent, (_, reasoning) in zip(all_agents, update_responses)
         }
-        agent_partners: dict[str, str | None] = {}
         partner_reasoning: dict[str, str] = {}
 
         # Perform recoupling sequentially and collect reasoning
@@ -474,7 +487,6 @@ async def main():
         for picker in pickers:
             partner_id, reasoning = await update_partner(picker, possible_targets)
 
-            agent_partners[picker.data.id] = partner_id
             partner_reasoning[picker.data.id] = reasoning
 
             # Remove the selected partner from the list of possible partners for the next pickers
@@ -489,17 +501,29 @@ async def main():
             EpochResult(
                 epoch=epoch,
                 agent_preferences=agent_preferences,
-                agent_partners=agent_partners,
+                agent_partners={
+                    agent.data.id: agent.memory_manager.get_behavior(
+                        LoveIslandBehavior.Impl
+                    ).current_partner
+                    for agent in all_agents
+                },
                 partner_reasoning=partner_reasoning,
                 preferences_reasoning=preferences_reasoning,
             )
         )
 
-    # Build final results
+    metrics = ExperimentMetrics(
+        wallclock_time_seconds=time.time() - experiment_start_time,
+        input_tokens=context.prompt_tokens,
+        output_tokens=context.completion_tokens,
+        api_time_seconds=context.total_time,
+        total_requests=context.total_requests,
+    )
     experiment_results = LoveIslandExperimentResults(
         agents=persons,
         finale_pairs=[(p1.id, p2.id) for p1, p2 in finale_pairs],
         epoch_results=epoch_results_list,
+        metrics=metrics,
     )
 
     # Save results to JSON
