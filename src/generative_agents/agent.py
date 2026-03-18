@@ -10,8 +10,10 @@ from .types import AgentModelBase, Conversation, LLMAgentBase, Utterance
 
 NUM_VALIDATION_ATTEMPTS = 3
 
-TAgent = TypeVar("TAgent", bound=AgentModelBase)
-TMemoryManager = TypeVar("TMemoryManager", bound=MemoryManagerBase)
+TAgent = TypeVar("TAgent", bound=AgentModelBase, default=AgentModelBase, covariant=True)
+TMemoryManager = TypeVar(
+    "TMemoryManager", bound=MemoryManagerBase, default=MemoryManagerBase, covariant=True
+)
 
 
 class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):

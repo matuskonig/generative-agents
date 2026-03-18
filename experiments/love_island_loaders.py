@@ -35,13 +35,3 @@ dataset_adapter = pydantic.TypeAdapter(list[LoveIslandPerson])
 
 class LoveIslandResult(pydantic.BaseModel):
     final_couples: list[tuple[str, str]]
-
-
-def load_persons(language: Literal["en", "cz"]) -> list[LoveIslandPerson]:
-    with open(f"../data/love_island/persons_{language}.json", "r") as f:
-        return dataset_adapter.validate_json(f.read())
-
-
-def load_results():
-    with open(f"../data/love_island/results.json", "r") as f:
-        return LoveIslandResult.model_validate_json(f.read())
