@@ -83,6 +83,8 @@ def get_agent(
                     f"Be open and honest about yourself - share your hobbies, interests, and personality with others. "
                     f"Get to know the other contestants by having genuine conversations. "
                     f"Be yourself and don't pretend to be someone you're not."
+                    f"Use English in conversations regardless of the language in which you were introduced to the experiment. "
+                    f"You can be critical of other contestants, you dont hahe to be always positive. "
                 ),
                 LoveIslandBehavior(opposite_sex_ids),
             ],
@@ -183,8 +185,9 @@ def shift_arr[T](arr: list[T], n: int) -> list[T]:
     return arr[n:] + arr[:n]
 
 
-def softmax(x: np.ndarray) -> np.ndarray:
-    e_x = np.exp(x - np.max(x))
+def softmax(x: np.ndarray, temperature: float = 1.0) -> np.ndarray:
+    x_with_temperature = x / temperature
+    e_x = np.exp(x_with_temperature - np.max(x_with_temperature))
     return e_x / e_x.sum()
 
 
@@ -219,6 +222,8 @@ Think about:
 - Your conversations with them
 - Physical attraction (if applicable)
 - Compatibility and shared interests
+- Think about long-term compatibility vs. just physical attraction, consider their hobbies, occupation and location as well
+- Base your decision on the current preferences
 
 Provide your reasoning for your preferences.""",
         PreferenceModel,
@@ -253,7 +258,8 @@ Think carefully about your choice:
 - Have you found someone you're really sure about? If yes, this is the time to commit!
 - If you're not sure yet, you might want to keep your options open
 - Consider who you've connected with the most
-- Think about long-term compatibility vs. just physical attraction
+- Think about long-term compatibility vs. just physical attraction, consider their hobbies, occupation and location as well
+- Base your decision on the current preferences
 
 Are you ready to settle down with one person, or do you want to explore more connections?
 
@@ -344,7 +350,10 @@ class LoveIslandConversationSelector(generative_agents.ConversationSelectorABC):
                     assert preferences is not None
 
                     remaining_targets_preferences = softmax(
+                        # Preferences are in 0-100 range
                         np.array([preferences[target.data.id] for target in targets])
+                        / 100,
+                        temperature=1,
                     )
 
                     # Increase preference for the current partner by a constant probability
@@ -458,6 +467,7 @@ async def main():
     experiment_start_time = time.time()
 
     for epoch in range(EPOCH_COUNT):
+        print(f"Starting epoch {epoch + 1}/{EPOCH_COUNT}...")
         # Let the agents converse
         await conversation_manager.run_simulation_epoch()
         conversation_manager.max_conversation_utterances = UTTERANCES_COUNT_NORMAL
