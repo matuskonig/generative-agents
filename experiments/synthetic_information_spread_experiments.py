@@ -10,7 +10,7 @@ import asyncio
 import logging
 import os
 import time
-from typing import Awaitable, Literal, TypedDict, Union
+from typing import Awaitable, Callable, Literal, TypedDict, Union
 
 import dotenv
 import httpx
@@ -106,6 +106,9 @@ MemoryManagerConfig = Union[
     BDIPLanningOnlyManagerType,
     BDIForgettingOnlyManagerType,
 ]
+
+EXPERIMENT_MAX_UTTERANCES = 16
+EXPERIMENT_EPOCHS = 20
 
 
 # =============================================================================
@@ -404,7 +407,7 @@ Respond using this JSON format: {response_format}"""
 
 
 async def run_experiment(
-    context: LLMBackend,
+    get_context: Callable[[], LLMBackend],
     dataset: Dataset,
     logger: logging.Logger,
     experiment_name: str,
@@ -423,7 +426,7 @@ async def run_experiment(
     """Run a single experiment with the given configuration.
 
     Args:
-        context: LLM backend for generating responses
+        get_context: LLM backend for generating responses
         dataset: Dataset containing agents and social network structure
         logger: Logger for experiment output
         experiment_name: Name identifier for the experiment
@@ -438,6 +441,7 @@ async def run_experiment(
     Returns:
         ExperimentResult containing all experiment metrics and responses
     """
+    context = get_context()
     seed_rng = np.random.default_rng(seed)
 
     start_time = time.time()
@@ -670,12 +674,13 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         )
     )
 
-    context = LLMBackend(
-        client=client,
-        model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
-        RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
-        embedding_provider=embedding_provider,
-    )
+    def get_context() -> LLMBackend:
+        return LLMBackend(
+            client=client,
+            model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
+            RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
+            embedding_provider=embedding_provider,
+        )
 
     # Shared configs
     baseline_mem_mgr = BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5)
@@ -705,7 +710,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/A1_baseline_5.log", level=logging.DEBUG
@@ -716,8 +721,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/A1_baseline_5.json",
             )
@@ -728,7 +733,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset5,
                         logger=get_xml_file_logger(
                             "./logs/A2_baseline_5_redprompt.log", level=logging.DEBUG
@@ -739,8 +744,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     "./results/A2_baseline_5_redprompt.json",
                 )
@@ -750,7 +755,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/A3_simple_no_bdi_5.log", level=logging.DEBUG
@@ -761,8 +766,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/A3_simple_no_bdi_5.json",
             )
@@ -773,7 +778,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset5,
                         logger=get_xml_file_logger(
                             "./logs/A4_simple_no_bdi_5_red.log", level=logging.DEBUG
@@ -784,8 +789,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     "./results/A4_simple_no_bdi_5_red.json",
                 )
@@ -795,7 +800,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/A5_baseline_10.log", level=logging.DEBUG
@@ -806,8 +811,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/A5_baseline_10.json",
             )
@@ -818,7 +823,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset10,
                         logger=get_xml_file_logger(
                             "./logs/A6_baseline_10_redprompt.log", level=logging.DEBUG
@@ -829,8 +834,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     "./results/A6_baseline_10_redprompt.json",
                 )
@@ -840,7 +845,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/A7_simple_no_bdi_10.log", level=logging.DEBUG
@@ -851,8 +856,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/A7_simple_no_bdi_10.json",
             )
@@ -863,7 +868,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset10,
                         logger=get_xml_file_logger(
                             "./logs/A8_simple_no_bdi_10_red.log", level=logging.DEBUG
@@ -874,8 +879,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     "./results/A8_simple_no_bdi_10_red.json",
                 )
@@ -886,7 +891,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/B1_unitary_5.log", level=logging.DEBUG
@@ -897,8 +902,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=UpdaterBehaviorType(behavior_type="unitary"),
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/B1_unitary_5.json",
             )
@@ -908,7 +913,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/B2_classical_5.log", level=logging.DEBUG
@@ -919,8 +924,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/B2_classical_5.json",
             )
@@ -930,7 +935,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/B4_unitary_10.log", level=logging.DEBUG
@@ -941,8 +946,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=UpdaterBehaviorType(behavior_type="unitary"),
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/B4_unitary_10.json",
             )
@@ -952,7 +957,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/B5_classical_10.log", level=logging.DEBUG
@@ -963,8 +968,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/B5_classical_10.json",
             )
@@ -975,7 +980,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/C1_no_bdi_5.log", level=logging.DEBUG
@@ -988,8 +993,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/C1_no_bdi_5.json",
             )
@@ -999,7 +1004,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/C2_no_forget_5.log", level=logging.DEBUG
@@ -1012,8 +1017,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/C2_no_forget_5.json",
             )
@@ -1023,7 +1028,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/C3_simple_mem_5.log", level=logging.DEBUG
@@ -1034,8 +1039,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/C3_simple_mem_5.json",
             )
@@ -1045,7 +1050,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/C4_no_bdi_10.log", level=logging.DEBUG
@@ -1058,8 +1063,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/C4_no_bdi_10.json",
             )
@@ -1069,7 +1074,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/C5_no_forget_10.log", level=logging.DEBUG
@@ -1082,8 +1087,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/C5_no_forget_10.json",
             )
@@ -1093,7 +1098,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/C6_simple_mem_10.log", level=logging.DEBUG
@@ -1104,8 +1109,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/C6_simple_mem_10.json",
             )
@@ -1117,7 +1122,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset5,
                         logger=get_xml_file_logger(
                             f"./logs/D{idx}_topk_{val}_5.log", level=logging.DEBUG
@@ -1130,8 +1135,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     f"./results/D{idx}_topk_{val}_5.json",
                 )
@@ -1142,7 +1147,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset5,
                         logger=get_xml_file_logger(
                             f"./logs/D{idx}_meanstd_{val}_5.log", level=logging.DEBUG
@@ -1155,8 +1160,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     f"./results/D{idx}_meanstd_{val}_5.json",
                 )
@@ -1167,7 +1172,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset5,
                         logger=get_xml_file_logger(
                             f"./logs/D{idx}_topstd_{val}_5.log", level=logging.DEBUG
@@ -1180,8 +1185,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     f"./results/D{idx}_topstd_{val}_5.json",
                 )
@@ -1192,7 +1197,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset10,
                         logger=get_xml_file_logger(
                             f"./logs/D{idx}_topk_{val}_10.log", level=logging.DEBUG
@@ -1205,8 +1210,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     f"./results/D{idx}_topk_{val}_10.json",
                 )
@@ -1217,7 +1222,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset10,
                         logger=get_xml_file_logger(
                             f"./logs/D{idx}_meanstd_{val}_10.log", level=logging.DEBUG
@@ -1230,8 +1235,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     f"./results/D{idx}_meanstd_{val}_10.json",
                 )
@@ -1242,7 +1247,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset10,
                         logger=get_xml_file_logger(
                             f"./logs/D{idx}_topstd_{val}_10.log", level=logging.DEBUG
@@ -1255,8 +1260,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                         conversation_selector_type="information_spread",
                         updater_behavior_type=baseline_updater,
                         seed=42,
-                        max_utterances=16,
-                        epochs=20,
+                        max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                        epochs=EXPERIMENT_EPOCHS,
                     ),
                     f"./results/D{idx}_topstd_{val}_10.json",
                 )
@@ -1275,7 +1280,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset5,
                         logger=get_xml_file_logger(
                             f"./logs/E{idx}_{epochs_val}e_{utt_val}u_5.log",
@@ -1297,7 +1302,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             tg.create_task(
                 run_and_save(
                     run_experiment(
-                        context=context,
+                        get_context=get_context,
                         dataset=dataset10,
                         logger=get_xml_file_logger(
                             f"./logs/E{5+idx}_{epochs_val}e_{utt_val}u_10.log",
@@ -1321,7 +1326,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/F1_fp_10.log", level=logging.DEBUG
@@ -1332,8 +1337,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="full_parallel",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/F1_fp_10.json",
             )
@@ -1343,7 +1348,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/F2_is_10.log", level=logging.DEBUG
@@ -1354,8 +1359,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/F2_is_10.json",
             )
@@ -1366,7 +1371,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset5,
                     logger=get_xml_file_logger(
                         "./logs/G1_full_forgetting_5.log", level=logging.DEBUG
@@ -1379,8 +1384,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/G1_full_forgetting_5.json",
             )
@@ -1390,7 +1395,7 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
         tg.create_task(
             run_and_save(
                 run_experiment(
-                    context=context,
+                    get_context=get_context,
                     dataset=dataset10,
                     logger=get_xml_file_logger(
                         "./logs/G2_full_forgetting_10.log", level=logging.DEBUG
@@ -1403,8 +1408,8 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
                     conversation_selector_type="information_spread",
                     updater_behavior_type=baseline_updater,
                     seed=42,
-                    max_utterances=16,
-                    epochs=20,
+                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
+                    epochs=EXPERIMENT_EPOCHS,
                 ),
                 "./results/G2_full_forgetting_10.json",
             )
@@ -1431,7 +1436,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--embedding_batch_size",
         type=int,
-        default=128,
+        default=32,
         help="Batch size for local embedding generation (default: 128)",
     )
     args = parser.parse_args()
