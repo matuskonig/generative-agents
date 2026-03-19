@@ -627,7 +627,7 @@ Answer positively even if you have received this information partially or indire
 # =============================================================================
 
 
-async def main(concurrency: int = 4):
+async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings: bool):
     """Run all experiments for the information spread study.
 
     Args:
@@ -655,14 +655,26 @@ async def main(concurrency: int = 4):
             limits=httpx.Limits(max_connections=1000, max_keepalive_connections=20),
         ),
     )
+
+    embedding_provider = (
+        SentenceTransformerProvider(
+            "BAAI/bge-m3",
+            device="cuda",
+            batch_size=embedding_batch_size,
+            model_kwargs={"torch_dtype": "bfloat16"},
+        )
+        if use_local_embeddings
+        else OpenAIEmbeddingProvider(
+            client=client,
+            model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),  # type: ignore
+        )
+    )
+
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
-        embedding_provider=OpenAIEmbeddingProvider(
-            client=client,
-            model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),  # type: ignore
-        ),
+        embedding_provider=embedding_provider,
     )
 
     # Shared configs
@@ -1408,9 +1420,27 @@ if __name__ == "__main__":
     parser.add_argument(
         "--concurrency",
         type=int,
+        required=True,
         help="Number of parallel experiments (default: 1)",
+    )
+    parser.add_argument(
+        "--use_local_embeddings",
+        action="store_true",
+        help="Whether to use local sentence transformer embeddings instead of OpenAI embeddings",
+    )
+    parser.add_argument(
+        "--embedding_batch_size",
+        type=int,
+        default=128,
+        help="Batch size for local embedding generation (default: 128)",
     )
     args = parser.parse_args()
 
     dotenv.load_dotenv()
-    asyncio.run(main(concurrency=args.concurrency))
+    asyncio.run(
+        main(
+            concurrency=args.concurrency,
+            embedding_batch_size=args.embedding_batch_size,
+            use_local_embeddings=args.use_local_embeddings,
+        )
+    )
