@@ -103,8 +103,13 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
 class SentenceTransformerProvider(EmbeddingProvider):
     """Local SentenceTransformer embeddings."""
 
-    # TODO: add support for float16
-    def __init__(self, model_name: str, device: str = "cpu"):
+    def __init__(
+        self,
+        model_name: str,
+        device: str = "cpu",
+        batch_size: int = 32,
+        model_kwargs: dict[str, Any] | None = None,
+    ):
         try:
             from sentence_transformers import (  # type: ignore [import-not-found]
                 SentenceTransformer,
@@ -114,10 +119,15 @@ class SentenceTransformerProvider(EmbeddingProvider):
                 "sentence-transformers is not installed. "
                 "Please install it with: pip install sentence-transformers or as part of optional project dependencies [embedding]"
             )
-        self.__model = SentenceTransformer(model_name, device=device)
+        self.__model = SentenceTransformer(
+            model_name, device=device, model_kwargs=model_kwargs
+        )
+        self.__batch_size = batch_size
 
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]:
-        result = self.__model.encode(input, convert_to_numpy=True)
+        result = self.__model.encode(
+            input, batch_size=self.__batch_size, convert_to_numpy=True
+        )
         return list(result)
 
 
