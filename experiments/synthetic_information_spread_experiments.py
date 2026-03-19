@@ -5,10 +5,12 @@ agent-based social networks, testing how information spreads from seed agents
 to other agents through conversations.
 """
 
+import argparse
 import asyncio
 import logging
 import os
-from typing import Literal, TypedDict
+import time
+from typing import Awaitable, Literal, TypedDict, Union
 
 import dotenv
 import httpx
@@ -35,13 +37,19 @@ from generative_agents import (
     LLMConversationAgent,
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
+    SequentialConversationSelector,
     SimpleMemory,
+    UnitaryAgentNoteUpdatingBehavior,
     default_config,
     fixed_count_strategy_factory,
     get_record_removal_linear_probability,
     mean_std_count_strategy_factory,
     top_std_count_strategy_factory,
 )
+
+# =============================================================================
+# Configuration TypedDicts
+# =============================================================================
 
 
 class BDIMemoryManagerType(TypedDict):
@@ -55,6 +63,20 @@ class SimpleMemoryManagerType(TypedDict):
     """Configuration for simple memory management without BDI or forgetting."""
 
     manager_type: Literal["simple"]
+
+
+class BDIPLanningOnlyManagerType(TypedDict):
+    """BDI with planning only, no forgetting."""
+
+    manager_type: Literal["bdi_planning_only"]
+    memory_removal_prob: float
+
+
+class BDIForgettingOnlyManagerType(TypedDict):
+    """BDI with forgetting only, no planning behavior."""
+
+    manager_type: Literal["forgetting_only"]
+    memory_removal_prob: float
 
 
 class SimpleMemoryType(TypedDict):
@@ -71,6 +93,26 @@ class EmbeddingMemoryType(TypedDict):
     value: int | float
 
 
+class UpdaterBehaviorType(TypedDict):
+    """Configuration for updating behavior type."""
+
+    behavior_type: Literal["classical"] | Literal["unitary"]
+
+
+# Union type for all memory manager configs
+MemoryManagerConfig = Union[
+    BDIMemoryManagerType,
+    SimpleMemoryManagerType,
+    BDIPLanningOnlyManagerType,
+    BDIForgettingOnlyManagerType,
+]
+
+
+# =============================================================================
+# Pydantic Models
+# =============================================================================
+
+
 class QuestionAnswer(BaseModel):
     """Response model for agent question answering about information received."""
 
@@ -83,20 +125,28 @@ class ExperimentResult(BaseModel):
 
     dataset: Dataset
     experiment_name: str
-    memory_manager_config: BDIMemoryManagerType | SimpleMemoryManagerType
+    memory_manager_config: MemoryManagerConfig
     memory_config: SimpleMemoryType | EmbeddingMemoryType
-    conversation_selector_type: Literal["information_spread", "full_parallel"]
+    conversation_selector_type: Literal[
+        "information_spread", "full_parallel", "sequential"
+    ]
+    updater_behavior_type: UpdaterBehaviorType
     seed: int
     max_utterances: int
     epochs: int
     total_time: float
+    wallclock_time: float
     completion_tokens: int
     prompt_tokens: int
     total_requests: int
     epoch_agents_responses: list[list[QuestionAnswer]]
 
 
-# Configuration class with modified prompts for reduced information spread experiments
+# =============================================================================
+# Config Classes
+# =============================================================================
+
+
 class ReducedInformationSpreadConfig(DefaultConfig):
     """Configuration with simplified prompts to test information spread with reduced prompting."""
 
@@ -348,20 +398,28 @@ Respond using this JSON format: {response_format}"""
         return base_prompt
 
 
+# =============================================================================
+# Experiment Runner
+# =============================================================================
+
+
 async def run_experiment(
     context: LLMBackend,
     dataset: Dataset,
     logger: logging.Logger,
     experiment_name: str,
-    memory_manager_config: BDIMemoryManagerType | SimpleMemoryManagerType,
+    memory_manager_config: MemoryManagerConfig,
     memory_config: SimpleMemoryType | EmbeddingMemoryType,
     conversation_selector_type: Literal[
-        "information_spread", "full_parallel"
+        "information_spread", "full_parallel", "sequential"
     ] = "information_spread",
-    seed=42,
-    max_utterances=12,
-    epochs=5,
-):
+    updater_behavior_type: UpdaterBehaviorType = UpdaterBehaviorType(
+        behavior_type="classical"
+    ),
+    seed: int = 42,
+    max_utterances: int = 12,
+    epochs: int = 5,
+) -> ExperimentResult:
     """Run a single experiment with the given configuration.
 
     Args:
@@ -369,9 +427,10 @@ async def run_experiment(
         dataset: Dataset containing agents and social network structure
         logger: Logger for experiment output
         experiment_name: Name identifier for the experiment
-        memory_manager_config: Configuration for memory management (BDI or simple)
+        memory_manager_config: Configuration for memory management
         memory_config: Configuration for memory type (simple or embedding)
-        conversation_selector_type: How conversations are selected (information_spread or full_parallel)
+        conversation_selector_type: How conversations are selected
+        updater_behavior_type: Type of memory updating behavior (classical or unitary)
         seed: Random seed for reproducibility
         max_utterances: Maximum turns per conversation
         epochs: Number of conversation epochs to run
@@ -381,8 +440,17 @@ async def run_experiment(
     """
     seed_rng = np.random.default_rng(seed)
 
+    start_time = time.time()
+
+    def get_updater_behavior():
+        """Get the memory updater behavior based on configuration."""
+        if updater_behavior_type["behavior_type"] == "unitary":
+            return UnitaryAgentNoteUpdatingBehavior()
+        return ConversationMemoryUpdatingBehavior()
+
     def get_agent_memory_manager(agent: LLMConversationAgent):
         """Create memory manager based on configuration."""
+        # Create memory based on type
         match memory_config["memory_type"]:
             case "simple":
                 memory = SimpleMemory()
@@ -402,15 +470,14 @@ async def run_experiment(
                         )
                 memory = EmbeddingMemory(context, count_selector)
 
+        # Create manager based on type
         match memory_manager_config["manager_type"]:
             case "simple":
                 return CompositeBehaviorMemoryManager(
                     memory,
                     agent,
                     context,
-                    [
-                        ConversationMemoryUpdatingBehavior(),
-                    ],
+                    [ConversationMemoryUpdatingBehavior()],
                 )
             case "bdi":
                 return CompositeBehaviorMemoryManager(
@@ -418,8 +485,33 @@ async def run_experiment(
                     agent,
                     context,
                     [
-                        ConversationMemoryUpdatingBehavior(),
+                        get_updater_behavior(),
                         BDIPlanningBehavior(),
+                        ConversationMemoryForgettingBehavior(
+                            get_record_removal_linear_probability(
+                                memory_manager_config["memory_removal_prob"]
+                            ),
+                            seed=seed_rng,
+                        ),
+                    ],
+                )
+            case "bdi_planning_only":
+                return CompositeBehaviorMemoryManager(
+                    memory,
+                    agent,
+                    context,
+                    [
+                        get_updater_behavior(),
+                        BDIPlanningBehavior(),
+                    ],
+                )
+            case "forgetting_only":
+                return CompositeBehaviorMemoryManager(
+                    memory,
+                    agent,
+                    context,
+                    [
+                        get_updater_behavior(),
                         ConversationMemoryForgettingBehavior(
                             get_record_removal_linear_probability(
                                 memory_manager_config["memory_removal_prob"]
@@ -462,6 +554,11 @@ async def run_experiment(
                 structure=structure_graph,
                 seed=np.random.default_rng(seed),
             )
+        case "sequential":
+            conversation_selector = SequentialConversationSelector(
+                structure=structure_graph,
+                seed=np.random.default_rng(seed),
+            )
 
     manager = ConversationManager(
         conversation_selector=conversation_selector,
@@ -472,9 +569,8 @@ async def run_experiment(
     epoch_responses: list[list[QuestionAnswer]] = []
 
     for epoch in range(epochs):
-        print(f"Running epoch {epoch + 1}/{epochs}...")
+        print(f"[{experiment_name}]: Running epoch {epoch + 1}/{epochs}...")
         await manager.run_simulation_epoch()
-        print(f"Epoch {epoch + 1} completed.")
         # Query all agents about whether they received the information
         agent_responses = await asyncio.gather(
             *[
@@ -491,38 +587,32 @@ Answer positively even if you have received this information partially or indire
                 for agent in agents
             ]
         )
-        print(f"Epoch {epoch + 1} collected responses.")
         epoch_responses.append(agent_responses)
 
     manager.reset_epochs()
-
-    # Print usage statistics
-    print()
-    print("Usage statistics")
-    print(f"Total time: {context.total_time:.02f} s")
-    print(f"Completion tokens: {context.completion_tokens}")
-    print(f"Prompt tokens: {context.prompt_tokens}")
-    print(f"Tokens per second: {context.completion_tokens / context.total_time:.2f}")
-    print(
-        f"Total requests: {context.total_requests}, avg input: {context.prompt_tokens/context.total_requests}, avt output: {context.completion_tokens/context.total_requests}"
-    )
-    print(f"Avg time per request: {context.total_time/context.total_requests}")
 
     # Log final memory state for each agent
     for agent in agents:
         logger.debug(
             agent.data.full_name,
-            extra={"memory": agent.memory_manager.get_tagged_full_memory()},
+            extra={
+                "memory": agent.memory_manager.get_tagged_full_memory(
+                    with_full_memory_record=True
+                )
+            },
         )
+
     experiment_result = ExperimentResult(
         dataset=dataset,
         experiment_name=experiment_name,
         memory_manager_config=memory_manager_config,
         memory_config=memory_config,
         conversation_selector_type=conversation_selector_type,
+        updater_behavior_type=updater_behavior_type,
         seed=seed,
         max_utterances=max_utterances,
         epochs=epochs,
+        wallclock_time=time.time() - start_time,
         total_time=context.total_time,
         completion_tokens=context.completion_tokens,
         prompt_tokens=context.prompt_tokens,
@@ -532,21 +622,29 @@ Answer positively even if you have received this information partially or indire
     return experiment_result
 
 
-async def main():
+# =============================================================================
+# Main Experiment Suite
+# =============================================================================
+
+
+async def main(concurrency: int = 4):
+    """Run all experiments for the information spread study.
+
+    Args:
+        concurrency: Number of experiments to run in parallel (default: 1 = sequential)
+    """
     if not os.path.exists("./logs"):
         os.makedirs("./logs")
+    if not os.path.exists("./results"):
+        os.makedirs("./results")
 
+    # Load datasets
     with open("./data/synthetic_5.json", "r") as f:
         dataset5 = Dataset.model_validate_json(f.read())
     with open("./data/synthetic_10.json", "r") as f:
         dataset10 = Dataset.model_validate_json(f.read())
-    with open("./data/synthetic_25.json", "r") as f:
-        dataset25 = Dataset.model_validate_json(f.read())
-    with open("./data/synthetic_50.json", "r") as f:
-        dataset50 = Dataset.model_validate_json(f.read())
-    with open("./data/synthetic_100.json", "r") as f:
-        dataset100 = Dataset.model_validate_json(f.read())
 
+    # Setup client
     api_key = os.getenv("OPENAI_API_KEY") or None
     client = AsyncOpenAI(
         base_url=os.getenv("OPENAI_BASE_URL"),
@@ -557,7 +655,6 @@ async def main():
             limits=httpx.Limits(max_connections=1000, max_keepalive_connections=20),
         ),
     )
-    # Create LLM backend for generating responses
     context = LLMBackend(
         client=client,
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
@@ -568,113 +665,752 @@ async def main():
         ),
     )
 
-    if not os.path.exists("./results"):
-        os.makedirs("./results")
-
-    # Run experiment with 5 agents, BDI memory, embedding memory, information spread selector
-    result5 = await run_experiment(
-        context,
-        dataset5,
-        get_xml_file_logger("./logs/synthetic_5_bdi_is.log", level=logging.DEBUG),
-        "synthetic_5_bdi_is",
-        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
-        EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
-        conversation_selector_type="information_spread",
-        seed=42,
-        max_utterances=16,
-        epochs=20,
+    # Shared configs
+    baseline_mem_mgr = BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5)
+    baseline_mem = EmbeddingMemoryType(
+        memory_type="embedding", strategy="mean_std", value=0.5
     )
-    with open("./results/synthetic_5_bdi_is.json", "w") as f:
-        f.write(result5.model_dump_json(indent=1))
+    baseline_updater = UpdaterBehaviorType(behavior_type="classical")
 
-    # Same as result5, but with half the utterances and epochs
-    result5_reduced = await run_experiment(
-        context,
-        dataset5,
-        get_xml_file_logger(
-            "./logs/synthetic_5_bdi_is_reduced.log", level=logging.DEBUG
-        ),
-        "synthetic_5_bdi_is_reduced",
-        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
-        EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
-        conversation_selector_type="information_spread",
-        seed=42,
-        max_utterances=8,  # Half of 16
-        epochs=10,  # Half of 20
-    )
-    with open("./results/synthetic_5_bdi_is_reduced.json", "w") as f:
-        f.write(result5_reduced.model_dump_json(indent=1))
+    simple_mem_mgr = SimpleMemoryManagerType(manager_type="simple")
+    simple_mem = SimpleMemoryType(memory_type="simple")
 
-    # Same as result5, but with simple memory (no embeddings)
-    result5_simple = await run_experiment(
-        context,
-        dataset5,
-        get_xml_file_logger(
-            "./logs/synthetic_5_bdi_is_simple.log", level=logging.DEBUG
-        ),
-        "synthetic_5_bdi_is_simple",
-        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
-        SimpleMemoryType(memory_type="simple"),
-        conversation_selector_type="information_spread",
-        seed=42,
-        max_utterances=16,
-        epochs=20,
-    )
-    with open("./results/synthetic_5_bdi_is_simple.json", "w") as f:
-        f.write(result5_simple.model_dump_json(indent=1))
+    semaphore = asyncio.Semaphore(concurrency)
 
-    # Same as result5, but with reduced prompt engineering
-    with default_config.override(ReducedInformationSpreadConfig()):
-        result5_reduced_prompt = await run_experiment(
-            context,
-            dataset5,
-            get_xml_file_logger(
-                "./logs/synthetic_5_bdi_is_reduced_prompt.log", level=logging.DEBUG
-            ),
-            "synthetic_5_bdi_is_reduced_prompt",
-            BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
-            EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
-            conversation_selector_type="information_spread",
-            seed=42,
-            max_utterances=16,
-            epochs=20,
+    async def run_and_save(result: Awaitable[ExperimentResult], file_name: str) -> None:
+        """Run experiment coroutine with semaphore and save result to file."""
+        try:
+            async with semaphore:
+                r = await result
+            with open(file_name, "w") as f:
+                f.write(r.model_dump_json(indent=1))
+        except Exception as e:
+            print(f"Error in experiment {file_name}: {e}")
+
+    async with asyncio.TaskGroup() as tg:
+        # === CATEGORY A: Baseline + Prompting (A1-A8) ===
+        # A1: baseline_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/A1_baseline_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="A1_baseline_5",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/A1_baseline_5.json",
+            )
         )
-        with open("./results/synthetic_5_bdi_is_reduced_prompt.json", "w") as f:
-            f.write(result5_reduced_prompt.model_dump_json(indent=1))
 
-    # Run experiment with 10 agents
-    result10 = await run_experiment(
-        context,
-        dataset10,
-        get_xml_file_logger("./logs/synthetic_10_bdi_is.log", level=logging.DEBUG),
-        "synthetic_10_bdi_is",
-        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
-        EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
-        conversation_selector_type="information_spread",
-        seed=42,
-        max_utterances=16,
-        epochs=30,
-    )
-    with open("./results/synthetic_10_bdi_is.json", "w") as f:
-        f.write(result10.model_dump_json(indent=1))
+        # A2: baseline_5_redprompt
+        with default_config.override(ReducedInformationSpreadConfig()):
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset5,
+                        logger=get_xml_file_logger(
+                            "./logs/A2_baseline_5_redprompt.log", level=logging.DEBUG
+                        ),
+                        experiment_name="A2_baseline_5_redprompt",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=baseline_mem,
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    "./results/A2_baseline_5_redprompt.json",
+                )
+            )
 
-    # Run experiment with 25 agents
-    result25 = await run_experiment(
-        context,
-        dataset25,
-        get_xml_file_logger("./logs/synthetic_25_bdi_is.log", level=logging.DEBUG),
-        "synthetic_25_bdi_is",
-        BDIMemoryManagerType(manager_type="bdi", memory_removal_prob=0.5),
-        EmbeddingMemoryType(memory_type="embedding", strategy="top_std", value=1),
-        conversation_selector_type="information_spread",
-        seed=42,
-        max_utterances=8,
-        epochs=15,
-    )
-    with open("./results/synthetic_25_bdi_is.json", "w") as f:
-        f.write(result25.model_dump_json(indent=1))
+        # A3: simple_no_bdi_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/A3_simple_no_bdi_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="A3_simple_no_bdi_5",
+                    memory_manager_config=simple_mem_mgr,
+                    memory_config=simple_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/A3_simple_no_bdi_5.json",
+            )
+        )
+
+        # A4: simple_no_bdi_5_red
+        with default_config.override(ReducedInformationSpreadConfig()):
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset5,
+                        logger=get_xml_file_logger(
+                            "./logs/A4_simple_no_bdi_5_red.log", level=logging.DEBUG
+                        ),
+                        experiment_name="A4_simple_no_bdi_5_red",
+                        memory_manager_config=simple_mem_mgr,
+                        memory_config=simple_mem,
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    "./results/A4_simple_no_bdi_5_red.json",
+                )
+            )
+
+        # A5: baseline_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/A5_baseline_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="A5_baseline_10",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/A5_baseline_10.json",
+            )
+        )
+
+        # A6: baseline_10_redprompt
+        with default_config.override(ReducedInformationSpreadConfig()):
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset10,
+                        logger=get_xml_file_logger(
+                            "./logs/A6_baseline_10_redprompt.log", level=logging.DEBUG
+                        ),
+                        experiment_name="A6_baseline_10_redprompt",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=baseline_mem,
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    "./results/A6_baseline_10_redprompt.json",
+                )
+            )
+
+        # A7: simple_no_bdi_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/A7_simple_no_bdi_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="A7_simple_no_bdi_10",
+                    memory_manager_config=simple_mem_mgr,
+                    memory_config=simple_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/A7_simple_no_bdi_10.json",
+            )
+        )
+
+        # A8: simple_no_bdi_10_red
+        with default_config.override(ReducedInformationSpreadConfig()):
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset10,
+                        logger=get_xml_file_logger(
+                            "./logs/A8_simple_no_bdi_10_red.log", level=logging.DEBUG
+                        ),
+                        experiment_name="A8_simple_no_bdi_10_red",
+                        memory_manager_config=simple_mem_mgr,
+                        memory_config=simple_mem,
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    "./results/A8_simple_no_bdi_10_red.json",
+                )
+            )
+
+        # === CATEGORY B: Memory Manager Comparison (B1-B6) ===
+        # B1: unitary_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/B1_unitary_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="B1_unitary_5",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=UpdaterBehaviorType(behavior_type="unitary"),
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/B1_unitary_5.json",
+            )
+        )
+
+        # B2: classical_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/B2_classical_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="B2_classical_5",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/B2_classical_5.json",
+            )
+        )
+
+        # B4: unitary_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/B4_unitary_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="B4_unitary_10",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=UpdaterBehaviorType(behavior_type="unitary"),
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/B4_unitary_10.json",
+            )
+        )
+
+        # B5: classical_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/B5_classical_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="B5_classical_10",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/B5_classical_10.json",
+            )
+        )
+
+        # === CATEGORY C: Feature Ablation (C1-C7) ===
+        # C1: no_bdi_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/C1_no_bdi_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="C1_no_bdi_5",
+                    memory_manager_config=BDIForgettingOnlyManagerType(
+                        manager_type="forgetting_only", memory_removal_prob=0.5
+                    ),
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/C1_no_bdi_5.json",
+            )
+        )
+
+        # C2: no_forget_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/C2_no_forget_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="C2_no_forget_5",
+                    memory_manager_config=BDIPLanningOnlyManagerType(
+                        manager_type="bdi_planning_only", memory_removal_prob=0.5
+                    ),
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/C2_no_forget_5.json",
+            )
+        )
+
+        # C3: simple_mem_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/C3_simple_mem_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="C3_simple_mem_5",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=simple_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/C3_simple_mem_5.json",
+            )
+        )
+
+        # C4: no_bdi_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/C4_no_bdi_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="C4_no_bdi_10",
+                    memory_manager_config=BDIForgettingOnlyManagerType(
+                        manager_type="forgetting_only", memory_removal_prob=0.5
+                    ),
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/C4_no_bdi_10.json",
+            )
+        )
+
+        # C5: no_forget_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/C5_no_forget_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="C5_no_forget_10",
+                    memory_manager_config=BDIPLanningOnlyManagerType(
+                        manager_type="bdi_planning_only", memory_removal_prob=0.5
+                    ),
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/C5_no_forget_10.json",
+            )
+        )
+
+        # C6: simple_mem_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/C6_simple_mem_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="C6_simple_mem_10",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=simple_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/C6_simple_mem_10.json",
+            )
+        )
+
+        # === CATEGORY D: Retrieval Strategy Sweep (D1-D20) ===
+        # D1-D4: top_k 5 agents
+        for val, idx in [(5, 1), (10, 2), (25, 3), (50, 4)]:
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset5,
+                        logger=get_xml_file_logger(
+                            f"./logs/D{idx}_topk_{val}_5.log", level=logging.DEBUG
+                        ),
+                        experiment_name=f"D{idx}_topk_{val}_5",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=EmbeddingMemoryType(
+                            memory_type="embedding", strategy="top_k", value=val
+                        ),
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    f"./results/D{idx}_topk_{val}_5.json",
+                )
+            )
+
+        # D5-D7: mean_std 5 agents
+        for val, idx in [(0.5, 5), (1.0, 6), (2.0, 7)]:
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset5,
+                        logger=get_xml_file_logger(
+                            f"./logs/D{idx}_meanstd_{val}_5.log", level=logging.DEBUG
+                        ),
+                        experiment_name=f"D{idx}_meanstd_{val}_5",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=EmbeddingMemoryType(
+                            memory_type="embedding", strategy="mean_std", value=val
+                        ),
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    f"./results/D{idx}_meanstd_{val}_5.json",
+                )
+            )
+
+        # D8-D10: top_std 5 agents
+        for val, idx in [(0.5, 8), (1.0, 9), (2.0, 10)]:
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset5,
+                        logger=get_xml_file_logger(
+                            f"./logs/D{idx}_topstd_{val}_5.log", level=logging.DEBUG
+                        ),
+                        experiment_name=f"D{idx}_topstd_{val}_5",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=EmbeddingMemoryType(
+                            memory_type="embedding", strategy="top_std", value=val
+                        ),
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    f"./results/D{idx}_topstd_{val}_5.json",
+                )
+            )
+
+        # D11-D14: top_k 10 agents
+        for val, idx in [(5, 11), (10, 12), (25, 13), (50, 14)]:
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset10,
+                        logger=get_xml_file_logger(
+                            f"./logs/D{idx}_topk_{val}_10.log", level=logging.DEBUG
+                        ),
+                        experiment_name=f"D{idx}_topk_{val}_10",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=EmbeddingMemoryType(
+                            memory_type="embedding", strategy="top_k", value=val
+                        ),
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    f"./results/D{idx}_topk_{val}_10.json",
+                )
+            )
+
+        # D15-D17: mean_std 10 agents
+        for val, idx in [(0.5, 15), (1.0, 16), (2.0, 17)]:
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset10,
+                        logger=get_xml_file_logger(
+                            f"./logs/D{idx}_meanstd_{val}_10.log", level=logging.DEBUG
+                        ),
+                        experiment_name=f"D{idx}_meanstd_{val}_10",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=EmbeddingMemoryType(
+                            memory_type="embedding", strategy="mean_std", value=val
+                        ),
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    f"./results/D{idx}_meanstd_{val}_10.json",
+                )
+            )
+
+        # D18-D20: top_std 10 agents
+        for val, idx in [(0.5, 18), (1.0, 19), (2.0, 20)]:
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset10,
+                        logger=get_xml_file_logger(
+                            f"./logs/D{idx}_topstd_{val}_10.log", level=logging.DEBUG
+                        ),
+                        experiment_name=f"D{idx}_topstd_{val}_10",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=EmbeddingMemoryType(
+                            memory_type="embedding", strategy="top_std", value=val
+                        ),
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=16,
+                        epochs=20,
+                    ),
+                    f"./results/D{idx}_topstd_{val}_10.json",
+                )
+            )
+
+        # === CATEGORY E: Epoch × Utterance Sweep (E1-E10) ===
+        epoch_utterance_combos = [
+            (5, 4, 1),  # quarter
+            (10, 8, 2),  # half
+            (20, 16, 3),  # baseline
+            (30, 16, 4),  # 1.5x epochs
+            (40, 32, 5),  # double
+        ]
+        for epochs_val, utt_val, idx in epoch_utterance_combos:
+            # 5 agents
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset5,
+                        logger=get_xml_file_logger(
+                            f"./logs/E{idx}_{epochs_val}e_{utt_val}u_5.log",
+                            level=logging.DEBUG,
+                        ),
+                        experiment_name=f"E{idx}_{epochs_val}e_{utt_val}u_5",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=baseline_mem,
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=utt_val,
+                        epochs=epochs_val,
+                    ),
+                    f"./results/E{idx}_{epochs_val}e_{utt_val}u_5.json",
+                )
+            )
+            # 10 agents
+            tg.create_task(
+                run_and_save(
+                    run_experiment(
+                        context=context,
+                        dataset=dataset10,
+                        logger=get_xml_file_logger(
+                            f"./logs/E{5+idx}_{epochs_val}e_{utt_val}u_10.log",
+                            level=logging.DEBUG,
+                        ),
+                        experiment_name=f"E{5+idx}_{epochs_val}e_{utt_val}u_10",
+                        memory_manager_config=baseline_mem_mgr,
+                        memory_config=baseline_mem,
+                        conversation_selector_type="information_spread",
+                        updater_behavior_type=baseline_updater,
+                        seed=42,
+                        max_utterances=utt_val,
+                        epochs=epochs_val,
+                    ),
+                    f"./results/E{5+idx}_{epochs_val}e_{utt_val}u_10.json",
+                )
+            )
+
+        # === CATEGORY F: Selector Comparison (F1-F2) ===
+        # F1: full_parallel_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/F1_fp_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="F1_fp_10",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="full_parallel",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/F1_fp_10.json",
+            )
+        )
+
+        # F2: information_spread_10 (baseline selector for comparison)
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/F2_is_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="F2_is_10",
+                    memory_manager_config=baseline_mem_mgr,
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/F2_is_10.json",
+            )
+        )
+
+        # === CATEGORY G: Forgetting Sweep (G1-G2) ===
+        # G1: full_forgetting_5
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset5,
+                    logger=get_xml_file_logger(
+                        "./logs/G1_full_forgetting_5.log", level=logging.DEBUG
+                    ),
+                    experiment_name="G1_full_forgetting_5",
+                    memory_manager_config=BDIMemoryManagerType(
+                        manager_type="bdi", memory_removal_prob=1.0
+                    ),
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/G1_full_forgetting_5.json",
+            )
+        )
+
+        # G2: full_forgetting_10
+        tg.create_task(
+            run_and_save(
+                run_experiment(
+                    context=context,
+                    dataset=dataset10,
+                    logger=get_xml_file_logger(
+                        "./logs/G2_full_forgetting_10.log", level=logging.DEBUG
+                    ),
+                    experiment_name="G2_full_forgetting_10",
+                    memory_manager_config=BDIMemoryManagerType(
+                        manager_type="bdi", memory_removal_prob=1.0
+                    ),
+                    memory_config=baseline_mem,
+                    conversation_selector_type="information_spread",
+                    updater_behavior_type=baseline_updater,
+                    seed=42,
+                    max_utterances=16,
+                    epochs=20,
+                ),
+                "./results/G2_full_forgetting_10.json",
+            )
+        )
+
+    print("\n=== All experiments completed ===")
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Run synthetic information spread experiments"
+    )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        help="Number of parallel experiments (default: 1)",
+    )
+    args = parser.parse_args()
+
     dotenv.load_dotenv()
-    asyncio.run(main())
+    asyncio.run(main(concurrency=args.concurrency))
