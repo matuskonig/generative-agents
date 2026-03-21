@@ -30,7 +30,7 @@ class MockLLMBackend(LLMBackendBase):
             return self._text_responses.pop(0)
         return ""
 
-    async def get_structued_response(
+    async def get_structured_response(
         self,
         prompt: str,
         response_format: type,
