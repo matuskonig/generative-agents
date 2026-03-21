@@ -6,7 +6,7 @@ import pydantic
 from openai import AsyncOpenAI
 
 from generative_agents import AgentModelBase
-from generative_agents.llm_backend import rate_limit_repeated
+from generative_agents.llm_backend import with_resiliency
 
 
 class GenerationStats(pydantic.BaseModel):
@@ -203,7 +203,7 @@ async def generate_agents[T](
 
     result_mapping: dict[T, SocietyAgent] = {}
 
-    @rate_limit_repeated()
+    @with_resiliency()
     async def generate_single(node):
         start = time.perf_counter()
         stats = GenerationStats()
@@ -321,7 +321,7 @@ Generate the agent using this schema: {SocietyAgent.model_json_schema()}"""
     return result_mapping, stats
 
 
-@rate_limit_repeated()
+@with_resiliency()
 async def create_information_seed[T](
     graph: nx.Graph,
     agent_mapping: dict[T, SocietyAgent],
