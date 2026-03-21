@@ -76,7 +76,7 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
             conversation,
             response_format=str(Utterance.model_json_schema()),
         )
-        result = await self.context.get_structued_response(
+        result = await self.context.get_structured_response(
             prompt,
             response_format=Utterance,
             params=default_config().get_creative_llm_params(),
@@ -120,7 +120,7 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
         )
 
         async def get_response() -> ResponseFormatType:
-            return await self.context.get_structued_response(
+            return await self.context.get_structured_response(
                 prompt,
                 response_format=response_format,
                 params=default_config().get_factual_llm_params(),

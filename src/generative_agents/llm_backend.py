@@ -12,7 +12,14 @@ from typing import (
 )
 
 import numpy as np
-from openai import APITimeoutError, AsyncClient, Omit, RateLimitError, omit
+from openai import (
+    APITimeoutError,
+    AsyncClient,
+    LengthFinishReasonError,
+    Omit,
+    RateLimitError,
+    omit,
+)
 from pydantic import BaseModel
 
 from .async_helpers import Throttler
@@ -36,7 +43,7 @@ class LLMBackendBase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def get_structued_response(
+    async def get_structured_response(
         self,
         prompt: str,
         response_format: Type[ResponseFormatType],
@@ -133,6 +140,7 @@ class SentenceTransformerProvider(EmbeddingProvider):
 
 class CompletionParams(TypedDict):
     temperature: float | Omit | None
+    max_tokens: int | Omit | None
     max_completion_tokens: int | Omit | None
     top_p: float | Omit | None
     frequency_penalty: float | Omit | None
@@ -142,12 +150,14 @@ class CompletionParams(TypedDict):
 def create_completion_params(
     temperature: float | Omit | None = omit,
     max_completion_tokens: int | Omit | None = omit,
+    max_tokens: int | Omit | None = omit,
     top_p: float | Omit | None = omit,
     frequency_penalty: float | Omit | None = omit,
     presence_penalty: float | Omit | None = omit,
 ) -> CompletionParams:
     return CompletionParams(
         temperature=temperature,
+        max_tokens=max_tokens,
         max_completion_tokens=max_completion_tokens,
         top_p=top_p,
         frequency_penalty=frequency_penalty,
@@ -155,20 +165,22 @@ def create_completion_params(
     )
 
 
-def rate_limit_repeated[**P, R](
-    delay_sec: float = 1, exp_backoff: float = 1.5
+def with_resiliency[**P, R](
+    delay_sec: float = 1, exp_backoff: float = 1.5, max_length_retries: int = 2
 ) -> Callable[
     [Callable[P, Coroutine[Any, Any, R]]], Callable[P, Coroutine[Any, Any, R]]
 ]:
     """Decorator that retries failed API calls with exponential backoff.
 
-    Specifically handles RateLimitError and APITimeoutError from OpenAI API.
+    Specifically handles RateLimitError, APITimeoutError, and LengthFinishReasonError from OpenAI API.
     Uses exponential backoff: delay = delay_sec * (exp_backoff ^ retry_count)
-    Retries indefinitely until success (no max retry limit).
+    For RateLimitError and APITimeoutError, retries indefinitely until success.
+    For LengthFinishReasonError, retries up to `max_length_retries` times.
 
     Args:
         delay_sec: Initial delay in seconds before first retry
         exp_backoff: Multiplier for exponential backoff (1.5 = 1.5x increase per retry)
+        max_length_retries: Maximum retries allowed for length finish reason errors (default: 2)
     """
 
     def decorator(
@@ -176,6 +188,7 @@ def rate_limit_repeated[**P, R](
     ) -> Callable[P, Coroutine[Any, Any, R]]:
         async def inner(*args: P.args, **kwargs: P.kwargs) -> R:
             retry_count = 0
+            finish_reason_count = 0
             while True:
                 try:
                     return await func(*args, **kwargs)
@@ -183,6 +196,11 @@ def rate_limit_repeated[**P, R](
                     delay = delay_sec * (exp_backoff**retry_count)
                     retry_count += 1
                     await asyncio.sleep(delay)
+                except LengthFinishReasonError as e:
+                    if finish_reason_count < max_length_retries:
+                        finish_reason_count += 1
+                        continue
+                    raise e
 
         return inner
 
@@ -211,7 +229,7 @@ class LLMBackend(LLMBackendBase):
         self.system_prompt = default_config().get_system_prompt()
         self.__embedding_provider = embedding_provider
 
-    @rate_limit_repeated()
+    @with_resiliency(max_length_retries=0)
     async def get_text_response(
         self, prompt: str, params: CompletionParams = create_completion_params()
     ) -> str:
@@ -236,8 +254,8 @@ class LLMBackend(LLMBackendBase):
 
         return response.choices[0].message.content or ""
 
-    @rate_limit_repeated()
-    async def get_structued_response(
+    @with_resiliency(max_length_retries=2)
+    async def get_structured_response(
         self,
         prompt: str,
         response_format: Type[ResponseFormatType],
@@ -275,7 +293,7 @@ class LLMBackend(LLMBackendBase):
     @overload
     async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
 
-    @rate_limit_repeated()
+    @with_resiliency()
     async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
         if not self.__embedding_provider:
             raise ValueError(

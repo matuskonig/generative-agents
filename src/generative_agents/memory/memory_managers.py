@@ -155,7 +155,7 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
                 memory_string=memory_string,
                 response_format=str(FactResponse.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 response_format=FactResponse,
                 params=default_config().get_factual_llm_params(),
@@ -321,7 +321,7 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
                 memory_string,
                 response_format=str(BDIData.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 BDIData,
                 params=default_config().get_neutral_default_llm_params(),
@@ -342,7 +342,7 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
                 memory_string,
                 response_format=str(BDIResponse.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 response_format=BDIResponse,
                 params=default_config().get_neutral_default_llm_params(),
@@ -485,7 +485,7 @@ class ConversationMemoryForgettingBehavior(CompositeBehaviorFactoryBase):
                 memory,
                 str(PruneFactsResponse.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 PruneFactsResponse,
                 params=default_config().get_neutral_default_llm_params(),
