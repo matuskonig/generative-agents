@@ -121,9 +121,12 @@ class EmbeddingMemory(MemoryBase):
             record.timestamp / self.__timestamp
         ) ** self.__time_smoothing
         embedding = cast(np.ndarray, record.embedding)
-        cosine_similarity: float = np.dot(embedding, query_emb) / (
-            np.linalg.norm(embedding) * np.linalg.norm(query_emb)
+        cosine_similarity: float = (
+            np.dot(embedding, query_emb)
+            / np.linalg.norm(embedding)
+            / np.linalg.norm(query_emb)
         )
+
         return (
             self.__time_weight * time_similarity
             + self.__relevance_weight * record.relevance
@@ -145,8 +148,8 @@ class EmbeddingMemory(MemoryBase):
                 (self.__get_memory_record_score(query_embedding, record), record)
                 for record in filtered_memory
             ],
+            key=lambda x: x[0],
             reverse=True,
-            key=lambda x: x[0]
         )
 
         selected_count = self.__count_selector(scored_records)

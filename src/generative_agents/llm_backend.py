@@ -98,6 +98,9 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
         self.__model = model
 
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]:
+        if len(input) == 0:
+            return []
+
         response = await self.__client.embeddings.create(
             input=input, model=self.__model
         )
@@ -132,6 +135,9 @@ class SentenceTransformerProvider(EmbeddingProvider):
         self.__batch_size = batch_size
 
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]:
+        if len(input) == 0:
+            return []
+
         result = self.__model.encode(
             input, batch_size=self.__batch_size, convert_to_numpy=True
         )
