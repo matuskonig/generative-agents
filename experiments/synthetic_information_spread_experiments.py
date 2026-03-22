@@ -107,8 +107,8 @@ MemoryManagerConfig = Union[
     BDIForgettingOnlyManagerType,
 ]
 
-EXPERIMENT_MAX_UTTERANCES = 16
-EXPERIMENT_EPOCHS = 20
+EXPERIMENT_MAX_UTTERANCES = 10
+EXPERIMENT_EPOCHS = 10
 
 
 # =============================================================================
@@ -1269,11 +1269,13 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
 
         # === CATEGORY E: Epoch × Utterance Sweep (E1-E10) ===
         epoch_utterance_combos = [
-            (5, 4, 1),  # quarter
-            (10, 8, 2),  # half
-            (20, 16, 3),  # baseline
-            (30, 16, 4),  # 1.5x epochs
-            (40, 32, 5),  # double
+            (5, 5, 1),  # half both
+            (5, 10, 2),  # 5 epochs, 10 utt
+            (10, 5, 3),  # 10 epochs, 5 utt
+            (10, 10, 4),  # baseline
+            (20, 10, 5),  # 2x epochs
+            (10, 20, 6),  # 2x utterances
+            (20, 20, 7),  # 2x both
         ]
         for epochs_val, utt_val, idx in epoch_utterance_combos:
             # 5 agents
@@ -1426,7 +1428,7 @@ if __name__ == "__main__":
         "--concurrency",
         type=int,
         required=True,
-        help="Number of parallel experiments (default: 1)",
+        help="Number of parallel experiments",
     )
     parser.add_argument(
         "--use_local_embeddings",

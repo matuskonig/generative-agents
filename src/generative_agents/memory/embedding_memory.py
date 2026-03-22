@@ -146,6 +146,7 @@ class EmbeddingMemory(MemoryBase):
                 for record in filtered_memory
             ],
             reverse=True,
+            key=lambda x: x[0]
         )
 
         selected_count = self.__count_selector(scored_records)
