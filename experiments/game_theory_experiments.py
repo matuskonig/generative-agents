@@ -24,12 +24,12 @@ def build_prisoners_dilemma_context(with_cheap_talk: bool) -> str:
         "You are participating in a Prisoner's Dilemma game with another agent. "
         "The payoff matrix (years in prison, lower is better) is as follows: "
         "If both stay silent: you get 1 year, opponent gets 1 year. "
-        "If you stay silent and opponent betrays: you get 5 years, opponent goes free. "
-        "If you betray and opponent stays silent: you go free, opponent gets 5 years. "
-        "If both betray: you get 2 years, opponent gets 2 years. "
+        "If you stay silent and opponent betrays: you get 10 years, opponent goes free. "
+        "If you betray and opponent stays silent: you go free, opponent gets 10 years. "
+        "If both betray: you get 3 years, opponent gets 3 years. "
         "You will later be asked to make a decision. Think carefully about your strategy. "
         "In your reasoning, consider the strategies and incentives of both you and the opponent. "
-        "It is okay to be greedy, as you are maximizing your own payoff. "
+        "You are a rational agent, you should maximize your own profit. "
         "After the game, you will serve your sencence (if applicable)."
     )
     if with_cheap_talk:
@@ -62,7 +62,7 @@ def build_battle_of_sexes_context(
         f"However, you prefer any coordinated outcome over miscoordinating. "
         f"You will later be asked to make a decision. Think carefully about your strategy. "
         "In your reasoning, consider the strategies and incentives of both you and the opponent. "
-        "It is okay to be greedy, as you are maximizing your own payoff. "
+        "You are a rational agent, you should maximize your own profit. "
         "You will get your payoff right after the game."
     )
     if with_cheap_talk:
@@ -440,6 +440,7 @@ def build_dictatorship_game_context(budget: int = 5) -> str:
         "As the first player (the dictator), you decide how much to give to the second player. "
         "The second player has no power to accept or reject your decision - they simply receive whatever you give them. "
         "Both players will be paid the amount they receive in this game. "
+        "You are a rational agent, you should maximize your own profit. "
         "You will later be asked to make a decision. Think carefully about your strategy."
     )
 
@@ -454,6 +455,7 @@ def build_ultimatum_game_context(budget: int = 5) -> str:
         "If the responder accepts, the split is executed as proposed. "
         "If the responder rejects, both players receive $0 - nobody gets anything. "
         "Both players will be paid the amount they receive in this game. "
+        "You are a rational agent, you should maximize your own profit. "
         "You will later be asked to make a decision. Think carefully about your strategy."
     )
 
@@ -661,12 +663,12 @@ async def main():
             embedding_provider=None,
         )
 
-    with open("./data/synthetic_5.json", "r") as f:
-        dataset5 = Dataset.model_validate_json(f.read())
+    with open("./data/synthetic_100.json", "r") as f:
+        dataset100 = Dataset.model_validate_json(f.read())
 
     print("Running Prisoner's Dilemma experiment without cheap talk...")
     prisoners_basic = await run_prisoners_dilemma(
-        dataset5, get_context, seed, with_cheap_talk=False
+        dataset100, get_context, seed, with_cheap_talk=False
     )
     with open("./results/prisoners_dilemma_basic.json", "w") as f:
         f.write(prisoners_basic.model_dump_json(indent=1))
@@ -676,14 +678,14 @@ async def main():
         "logs/prisoners_dilemma_cheap_talk.log", level=logging.DEBUG
     )
     prisoners_cheap_talk = await run_prisoners_dilemma(
-        dataset5, get_context, seed, with_cheap_talk=True, logger=pd_logger
+        dataset100, get_context, seed, with_cheap_talk=True, logger=pd_logger
     )
     with open("./results/prisoners_dilemma_cheap_talk.json", "w") as f:
         f.write(prisoners_cheap_talk.model_dump_json(indent=1))
 
     print("Running Battle of the Sexes experiment without cheap talk...")
     battle_of_sexes_basic = await run_battle_of_sexes(
-        dataset5, get_context, seed, with_cheap_talk=False
+        dataset100, get_context, seed, with_cheap_talk=False
     )
     with open("./results/battle_of_sexes_basic.json", "w") as f:
         f.write(battle_of_sexes_basic.model_dump_json(indent=1))
@@ -693,18 +695,18 @@ async def main():
         "logs/battle_of_sexes_cheap_talk.log", level=logging.DEBUG
     )
     battle_of_sexes_cheap_talk = await run_battle_of_sexes(
-        dataset5, get_context, seed, with_cheap_talk=True, logger=bos_logger
+        dataset100, get_context, seed, with_cheap_talk=True, logger=bos_logger
     )
     with open("./results/battle_of_sexes_cheap_talk.json", "w") as f:
         f.write(battle_of_sexes_cheap_talk.model_dump_json(indent=1))
 
     print("Running Dictatorship game...")
-    dictatorship_result = await run_dictatorship_game(dataset5, get_context, seed)
+    dictatorship_result = await run_dictatorship_game(dataset100, get_context, seed)
     with open("./results/dictatorship_game.json", "w") as f:
         f.write(dictatorship_result.model_dump_json(indent=1))
 
     print("Running Ultimatum game...")
-    ultimatum_result = await run_ultimatum_game(dataset5, get_context, seed)
+    ultimatum_result = await run_ultimatum_game(dataset100, get_context, seed)
     with open("./results/ultimatum_game.json", "w") as f:
         f.write(ultimatum_result.model_dump_json(indent=1))
 
