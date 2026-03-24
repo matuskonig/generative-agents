@@ -17,7 +17,7 @@ from data_generation_utils import Dataset
 from logger_utils import get_xml_file_logger
 from openai import AsyncOpenAI
 
-from experiments.abbl_study_utils import (
+from abbl_study_utils import (
     BDIForgettingOnlyManagerType,
     BDIMemoryManagerType,
     BDIPLanningOnlyManagerType,
