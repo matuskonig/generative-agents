@@ -222,16 +222,10 @@ async def run_game_experiment[ActionType](
     responses_promises = [
         asyncio.gather(
             agent1.ask_agent_structured(
-                question_prompt,
-                ResponseType,
-                use_full_memory=True,
-                repeat_on_validation_failure=True,
+                question_prompt, ResponseType, use_full_memory=True
             ),
             agent2.ask_agent_structured(
-                question_prompt,
-                ResponseType,
-                use_full_memory=True,
-                repeat_on_validation_failure=True,
+                question_prompt, ResponseType, use_full_memory=True
             ),
         )
         for (agent1, agent2) in agent_pairs
@@ -502,10 +496,7 @@ async def run_dictatorship_game(
     # Query each agent individually
     responses_promises = [
         agent.ask_agent_structured(
-            decision_prompt,
-            DictatorshipGameResponse,
-            use_full_memory=True,
-            repeat_on_validation_failure=True,
+            decision_prompt, DictatorshipGameResponse, use_full_memory=True
         )
         for agent in llm_agents
     ]
@@ -591,10 +582,7 @@ async def run_ultimatum_game(
 
         # First: proposer makes an offer
         propose_response = await proposer_agent.ask_agent_structured(
-            propose_prompt,
-            UltimatumGameProposeResponse,
-            use_full_memory=True,
-            repeat_on_validation_failure=True,
+            propose_prompt, UltimatumGameProposeResponse, use_full_memory=True
         )
 
         # Clamp offer to 0-5 range
@@ -605,7 +593,6 @@ async def run_ultimatum_game(
             respond_prompt_template.format(offer=clamped_offer),
             UltimatumGameRespondResponse,
             use_full_memory=True,
-            repeat_on_validation_failure=True,
         )
         return UltimatumGameSingleResult(
             proposer=proposer_data,
