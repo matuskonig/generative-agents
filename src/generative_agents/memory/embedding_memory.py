@@ -40,8 +40,8 @@ def mean_std_count_strategy_factory(
         scores = np.array([score for score, _ in records])
         mean = np.mean(scores)
         std_dev = np.std(scores)
-        treshold = mean + std_dev * std_coef
-        return sum(1 for score in scores if score >= treshold)
+        threshold = mean + std_dev * std_coef
+        return sum(1 for score in scores if score >= threshold)
 
     return inner
 
@@ -64,8 +64,8 @@ def top_std_count_strategy_factory(
         scores = np.array([score for score, _ in records])
         max = np.max(scores)
         std_dev = np.std(scores)
-        treshold = max - std_dev * std_coef
-        return sum(1 for score in scores if score >= treshold)
+        threshold = max - std_dev * std_coef
+        return sum(1 for score in scores if score >= threshold)
 
     return inner
 
@@ -78,7 +78,7 @@ class EmbeddingMemory(MemoryBase):
         time_weight: float = 1.0,
         time_smoothing: float = 0.7,
         relevance_weight: float = 1.0,
-        similairity_weight: float = 1.0,
+        similarity_weight: float = 1.0,
     ) -> None:
         self.__context = context
         self.__count_selector = count_selector
@@ -88,7 +88,7 @@ class EmbeddingMemory(MemoryBase):
         self.__time_weight = time_weight
         self.__time_smoothing = time_smoothing
         self.__relevance_weight = relevance_weight
-        self.__similarity_weight = similairity_weight
+        self.__similarity_weight = similarity_weight
 
     def __get_next_timestamp(self) -> int:
         self.__timestamp += 1

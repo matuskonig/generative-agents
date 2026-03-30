@@ -1,8 +1,6 @@
 import logging
 from typing import Callable, Generic, Type, TypeVar
 
-from pydantic import ValidationError
-
 from .config import default_config
 from .llm_backend import LLMBackendBase, ResponseFormatType
 from .memory import MemoryManagerBase

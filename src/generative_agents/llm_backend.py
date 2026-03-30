@@ -76,6 +76,7 @@ class EmbeddingProvider(abc.ABC):
     @abc.abstractmethod
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]: ...
 
+    # TODO: add length assertion here
     @overload
     async def embed_text(self, input: str) -> np.ndarray: ...
     @overload

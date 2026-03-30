@@ -78,7 +78,7 @@ class CompositeBehaviorFactoryBase(abc.ABC):
     ) -> "type[CompositeBehaviorFactoryBase.Impl]": ...
 
     @abc.abstractmethod
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
@@ -108,7 +108,7 @@ class CompositeBehaviorFactoryBase(abc.ABC):
 
 
 class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
@@ -182,7 +182,7 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
 class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
     """You store only a single note about each other agent, which gets updated after every conversation."""
 
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
@@ -223,6 +223,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
             )
             return self.memory.full_retrieval(query_filter)
 
+        # TODO: more logging
         async def _update_agent_note(
             self, other_agent: LLMAgentBase, conversation: Conversation
         ) -> None:
@@ -232,7 +233,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
                 note.timestamp for note in self._get_existing_notes(other_agent_name)
             ]
 
-            omit_other_agent_filter = MemoryQueryFilter(
+            omit_other_simulation_agents_filter = MemoryQueryFilter(
                 predicate=lambda record: (
                     record.source.other_agent == other_agent_name
                     if isinstance(
@@ -243,7 +244,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
             )
             memory_string = self._owner.get_tagged_full_memory(
                 with_full_memory_record=False,
-                query_filter=omit_other_agent_filter,
+                query_filter=omit_other_simulation_agents_filter,
             )
 
             prompt = default_config().get_agent_note_update_prompt(
@@ -282,7 +283,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
 
 
 class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
@@ -359,6 +360,7 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
                     intention=result.data.intention,
                 )
 
+        # TODO :split initialize from pre_conversation hook
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             await self._initialize_bdi()
 
@@ -390,13 +392,13 @@ def get_record_removal_linear_probability(
 ) -> "RecordRemovalProbSelector":
     """Creates a linear probability function for memory removal.
 
-    Probability increases linearly from 0 (at current timestamp) to max_prob_coef
+    Probability increases linearly from 0 (at current timestamp) to max_prob
     (at timestamp 0). Older memories have higher removal probability.
 
-    Formula: probability = max_prob_coef * (1 - record_timestamp / current_timestamp)
+    Formula: probability = max_prob * (1 - record_timestamp / current_timestamp)
 
     Args:
-        max_prob_coef: Maximum probability coefficient (typically 0.0-1.0)
+        max_prob: Maximum probability coefficient (typically 0.0-1.0)
     """
 
     def inner(current_timestamp: int, target_memory_record: MemoryRecord) -> float:
@@ -431,7 +433,7 @@ class ConversationMemoryForgettingBehavior(CompositeBehaviorFactoryBase):
     ) -> type["ConversationMemoryForgettingBehavior.Impl"]:
         return ConversationMemoryForgettingBehavior.Impl
 
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
@@ -521,7 +523,7 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
     ) -> type["ConstantContextBehavior.Impl"]:
         return ConstantContextBehavior.Impl
 
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
@@ -567,6 +569,7 @@ def construct_tagged_combined_data_string(data: dict[str, str]) -> str:
     return "\n".join(f"<{tag}>{value}</{tag}>" for tag, value in data.items())
 
 
+# TODO: enable multiple behaviors of the same type, fix multiple constant behaviors with the same tag
 class CompositeBehaviorMemoryManager(MemoryManagerBase):
     def __init__(
         self,
@@ -578,7 +581,7 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         self.memory = memory
         self._agent = agent
         self._behaviors = [
-            (behavior.instantizate(memory, self, agent, context))
+            (behavior.instantiate(memory, self, agent, context))
             for behavior in behaviors
         ]
 

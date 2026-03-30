@@ -47,12 +47,15 @@ class BFSFrontierGraph[T]:
 
     def get_core_nodes(self, distance: int) -> list[T]:
         """Nodes completely within the given distance from the source nodes."""
+        assert distance >= 0
+
         return [node for nodes in self._layers[: distance + 1] for node in nodes]
 
     def get_frontier_extended_graph(self, distance: int) -> "nx.Graph[T]":
         """Returns a graph containing complete subgraph of given distance. The graph is extended to include adjacent edges to the nodes in the specified distance.
         Distance starts from 0, which is the source nodes.
         """
+
         core_nodes = self.get_core_nodes(distance)
         graph = self._graph.subgraph(core_nodes).copy()
 
@@ -173,7 +176,7 @@ class FullParallelConversationSelector(GeneralParallelSelectorBase):
         self.__structure = structure
 
     def _get_generator_structure(self) -> "nx.Graph[LLMConversationAgent]":
-        return self.__structure
+        return self.__structure.copy()
 
 
 class ConversationRandomRestrictionAdapter(ConversationSelectorABC):
@@ -217,9 +220,9 @@ class SequentialConversationSelector(ConversationSelectorABC):
         self,
         structure: "nx.Graph[LLMConversationAgent]",
         seed: np.random.Generator | None = None,
-        initial_conversation: Sequence[
-            tuple[LLMConversationAgent, LLMConversationAgent]
-        ] = [],
+        initial_conversation: (
+            Sequence[tuple[LLMConversationAgent, LLMConversationAgent]] | None
+        ) = None,
     ):
         self.__generated_epochs = 0
         for node in structure.nodes:
@@ -228,7 +231,7 @@ class SequentialConversationSelector(ConversationSelectorABC):
             ), f"Graph node must be LLMConversationAgent, got {type(node)}"
 
         self.__structure = structure
-        self.__initial_conversation = initial_conversation
+        self.__initial_conversation = initial_conversation or []
         self.seed = seed or np.random.default_rng()
 
     async def generate_epoch_pairs(
