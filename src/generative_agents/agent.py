@@ -104,7 +104,6 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
         question: str,
         response_format: Type[ResponseFormatType],
         use_full_memory: bool = True,
-        repeat_on_validation_failure: bool = False,
     ) -> ResponseFormatType:
         memory = (
             self.memory_manager.get_tagged_full_memory()
@@ -119,24 +118,11 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
             response_format=str(response_format.model_json_schema()),
         )
 
-        async def get_response() -> ResponseFormatType:
-            return await self.context.get_structured_response(
-                prompt,
-                response_format=response_format,
-                params=default_config().get_factual_llm_params(),
-            )
-
-        if repeat_on_validation_failure:
-            for _ in range(NUM_VALIDATION_ATTEMPTS):
-                try:
-                    return await get_response()
-                except (ValidationError, ValueError):
-                    pass
-            raise ValueError(
-                "Failed to get valid structured response after multiple attempts."
-            )
-
-        return await get_response()
+        return await self.context.get_structured_response(
+            prompt,
+            response_format=response_format,
+            params=default_config().get_factual_llm_params(),
+        )
 
     async def post_conversation_hook(
         self,
