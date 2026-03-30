@@ -5,6 +5,8 @@ from typing import (
     Any,
     Callable,
     Coroutine,
+    Literal,
+    Optional,
     Type,
     TypedDict,
     TypeVar,
@@ -151,6 +153,9 @@ class CompletionParams(TypedDict):
     top_p: float | Omit | None
     frequency_penalty: float | Omit | None
     presence_penalty: float | Omit | None
+    reasoning_effort: (
+        Optional[Literal["none", "minimal", "low", "medium", "high", "xhigh"]] | Omit
+    )
 
 
 def create_completion_params(
@@ -160,6 +165,9 @@ def create_completion_params(
     top_p: float | Omit | None = omit,
     frequency_penalty: float | Omit | None = omit,
     presence_penalty: float | Omit | None = omit,
+    reasoning_effort: (
+        Optional[Literal["none", "minimal", "low", "medium", "high", "xhigh"]] | Omit
+    ) = omit,
 ) -> CompletionParams:
     return CompletionParams(
         temperature=temperature,
@@ -168,6 +176,7 @@ def create_completion_params(
         top_p=top_p,
         frequency_penalty=frequency_penalty,
         presence_penalty=presence_penalty,
+        reasoning_effort=reasoning_effort,
     )
 
 

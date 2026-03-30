@@ -3,6 +3,7 @@ from .types import AgentModelBase, Conversation
 from .utils import OverridableContextVar
 
 
+# TODO: add method to reasonably override the llm params
 class DefaultConfig:
     __SYSTEM_PROMPT = (
         "You are an intelligent agent in a realistic society simulation. "
@@ -15,13 +16,24 @@ class DefaultConfig:
     )
 
     def get_factual_llm_params(self) -> CompletionParams:
-        return create_completion_params(temperature=0.1, top_p=0.9)
+        return create_completion_params(
+            temperature=0.3, top_p=0.95, reasoning_effort="medium"
+        )
 
     def get_neutral_default_llm_params(self) -> CompletionParams:
-        return create_completion_params()
+        return create_completion_params(
+            temperature=0.6, top_p=0.95, reasoning_effort="low"
+        )
 
     def get_creative_llm_params(self) -> CompletionParams:
-        return create_completion_params(temperature=0.35, frequency_penalty=0.8)
+        # Creative mode - aligned with gpt-oss-120b recommended settings (temp=1.0, top_p=1)
+        return create_completion_params(
+            temperature=1.0,
+            top_p=1.0,
+            frequency_penalty=0.8,
+            presence_penalty=0.2,
+            reasoning_effort="low",
+        )
 
     def get_system_prompt(self) -> str:
         return self.__SYSTEM_PROMPT
