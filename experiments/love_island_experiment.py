@@ -85,7 +85,7 @@ def get_agent(
                     f"Get to know the other contestants by having genuine conversations. "
                     f"Be yourself and don't pretend to be someone you're not."
                     f"Use English in conversations regardless of the language in which you were introduced to the experiment. "
-                    f"You can be critical of other contestants, you dont hahe to be always positive. "
+                    f"You can be critical of other contestants, you dont have to be always positive. "
                 ),
                 LoveIslandBehavior(opposite_sex_ids),
             ],
