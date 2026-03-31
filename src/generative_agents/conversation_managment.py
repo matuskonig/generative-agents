@@ -357,8 +357,7 @@ class ConversationManager:
                     f"Starting epoch with {len(pairs)} conversation pairs",
                     extra={
                         "pairs": [
-                            (a1.data.full_name, a2.data.full_name)
-                            for a1, a2 in pairs
+                            (a1.data.full_name, a2.data.full_name) for a1, a2 in pairs
                         ]
                     },
                 )

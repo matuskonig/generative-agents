@@ -6,7 +6,7 @@ from typing import Callable, Literal, TypedDict, Union
 
 import networkx as nx
 import numpy as np
-from data_generation_utils import Dataset
+from data_generation_utils import Dataset, SocietyAgent
 from pydantic import BaseModel
 
 from generative_agents import (
@@ -33,6 +33,15 @@ from generative_agents import (
 # =============================================================================
 # Configuration TypedDicts
 # =============================================================================
+
+
+class SeedSocietyAgent(SocietyAgent):
+    information_to_spread: str
+    behavior_context: str = (
+        "You must spread this information to others as if your life depended on it. "
+        "Commit it to memory and let it condition your actions. "
+        "Furthermore, you must persuade others to spread it further."
+    )
 
 
 class BDIMemoryManagerType(TypedDict):
@@ -506,12 +515,24 @@ async def run_experiment(
                             seed=seed_rng,
                         ),
                     ],
+                    logger=logger,
                 )
 
     # Create agents from dataset
     agents = [
-        LLMConversationAgent(data, context, get_agent_memory_manager)
-        for data in dataset.agents
+        LLMConversationAgent(
+            (
+                SeedSocietyAgent(
+                    information_to_spread=dataset.injected_information,
+                    **data.model_dump(),
+                )
+                if i == dataset.information_seed_agent
+                else data
+            ),
+            context,
+            get_agent_memory_manager,
+        )
+        for (i, data) in enumerate(dataset.agents)
     ]
     id_mapping = {i: agent for i, agent in enumerate(agents)}
 
@@ -564,19 +585,39 @@ async def run_experiment(
         agent_responses = await asyncio.gather(
             *[
                 agent.ask_agent_structured(
-                    f"""Based on your memory and recent conversations, check if you have received specific information from {id_mapping[dataset.information_seed_agent].data.full_name}.
+                    f"""Based on your memory and recent conversations, check if you have received specific information originating from {id_mapping[dataset.information_seed_agent].data.full_name}.
 
-The information in question is: "{dataset.injected_information}"
+The information is: "{dataset.injected_information}"
 
-Please review your memories and conversations to determine if you have encountered this information. Provide your reasoning based on what you remember, then give a definitive true/false answer about whether you received this information.
-Answer positively even if you have received this information partially or indirectly.
-""",
+Did any mention of this information reach you? Provide your reasoning, then give a definitive yes/no answer.
+
+Answer YES if:
+- You heard about it directly from {id_mapping[dataset.information_seed_agent].data.full_name}
+- You overheard it in a conversation
+- You inferred it from related details
+- You have only partial or incomplete knowledge of it
+- You cannot link it to the original person
+- You have only some notation about it in your memory
+
+In short: if this information reached your node in any form, answer yes.""",
                     response_format=QuestionAnswer,
+                    use_full_memory=True,
                 )
                 for agent in agents
             ]
         )
         epoch_responses.append(agent_responses)
+        logger.debug(f"Epoch {epoch} completed. Printing memory.")
+        # Log final memory state for each agent
+        for agent in agents:
+            logger.debug(
+                agent.data.full_name,
+                extra={
+                    "memory": agent.memory_manager.get_tagged_full_memory(
+                        with_full_memory_record=True
+                    )
+                },
+            )
 
     manager.reset_epochs()
 
@@ -590,7 +631,9 @@ Answer positively even if you have received this information partially or indire
                 )
             },
         )
-
+    print(
+        f"[{experiment_name}: {datetime.datetime.now()}]: Experiment completed. Compiling results..."
+    )
     experiment_result = ExperimentResult(
         dataset=dataset,
         experiment_name=experiment_name,
