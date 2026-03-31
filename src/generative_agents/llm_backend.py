@@ -76,17 +76,22 @@ class EmbeddingProvider(abc.ABC):
     @abc.abstractmethod
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]: ...
 
-    # TODO: add length assertion here
     @overload
     async def embed_text(self, input: str) -> np.ndarray: ...
     @overload
     async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
     async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
-        if isinstance(input, str):
-            result = await self._embed_impl([input])
+        input_array = [input] if isinstance(input, str) else input
+        result = await self._embed_impl(input_array)
+
+        assert len(result) == len(
+            input_array
+        ), "Embedding provider returned incorrect number of embeddings"
+
+        if len(result) == 1:
             return result[0]
-        else:
-            return await self._embed_impl(input)
+
+        return result
 
 
 class OpenAIEmbeddingProvider(EmbeddingProvider):
