@@ -462,6 +462,7 @@ async def run_experiment(
                     agent,
                     context,
                     [ConversationMemoryUpdatingBehavior()],
+                    logger=logger,
                 )
             case "bdi":
                 return CompositeBehaviorMemoryManager(
@@ -478,6 +479,7 @@ async def run_experiment(
                             seed=seed_rng,
                         ),
                     ],
+                    logger=logger,
                 )
             case "bdi_planning_only":
                 return CompositeBehaviorMemoryManager(
@@ -488,6 +490,7 @@ async def run_experiment(
                         get_updater_behavior(),
                         BDIPlanningBehavior(),
                     ],
+                    logger=logger,
                 )
             case "forgetting_only":
                 return CompositeBehaviorMemoryManager(

@@ -56,6 +56,7 @@ def get_agent(
     data: LoveIslandPerson,
     context: generative_agents.LLMBackend,
     seed_rng: np.random.Generator,
+    logger: logging.Logger | None,
     opposite_sex_ids: list[str],
 ) -> Agent:
     return generative_agents.LLMConversationAgent(
@@ -88,6 +89,7 @@ def get_agent(
                 ),
                 LoveIslandBehavior(opposite_sex_ids),
             ],
+            logger=logger,
         ),
     )
 
@@ -119,12 +121,13 @@ class LoveIslandBehavior(generative_agents.CompositeBehaviorFactoryBase):
     ) -> "type[generative_agents.CompositeBehaviorFactoryBase.Impl]":
         return LoveIslandBehavior.Impl
 
-    def instantizate(
+    def instantiate(
         self,
         memory: generative_agents.MemoryBase,
         owner: generative_agents.MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
+        logger: logging.Logger | None = None,
     ) -> "LoveIslandBehavior.Impl":
         return LoveIslandBehavior.Impl(
             memory, owner, agent, context, self.possible_values
@@ -440,11 +443,11 @@ async def main():
     female_ids = [person.id for person in female_persons]
 
     males = [
-        get_agent(person, context, seed, opposite_sex_ids=female_ids)
+        get_agent(person, context, seed, logger, opposite_sex_ids=female_ids)
         for person in male_persons
     ]
     females = [
-        get_agent(person, context, seed, opposite_sex_ids=male_ids)
+        get_agent(person, context, seed, logger, opposite_sex_ids=male_ids)
         for person in female_persons
     ]
 

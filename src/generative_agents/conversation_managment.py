@@ -346,12 +346,22 @@ class ConversationManager:
                 },
             )
         await asyncio.gather(
-            agent1.post_conversation_hook(agent2, conversation, logger=self._logger),
-            agent2.post_conversation_hook(agent1, conversation, logger=self._logger),
+            agent1.post_conversation_hook(agent2, conversation),
+            agent2.post_conversation_hook(agent1, conversation),
         )
 
     async def run_simulation_epoch(self) -> None:
         async for pairs in self.conversation_selector.generate_epoch_pairs():
+            if self._logger:
+                self._logger.debug(
+                    f"Starting epoch with {len(pairs)} conversation pairs",
+                    extra={
+                        "pairs": [
+                            (a1.data.full_name, a2.data.full_name)
+                            for a1, a2 in pairs
+                        ]
+                    },
+                )
             await asyncio.gather(
                 *[self.__process_conversation_pair(*pair) for pair in pairs]
             )

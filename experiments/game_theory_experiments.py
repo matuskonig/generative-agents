@@ -98,12 +98,13 @@ def get_agent(
     data: SocietyAgent,
     context: generative_agents.LLMBackend,
     behaviors: list[generative_agents.CompositeBehaviorFactoryBase],
+    logger: logging.Logger | None = None,
 ):
     return generative_agents.LLMConversationAgent[SocietyAgent](
         data,
         context,
         lambda agent: generative_agents.CompositeBehaviorMemoryManager(
-            generative_agents.SimpleMemory(), agent, context, behaviors
+            generative_agents.SimpleMemory(), agent, context, behaviors, logger=logger
         ),
     )
 

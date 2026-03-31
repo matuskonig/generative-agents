@@ -126,9 +126,8 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
         self,
         other: "LLMConversationAgent",
         conversation: Conversation,
-        logger: logging.Logger | None = None,
     ) -> None:
-        await self.memory_manager.post_conversation_hook(other, conversation, logger)
+        await self.memory_manager.post_conversation_hook(other, conversation)
 
     async def pre_conversation_hook(self, other: "LLMConversationAgent") -> None:
         await self.memory_manager.pre_conversation_hook(other)
