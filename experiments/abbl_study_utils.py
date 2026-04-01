@@ -542,50 +542,53 @@ async def run_experiment(
         (id_mapping[first], id_mapping[second]) for (first, second) in dataset.edges
     )
 
-    await asyncio.gather(*[agent.get_agent_introduction_message() for agent in agents])
-    logger.info("Agents initialized.")
-    for agent in agents:
-        logger.info(
-            f"Introducing {agent.data.full_name}",
-            extra={"introduction": await agent.get_agent_introduction_message()},
+    try:
+        await asyncio.gather(
+            *[agent.get_agent_introduction_message() for agent in agents]
+        )
+        logger.info("Agents initialized.")
+        for agent in agents:
+            logger.info(
+                f"Introducing {agent.data.full_name}",
+                extra={"introduction": await agent.get_agent_introduction_message()},
+            )
+
+        match conversation_selector_type:
+            case "information_spread":
+                conversation_selector = InformationSpreadConversationSelector(
+                    structure=structure_graph,
+                    seed_nodes=[id_mapping[dataset.information_seed_agent]],
+                    seed=np.random.default_rng(seed),
+                )
+            case "full_parallel":
+                conversation_selector = FullParallelConversationSelector(
+                    structure=structure_graph,
+                    seed=np.random.default_rng(seed),
+                )
+            case "sequential":
+                conversation_selector = SequentialConversationSelector(
+                    structure=structure_graph,
+                    seed=np.random.default_rng(seed),
+                )
+
+        manager = ConversationManager(
+            conversation_selector=conversation_selector,
+            max_conversation_utterances=max_utterances,
+            logger=logger,
         )
 
-    match conversation_selector_type:
-        case "information_spread":
-            conversation_selector = InformationSpreadConversationSelector(
-                structure=structure_graph,
-                seed_nodes=[id_mapping[dataset.information_seed_agent]],
-                seed=np.random.default_rng(seed),
-            )
-        case "full_parallel":
-            conversation_selector = FullParallelConversationSelector(
-                structure=structure_graph,
-                seed=np.random.default_rng(seed),
-            )
-        case "sequential":
-            conversation_selector = SequentialConversationSelector(
-                structure=structure_graph,
-                seed=np.random.default_rng(seed),
-            )
+        epoch_responses: list[list[QuestionAnswer]] = []
 
-    manager = ConversationManager(
-        conversation_selector=conversation_selector,
-        max_conversation_utterances=max_utterances,
-        logger=logger,
-    )
-
-    epoch_responses: list[list[QuestionAnswer]] = []
-
-    for epoch in range(epochs):
-        print(
-            f"[{experiment_name}: {datetime.datetime.now()}]: Running epoch {epoch + 1}/{epochs}..."
-        )
-        await manager.run_simulation_epoch()
-        # Query all agents about whether they received the information
-        agent_responses = await asyncio.gather(
-            *[
-                agent.ask_agent_structured(
-                    f"""Based on your memory and recent conversations, check if you have received specific information originating from {id_mapping[dataset.information_seed_agent].data.full_name}.
+        for epoch in range(epochs):
+            print(
+                f"[{experiment_name}: {datetime.datetime.now()}]: Running epoch {epoch + 1}/{epochs}..."
+            )
+            await manager.run_simulation_epoch()
+            # Query all agents about whether they received the information
+            agent_responses = await asyncio.gather(
+                *[
+                    agent.ask_agent_structured(
+                        f"""Based on your memory and recent conversations, check if you have received specific information originating from {id_mapping[dataset.information_seed_agent].data.full_name}.
 
 The information is: "{dataset.injected_information}"
 
@@ -600,14 +603,27 @@ Answer YES if:
 - You have only some notation about it in your memory
 
 In short: if this information reached your node in any form, answer yes.""",
-                    response_format=QuestionAnswer,
-                    use_full_memory=True,
+                        response_format=QuestionAnswer,
+                        use_full_memory=True,
+                    )
+                    for agent in agents
+                ]
+            )
+            epoch_responses.append(agent_responses)
+            logger.debug(f"Epoch {epoch} completed. Printing memory.")
+            # Log final memory state for each agent
+            for agent in agents:
+                logger.debug(
+                    agent.data.full_name,
+                    extra={
+                        "memory": agent.memory_manager.get_tagged_full_memory(
+                            with_full_memory_record=True
+                        )
+                    },
                 )
-                for agent in agents
-            ]
-        )
-        epoch_responses.append(agent_responses)
-        logger.debug(f"Epoch {epoch} completed. Printing memory.")
+
+        manager.reset_epochs()
+
         # Log final memory state for each agent
         for agent in agents:
             logger.debug(
@@ -618,37 +634,27 @@ In short: if this information reached your node in any form, answer yes.""",
                     )
                 },
             )
-
-    manager.reset_epochs()
-
-    # Log final memory state for each agent
-    for agent in agents:
-        logger.debug(
-            agent.data.full_name,
-            extra={
-                "memory": agent.memory_manager.get_tagged_full_memory(
-                    with_full_memory_record=True
-                )
-            },
+        print(
+            f"[{experiment_name}: {datetime.datetime.now()}]: Experiment completed. Compiling results..."
         )
-    print(
-        f"[{experiment_name}: {datetime.datetime.now()}]: Experiment completed. Compiling results..."
-    )
-    experiment_result = ExperimentResult(
-        dataset=dataset,
-        experiment_name=experiment_name,
-        memory_manager_config=memory_manager_config,
-        memory_config=memory_config,
-        conversation_selector_type=conversation_selector_type,
-        updater_behavior_type=updater_behavior_type,
-        seed=seed,
-        max_utterances=max_utterances,
-        epochs=epochs,
-        wallclock_time=time.time() - start_time,
-        total_time=context.total_time,
-        completion_tokens=context.completion_tokens,
-        prompt_tokens=context.prompt_tokens,
-        total_requests=context.total_requests,
-        epoch_agents_responses=epoch_responses,
-    )
-    return experiment_result
+        experiment_result = ExperimentResult(
+            dataset=dataset,
+            experiment_name=experiment_name,
+            memory_manager_config=memory_manager_config,
+            memory_config=memory_config,
+            conversation_selector_type=conversation_selector_type,
+            updater_behavior_type=updater_behavior_type,
+            seed=seed,
+            max_utterances=max_utterances,
+            epochs=epochs,
+            wallclock_time=time.time() - start_time,
+            total_time=context.total_time,
+            completion_tokens=context.completion_tokens,
+            prompt_tokens=context.prompt_tokens,
+            total_requests=context.total_requests,
+            epoch_agents_responses=epoch_responses,
+        )
+        return experiment_result
+    except Exception as e:
+        logger.exception(f"Experiment {experiment_name} failed: {e}")
+        raise e
