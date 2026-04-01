@@ -365,28 +365,6 @@ async def main(concurrency: int, embedding_batch_size: int, use_local_embeddings
             )
         )
 
-        # B4: unitary_10
-        tg.create_task(
-            run_and_save(
-                run_experiment(
-                    get_context=get_context,
-                    dataset=dataset10,
-                    logger=get_xml_file_logger(
-                        "./logs/B4_unitary_10.log", level=logging.DEBUG
-                    ),
-                    experiment_name="B4_unitary_10",
-                    memory_manager_config=baseline_mem_mgr,
-                    memory_config=baseline_mem,
-                    conversation_selector_type="information_spread",
-                    updater_behavior_type=UpdaterBehaviorType(behavior_type="unitary"),
-                    seed=42,
-                    max_utterances=EXPERIMENT_MAX_UTTERANCES,
-                    epochs=EXPERIMENT_EPOCHS,
-                ),
-                "./results/B4_unitary_10.json",
-            )
-        )
-
         # B5: classical_10
         tg.create_task(
             run_and_save(
