@@ -22,7 +22,7 @@ from openai import (
     RateLimitError,
     omit,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from .async_helpers import Throttler
 
@@ -88,7 +88,7 @@ class EmbeddingProvider(abc.ABC):
             input_array
         ), "Embedding provider returned incorrect number of embeddings"
 
-        if len(result) == 1:
+        if isinstance(input, str):
             return result[0]
 
         return result
@@ -193,10 +193,11 @@ def with_resiliency[**P, R](
 ]:
     """Decorator that retries failed API calls with exponential backoff.
 
-    Specifically handles RateLimitError, APITimeoutError, and LengthFinishReasonError from OpenAI API.
+    Specifically handles RateLimitError, APITimeoutError, LengthFinishReasonError, and ValidationError from OpenAI API.
     Uses exponential backoff: delay = delay_sec * (exp_backoff ^ retry_count)
     For RateLimitError and APITimeoutError, retries indefinitely until success.
     For LengthFinishReasonError, retries up to `max_length_retries` times.
+    For ValidationError (invalid JSON from model), retries up to `max_length_retries` times.
 
     Args:
         delay_sec: Initial delay in seconds before first retry
@@ -210,6 +211,7 @@ def with_resiliency[**P, R](
         async def inner(*args: P.args, **kwargs: P.kwargs) -> R:
             retry_count = 0
             finish_reason_count = 0
+            validation_error_count = 0
             while True:
                 try:
                     return await func(*args, **kwargs)
@@ -220,6 +222,11 @@ def with_resiliency[**P, R](
                 except LengthFinishReasonError as e:
                     if finish_reason_count < max_length_retries:
                         finish_reason_count += 1
+                        continue
+                    raise e
+                except ValidationError as e:
+                    if validation_error_count < max_length_retries:
+                        validation_error_count += 1
                         continue
                     raise e
 

@@ -121,7 +121,7 @@ class EmbeddingMemory(MemoryBase):
             record.timestamp / self.__timestamp
         ) ** self.__time_smoothing
         embedding = cast(np.ndarray, record.embedding)
-        cosine_similarity: float = (
+        cosine_similarity: float = float(
             np.dot(embedding, query_emb)
             / np.linalg.norm(embedding)
             / np.linalg.norm(query_emb)
