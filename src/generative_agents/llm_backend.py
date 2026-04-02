@@ -5,6 +5,8 @@ from typing import (
     Any,
     Callable,
     Coroutine,
+    Literal,
+    Optional,
     Type,
     TypedDict,
     TypeVar,
@@ -12,8 +14,15 @@ from typing import (
 )
 
 import numpy as np
-from openai import APITimeoutError, AsyncClient, Omit, RateLimitError, omit
-from pydantic import BaseModel
+from openai import (
+    APITimeoutError,
+    AsyncClient,
+    LengthFinishReasonError,
+    Omit,
+    RateLimitError,
+    omit,
+)
+from pydantic import BaseModel, ValidationError
 
 from .async_helpers import Throttler
 
@@ -36,7 +45,7 @@ class LLMBackendBase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def get_structued_response(
+    async def get_structured_response(
         self,
         prompt: str,
         response_format: Type[ResponseFormatType],
@@ -72,11 +81,17 @@ class EmbeddingProvider(abc.ABC):
     @overload
     async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
     async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
+        input_array = [input] if isinstance(input, str) else input
+        result = await self._embed_impl(input_array)
+
+        assert len(result) == len(
+            input_array
+        ), "Embedding provider returned incorrect number of embeddings"
+
         if isinstance(input, str):
-            result = await self._embed_impl([input])
             return result[0]
-        else:
-            return await self._embed_impl(input)
+
+        return result
 
 
 class OpenAIEmbeddingProvider(EmbeddingProvider):
@@ -91,6 +106,9 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
         self.__model = model
 
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]:
+        if len(input) == 0:
+            return []
+
         response = await self.__client.embeddings.create(
             input=input, model=self.__model
         )
@@ -103,7 +121,13 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
 class SentenceTransformerProvider(EmbeddingProvider):
     """Local SentenceTransformer embeddings."""
 
-    def __init__(self, model_name: str, device: str = "cpu"):
+    def __init__(
+        self,
+        model_name: str,
+        device: str = "cpu",
+        batch_size: int = 32,
+        model_kwargs: dict[str, Any] | None = None,
+    ):
         try:
             from sentence_transformers import (  # type: ignore [import-not-found]
                 SentenceTransformer,
@@ -113,52 +137,72 @@ class SentenceTransformerProvider(EmbeddingProvider):
                 "sentence-transformers is not installed. "
                 "Please install it with: pip install sentence-transformers or as part of optional project dependencies [embedding]"
             )
-
-        self.__model = SentenceTransformer(model_name, device=device)
+        self.__model = SentenceTransformer(
+            model_name, device=device, model_kwargs=model_kwargs
+        )
+        self.__batch_size = batch_size
 
     async def _embed_impl(self, input: list[str]) -> list[np.ndarray]:
-        result = self.__model.encode(input, convert_to_numpy=True)
+        if len(input) == 0:
+            return []
+
+        result = self.__model.encode(
+            input, batch_size=self.__batch_size, convert_to_numpy=True
+        )
         return list(result)
 
 
 class CompletionParams(TypedDict):
     temperature: float | Omit | None
+    max_tokens: int | Omit | None
     max_completion_tokens: int | Omit | None
     top_p: float | Omit | None
     frequency_penalty: float | Omit | None
     presence_penalty: float | Omit | None
+    reasoning_effort: (
+        Optional[Literal["none", "minimal", "low", "medium", "high", "xhigh"]] | Omit
+    )
 
 
 def create_completion_params(
     temperature: float | Omit | None = omit,
     max_completion_tokens: int | Omit | None = omit,
+    max_tokens: int | Omit | None = omit,
     top_p: float | Omit | None = omit,
     frequency_penalty: float | Omit | None = omit,
     presence_penalty: float | Omit | None = omit,
+    reasoning_effort: (
+        Optional[Literal["none", "minimal", "low", "medium", "high", "xhigh"]] | Omit
+    ) = omit,
 ) -> CompletionParams:
     return CompletionParams(
         temperature=temperature,
+        max_tokens=max_tokens,
         max_completion_tokens=max_completion_tokens,
         top_p=top_p,
         frequency_penalty=frequency_penalty,
         presence_penalty=presence_penalty,
+        reasoning_effort=reasoning_effort,
     )
 
 
-def rate_limit_repeated[**P, R](
-    delay_sec: float = 1, exp_backoff: float = 1.5
+def with_resiliency[**P, R](
+    delay_sec: float = 1, exp_backoff: float = 1.5, max_length_retries: int = 2
 ) -> Callable[
     [Callable[P, Coroutine[Any, Any, R]]], Callable[P, Coroutine[Any, Any, R]]
 ]:
     """Decorator that retries failed API calls with exponential backoff.
 
-    Specifically handles RateLimitError and APITimeoutError from OpenAI API.
+    Specifically handles RateLimitError, APITimeoutError, LengthFinishReasonError, and ValidationError from OpenAI API.
     Uses exponential backoff: delay = delay_sec * (exp_backoff ^ retry_count)
-    Retries indefinitely until success (no max retry limit).
+    For RateLimitError and APITimeoutError, retries indefinitely until success.
+    For LengthFinishReasonError, retries up to `max_length_retries` times.
+    For ValidationError (invalid JSON from model), retries up to `max_length_retries` times.
 
     Args:
         delay_sec: Initial delay in seconds before first retry
         exp_backoff: Multiplier for exponential backoff (1.5 = 1.5x increase per retry)
+        max_length_retries: Maximum retries allowed for length finish reason errors (default: 2)
     """
 
     def decorator(
@@ -166,6 +210,8 @@ def rate_limit_repeated[**P, R](
     ) -> Callable[P, Coroutine[Any, Any, R]]:
         async def inner(*args: P.args, **kwargs: P.kwargs) -> R:
             retry_count = 0
+            finish_reason_count = 0
+            validation_error_count = 0
             while True:
                 try:
                     return await func(*args, **kwargs)
@@ -173,6 +219,16 @@ def rate_limit_repeated[**P, R](
                     delay = delay_sec * (exp_backoff**retry_count)
                     retry_count += 1
                     await asyncio.sleep(delay)
+                except LengthFinishReasonError as e:
+                    if finish_reason_count < max_length_retries:
+                        finish_reason_count += 1
+                        continue
+                    raise e
+                except ValidationError as e:
+                    if validation_error_count < max_length_retries:
+                        validation_error_count += 1
+                        continue
+                    raise e
 
         return inner
 
@@ -201,7 +257,7 @@ class LLMBackend(LLMBackendBase):
         self.system_prompt = default_config().get_system_prompt()
         self.__embedding_provider = embedding_provider
 
-    @rate_limit_repeated()
+    @with_resiliency(max_length_retries=0)
     async def get_text_response(
         self, prompt: str, params: CompletionParams = create_completion_params()
     ) -> str:
@@ -226,8 +282,8 @@ class LLMBackend(LLMBackendBase):
 
         return response.choices[0].message.content or ""
 
-    @rate_limit_repeated()
-    async def get_structued_response(
+    @with_resiliency(max_length_retries=2)
+    async def get_structured_response(
         self,
         prompt: str,
         response_format: Type[ResponseFormatType],
@@ -265,7 +321,7 @@ class LLMBackend(LLMBackendBase):
     @overload
     async def embed_text(self, input: list[str]) -> list[np.ndarray]: ...
 
-    @rate_limit_repeated()
+    @with_resiliency()
     async def embed_text(self, input: str | list[str]) -> np.ndarray | list[np.ndarray]:
         if not self.__embedding_provider:
             raise ValueError(

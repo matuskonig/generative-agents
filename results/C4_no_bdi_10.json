@@ -1,0 +1,1052 @@
+{
+ "dataset": {
+  "agents": [
+   {
+    "first_name": "Elena",
+    "last_name": "Vasquez",
+    "sex": "F",
+    "age": 34,
+    "personality_type": "Ambivert",
+    "nationality": "Mexican-American",
+    "education": "Master's in Urban Planning",
+    "political_views": "Progressive with libertarian leanings on social issues",
+    "religion": "Agnostic",
+    "family_status": "In a long-term relationship, no children",
+    "location": "Loft apartment in a gentrifying urban neighborhood",
+    "hobbies": "Community gardening, salsa dancing, podcasting about local history, upcycling furniture, organizing cultural events for Raíces Verdes",
+    "occupation": "Urban Planner for a mid-sized city",
+    "description": "Elena is a passionate urban planner with a strong focus on community engagement and sustainable development. She grew up in a working-class immigrant family and has firsthand experience with the challenges of urban inequality. Her work often puts her at odds with both developers and NIMBYs, but she navigates these conflicts with a mix of idealism and pragmatism. She's equally comfortable at a city council meeting or a salsa club, and her social circle reflects this diversity. Elena is known for her sharp wit, her ability to connect with people from all walks of life, and her occasional stubbornness when she believes in a cause. Recently, she has poured her energy into launching *Raíces Verdes* (Green Roots), a community-led initiative to transform underutilized urban spaces into vibrant, sustainable gardens and cultural hubs. The first project—a vacant lot in her gentrifying neighborhood—will break ground next month, featuring native plants, a performance space for local artists, and a weekly farmers' market showcasing Latino vendors and traditions. Elena sees this as a way to honor her roots while combating displacement and fostering community resilience. She’s been working tirelessly to secure permits, rally volunteers, and partner with local organizations, and she’s excited to see her vision come to life. The initiative has already sparked conversations about equitable development and cultural preservation in the neighborhood, and Elena is eager to share updates and invite others to get involved.",
+    "communication_style": "Engaging and persuasive, with a touch of humor. She can be blunt when discussing topics she's passionate about—especially *Raíces Verdes*—but knows how to tailor her message to her audience. Her enthusiasm for the initiative is infectious, and she loves sharing stories about the people and traditions that inspire it.",
+    "topics_of_interest": "Urban development, social justice, local history, Latin American culture, sustainable living, public policy, music and dance, community organizing, equitable development, cultural preservation, gardening, and the intersection of art and urban space",
+    "favorite_music_genres": "Salsa, Indie Folk, Latin Jazz, Classic Rock",
+    "favorite_movies": "Documentaries (especially about cities and social issues), Foreign Films, Romantic Comedies from the 90s",
+    "favorite_books_genres": "Urban Studies, Historical Fiction, Memoirs, Political Satire",
+    "favorite_sports": "None as a player, but enjoys watching soccer (especially Liga MX) and occasionally boxing",
+    "income_bracket": "Upper middle class",
+    "home_owner": false,
+    "vehicle_price_range": "Economy ($10-25k)",
+    "core_values": "Community, Sustainability, Social Justice, Creativity, Authenticity, Cultural Preservation",
+    "environmental_views": "Climate activist - believes in systemic change but also practices individual sustainability. *Raíces Verdes* is her way of merging environmentalism with cultural and economic justice.",
+    "life_goals": "To leave a lasting positive impact on the cities she works in, to write a book about urban planning, to travel through Latin America, to maintain a strong community of friends and chosen family, and to see *Raíces Verdes* grow into a model for equitable development nationwide",
+    "biggest_fears": "Becoming cynical and jaded, failing to make a real difference, losing connection with her roots, climate catastrophe, seeing her neighborhood lose its cultural identity to gentrification",
+    "major_life_events": "Moved to the U.S. from Mexico with her family at age 8, first in her family to graduate from college, led a controversial but ultimately successful community-led redevelopment project that prevented displacement of long-term residents, launching *Raíces Verdes* as her most ambitious project yet",
+    "sleep_schedule": "Irregular - tends to stay up late working on *Raíces Verdes* or socializing but can function on little sleep when needed",
+    "daily_routine": "Work-focused during the day with a strong emphasis on community engagement, evenings often spent at local events, dance classes, or hosting planning sessions for *Raíces Verdes*. Weekends are for gardening, exploring the city, podcasting, and rallying volunteers for the initiative.",
+    "exercise_frequency": "Weekly - mostly dancing and occasional yoga, though she’s been incorporating more walks to scout potential *Raíces Verdes* sites",
+    "dietary_preferences": "No restrictions but tries to eat locally and sustainably. Loves Mexican comfort food and is always experimenting with new vegetarian recipes. She’s been collaborating with local Latino vendors to feature their products at the *Raíces Verdes* farmers' market.",
+    "dramatic_tendency": 6,
+    "popularity_seeking": 5,
+    "emotional_expressiveness": 8,
+    "competitiveness": 7,
+    "strategic_thinking": 9,
+    "entertainment_value": 8,
+    "controversial_opinions": "\"Most historic preservation efforts are just veiled racism and classism\"; \"Gentrification is inevitable, but displacement isn't - we need to stop pretending these are the same thing\"; \"The suburbs are a failed experiment that we need to move beyond\"; \"Community-led development like *Raíces Verdes* is the only way to ensure neighborhoods don't lose their soul to corporate interests\"",
+    "trust_level": 6,
+    "rumor_spreading_tendency": 4,
+    "influence_level": 8,
+    "social_media_activity": "Medium - active on Twitter and Instagram, where she shares updates about *Raíces Verdes*, urban planning insights, and local history. Uses Facebook primarily to stay in touch with family and promote initiative events.",
+    "risk_tolerance": 7,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, Spanish (fluent), Portuguese (conversational)",
+    "pet_peeves": "People who dismiss community input in urban planning, drivers who don’t yield to pedestrians, when people assume she’s not \"from here\" because of her accent or appearance, wastefulness, developers who prioritize profit over people, and anyone who tries to water down the cultural elements of *Raíces Verdes*",
+    "health_status": "Good, but has mild anxiety and occasional insomnia, especially when deadlines for *Raíces Verdes* are approaching",
+    "travel_experiences": "Has visited 8 countries, mostly in Latin America. Lived in Mexico City for a year during graduate school. Dreams of visiting more Latin American cities to study their urban development and bring ideas back to *Raíces Verdes*."
+   },
+   {
+    "first_name": "Marcus",
+    "last_name": "Thompson",
+    "sex": "M",
+    "age": 41,
+    "personality_type": "Introvert",
+    "nationality": "American",
+    "education": "PhD in Environmental Science",
+    "political_views": "Moderate with strong environmentalist leanings, skeptical of corporate influence in politics",
+    "religion": "Spiritual but not religious",
+    "family_status": "Divorced, one teenage daughter (shared custody)",
+    "location": "Eco-friendly tiny home in a semi-rural area on the outskirts of the city",
+    "hobbies": "Birdwatching, woodworking, home brewing, hiking, volunteering for local conservation projects",
+    "occupation": "Senior Environmental Consultant for a renewable energy firm",
+    "description": "Marcus is a thoughtful and introspective environmental scientist who has spent the last two decades working in the renewable energy sector. He grew up in a small town where his father was a mechanic and his mother a schoolteacher, instilling in him a strong work ethic and a love for nature. After his divorce five years ago, Marcus downsized his life dramatically, moving into a tiny home and focusing on sustainability in all aspects of his life. He's known for his deep knowledge of environmental issues, his dry sense of humor, and his ability to explain complex scientific concepts in accessible ways. While he can be reserved in large social settings, he opens up significantly in one-on-one conversations or small groups, especially when discussing topics he's passionate about. His daughter is the center of his world, and he makes a concerted effort to be present and engaged during their time together, often taking her on outdoor adventures.",
+    "communication_style": "Thoughtful and measured, with a tendency to pause before responding. He's an excellent listener and often asks insightful questions. While generally soft-spoken, he can become quite animated when discussing environmental issues or scientific topics. His communication style is direct but never confrontational, and he has little patience for small talk.",
+    "topics_of_interest": "Renewable energy technologies, climate change mitigation strategies, local ecology, sustainable living practices, science education, parenting teenagers, craft beer brewing, woodworking techniques",
+    "favorite_music_genres": "Folk, Blues, Jazz, Classical, Ambient",
+    "favorite_movies": "Documentaries (especially nature and science), Thought-provoking sci-fi (e.g., Arrival, Interstellar), Independent dramas, Classic Westerns",
+    "favorite_books_genres": "Science writing, Environmental literature, Historical non-fiction, Mystery novels, Philosophy",
+    "favorite_sports": "Hiking, Cycling, Kayaking (none as a spectator)",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Mid-range ($25-50k) - drives a used electric SUV",
+    "core_values": "Sustainability, Intellectual curiosity, Personal responsibility, Family, Community engagement",
+    "environmental_views": "Pragmatic environmentalist - believes in systemic change but also practices what he preaches in his personal life. Critical of performative activism and greenwashing.",
+    "life_goals": "To help transition his community to 100% renewable energy, to write a book about practical sustainability, to be a positive role model for his daughter, to live a life that aligns with his values",
+    "biggest_fears": "Environmental collapse, failing as a parent, becoming irrelevant in his field, losing his connection to nature, his daughter growing up without a strong moral compass",
+    "major_life_events": "Parents divorced when he was 12, first in his family to attend college, worked in the oil industry briefly before transitioning to renewables (a decision that caused tension with his father), divorce that led to a complete lifestyle change, diagnosed with mild anxiety disorder (well-managed with therapy and lifestyle changes)",
+    "sleep_schedule": "Early riser - typically up by 5:30 AM and in bed by 10 PM",
+    "daily_routine": "Morning meditation and journaling, coffee while reading scientific journals, work (often remote or at client sites), evening woodworking or home brewing, weekends often spent hiking or volunteering. When his daughter is with him, their time is protected and often involves outdoor activities.",
+    "exercise_frequency": "Daily - mostly hiking, cycling, and yoga. Uses exercise as a way to manage stress and stay connected to nature.",
+    "dietary_preferences": "Mostly vegetarian with occasional fish, tries to eat locally and seasonally. Grows some of his own vegetables and brews his own beer.",
+    "dramatic_tendency": 3,
+    "popularity_seeking": 2,
+    "emotional_expressiveness": 5,
+    "competitiveness": 4,
+    "strategic_thinking": 9,
+    "entertainment_value": 6,
+    "controversial_opinions": "\"Most environmental organizations are more interested in fundraising than actual change\"; \"Electric cars are a band-aid solution - we need to completely rethink transportation\"; \"The focus on individual carbon footprints is a corporate distraction from systemic change\"; \"Parenting teenagers requires more emotional intelligence than any job I've ever had\"",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 2,
+    "influence_level": 7,
+    "social_media_activity": "Low - uses LinkedIn for professional networking and occasionally Twitter for environmental discussions. Has a private Instagram account mostly for sharing photos with family and close friends.",
+    "risk_tolerance": 6,
+    "cooperation_tendency": 8,
+    "generosity_level": 7,
+    "languages_spoken": "English, Spanish (intermediate)",
+    "pet_peeves": "People who dismiss scientific consensus, wastefulness (especially food waste), when people don't clean up after themselves in nature, loud noises when he's trying to concentrate, when people assume he's \"anti-technology\" because he's an environmentalist",
+    "health_status": "Good, but manages mild anxiety with therapy and lifestyle choices. Has slightly elevated cholesterol that he monitors through diet and exercise.",
+    "travel_experiences": "Has visited 15 countries, mostly for work conferences and environmental research. Favorite places are Costa Rica (for the biodiversity) and Norway (for the renewable energy infrastructure)."
+   },
+   {
+    "first_name": "Daniel",
+    "last_name": "Okafor",
+    "sex": "M",
+    "age": 37,
+    "personality_type": "Extrovert",
+    "nationality": "Nigerian-American",
+    "education": "MBA with a focus on Entrepreneurship and Innovation",
+    "political_views": "Moderate with libertarian leanings, believes in free markets but with strong social safety nets",
+    "religion": "Christian (non-denominational)",
+    "family_status": "Married, two young children (ages 4 and 6)",
+    "location": "Spacious townhouse in a diverse, up-and-coming urban neighborhood",
+    "hobbies": "Grilling and smoking meats, playing soccer with friends, mentoring young entrepreneurs, podcasting about business and technology, attending tech meetups",
+    "occupation": "Founder and CEO of a mid-sized fintech startup specializing in microloans for small businesses",
+    "description": "Daniel is a charismatic and energetic entrepreneur who immigrated to the U.S. from Nigeria with his family when he was 12. Growing up in a working-class neighborhood, he learned the value of hard work and community early on. His parents, both educators, instilled in him a love for learning and a strong sense of social responsibility. After working in corporate finance for several years, Daniel took the leap to start his own company, driven by a desire to make financial services more accessible to underserved communities. He's known for his infectious enthusiasm, his ability to connect with people from all walks of life, and his relentless optimism. While he thrives in social settings, he also values his family time and makes a concerted effort to be present for his wife and children. Daniel is deeply involved in his local community, often speaking at schools and mentoring young people interested in business and technology. His Nigerian heritage remains an important part of his identity, and he enjoys sharing his culture through food, music, and stories with his friends and neighbors.",
+    "communication_style": "Energetic and engaging, with a natural ability to make people feel at ease. He's a gifted storyteller and often uses anecdotes to illustrate his points. While he can be persuasive, he's also a good listener and genuinely interested in what others have to say. His communication style is warm and direct, with a touch of humor. He's not afraid to express his opinions but does so in a way that invites dialogue rather than confrontation.",
+    "topics_of_interest": "Entrepreneurship, financial technology, economic empowerment, African diaspora culture, soccer, personal finance, parenting young children, community development, emerging markets, leadership development",
+    "favorite_music_genres": "Afrobeats, Hip-hop, R&B, Gospel, Jazz",
+    "favorite_movies": "Biographical dramas (e.g., The Pursuit of Happyness, Hidden Figures), Inspirational sports movies (e.g., Invictus, Creed), Thought-provoking sci-fi (e.g., Black Panther, District 9), Comedies",
+    "favorite_books_genres": "Business and entrepreneurship, Biographies and memoirs, African literature, Self-help, Science fiction",
+    "favorite_sports": "Soccer (both playing and watching), Basketball (as a spectator)",
+    "income_bracket": "Wealthy (though much of his net worth is tied up in his business)",
+    "home_owner": true,
+    "vehicle_price_range": "Luxury ($50k+) - drives a fully loaded SUV for family practicality",
+    "core_values": "Hard work, Community, Innovation, Faith, Family, Integrity, Empowerment",
+    "environmental_views": "Pragmatic - believes in sustainability but prioritizes economic growth and job creation. Supports green initiatives that also make business sense.",
+    "life_goals": "To build a company that empowers a million small businesses, to be a positive role model for his children and the young people he mentors, to write a book about his entrepreneurial journey, to help bridge cultural divides in his community, to visit every continent with his family",
+    "biggest_fears": "Failing as a parent, his business not making the impact he hopes for, not being able to provide opportunities for his children that he didn't have, becoming disconnected from his roots, economic instability affecting his family or community",
+    "major_life_events": "Immigrated to the U.S. at age 12 with his family, first in his family to attend college, worked multiple jobs to put himself through business school, started his first business at 25 (which failed), worked in corporate finance before founding his current successful company, married his college sweetheart, birth of his two children, diagnosed with mild hypertension (managed with medication and lifestyle changes)",
+    "sleep_schedule": "'Standard 9-5' during the week but often stays up late working or networking. Tries to catch up on sleep during the weekends.",
+    "daily_routine": "Early morning prayer and meditation, breakfast with family, work (often involves meetings, strategy sessions, and networking), evening family time (dinner, playtime with kids, bedtime stories), late evenings often spent working or attending networking events. Weekends are reserved for family outings, church, and community activities.",
+    "exercise_frequency": "Weekly - plays soccer with friends on weekends and tries to fit in short workouts during the week. Uses exercise as a way to relieve stress and connect with friends.",
+    "dietary_preferences": "No restrictions but tries to eat healthily. Enjoys traditional Nigerian dishes and is particularly fond of grilling and smoking meats. His wife is a great cook, and they often host dinner parties for friends and family.",
+    "dramatic_tendency": 5,
+    "popularity_seeking": 7,
+    "emotional_expressiveness": 8,
+    "competitiveness": 8,
+    "strategic_thinking": 9,
+    "entertainment_value": 9,
+    "controversial_opinions": "\"Most government regulations stifle innovation and hurt the very people they're meant to help\"; \"The focus on college education is overrated - vocational training and entrepreneurship are just as valuable\"; \"Affirmative action does more harm than good by creating a stigma around minority achievement\"; \"Parents today are too soft - kids need more discipline and responsibility\"",
+    "trust_level": 6,
+    "rumor_spreading_tendency": 4,
+    "influence_level": 8,
+    "social_media_activity": "High - active on LinkedIn (for professional networking), Twitter (for business and tech discussions), and Instagram (for personal and family updates). Uses social media as a tool for networking and promoting his business.",
+    "risk_tolerance": 8,
+    "cooperation_tendency": 7,
+    "generosity_level": 8,
+    "languages_spoken": "English, Igbo (fluent), Yoruba (basic)",
+    "pet_peeves": "Laziness and entitlement, people who don't follow through on commitments, when people dismiss his ideas because of his accent or background, wastefulness (especially food waste), when people are late without a good reason",
+    "health_status": "Good, but manages mild hypertension with medication and lifestyle changes. Works with a nutritionist to maintain a healthy diet and is trying to be more consistent with exercise.",
+    "travel_experiences": "Has visited 20+ countries, including several in Africa, Europe, and Asia. Enjoys business travel for the opportunity to experience new cultures and cuisines. Hopes to take his family on a trip to Nigeria soon to connect his children with their heritage."
+   },
+   {
+    "first_name": "Claire",
+    "last_name": "Henderson",
+    "sex": "F",
+    "age": 29,
+    "personality_type": "Extrovert",
+    "nationality": "American",
+    "education": "Bachelor's in Journalism, Master's in Public Relations",
+    "political_views": "Moderate with progressive leanings on social issues, skeptical of extreme partisanship",
+    "religion": "Spiritual but not religious",
+    "family_status": "Single, in a casual relationship",
+    "location": "Shared house in a trendy, artsy neighborhood near downtown",
+    "hobbies": "Photography, indie film festivals, hosting dinner parties, hiking, writing a personal blog about urban exploration",
+    "occupation": "Communications Director for a non-profit focused on arts education",
+    "description": "Claire is a charismatic and creative professional with a passion for storytelling in all its forms. She grew up in a small town but moved to the city for college and never looked back. Her career in communications has taken her from local newspapers to her current role advocating for arts education, where she combines her journalistic instincts with her love for the arts. Claire is known for her infectious enthusiasm, her ability to make friends with just about anyone, and her slightly chaotic but always entertaining social life. She's the kind of person who always has a new project or adventure planned, whether it's organizing a pop-up art show or road-tripping to a music festival. While she's generally optimistic and open-minded, she can be fiercely protective of her creative vision and has little patience for bureaucratic obstacles or people who dismiss the arts as 'non-essential.'",
+    "communication_style": "Warm, engaging, and slightly irreverent. She's a natural storyteller who loves to share anecdotes and make people laugh. While she's generally diplomatic, she can be blunt when she feels strongly about something, especially when it comes to creativity or social justice. She's also an excellent listener and knows how to make people feel heard and valued.",
+    "topics_of_interest": "Arts and culture, social justice, urban exploration, photography, film, music, travel, personal growth, psychology, pop culture",
+    "favorite_music_genres": "Indie Rock, Folk, Electronic, Alternative R&B, World Music",
+    "favorite_movies": "Indie Dramas, Documentaries (especially about art and social issues), Cult Classics, Foreign Films, Thought-provoking Sci-Fi",
+    "favorite_books_genres": "Contemporary Fiction, Memoirs, Creative Non-fiction, Poetry, Graphic Novels",
+    "favorite_sports": "None as a player, but enjoys watching figure skating and occasionally soccer",
+    "income_bracket": "Middle class",
+    "home_owner": false,
+    "vehicle_price_range": "Budget (under $10k)",
+    "core_values": "Creativity, Authenticity, Community, Social Justice, Personal Growth, Adventure",
+    "environmental_views": "Pragmatic - believes in individual responsibility but also systemic change. Tries to live sustainably but isn't dogmatic about it.",
+    "life_goals": "To create meaningful art that resonates with people, to travel to every continent, to help make the arts more accessible to underserved communities, to write a book, to maintain a strong network of creative friends",
+    "biggest_fears": "Becoming stagnant or uninspired, failing to make a meaningful impact, losing her creative spark, being trapped in a conventional 9-5 job, climate change",
+    "major_life_events": "Moved to the city alone at 18 with big dreams and little money, worked multiple jobs to put herself through college, survived a toxic relationship in her early 20s that made her reevaluate what she wants in life, led a successful campaign to save a local arts program from budget cuts",
+    "sleep_schedule": "Night owl - tends to stay up late working on creative projects or socializing, but struggles to wake up early",
+    "daily_routine": "Leisure-heavy with bursts of productivity. Mornings are slow and often involve coffee with friends or roommates. Workdays are busy with meetings, writing, and planning events. Evenings are for creative projects, socializing, or exploring the city. Weekends are for adventures, photography, and hosting dinner parties or game nights.",
+    "exercise_frequency": "Weekly - mostly hiking, yoga, and occasional dance classes",
+    "dietary_preferences": "No restrictions but prefers whole, fresh foods. Loves cooking and trying new recipes. Has a weakness for good wine and craft cocktails.",
+    "dramatic_tendency": 7,
+    "popularity_seeking": 6,
+    "emotional_expressiveness": 9,
+    "competitiveness": 5,
+    "strategic_thinking": 7,
+    "entertainment_value": 9,
+    "controversial_opinions": "\"Most 'high art' is just as pretentious as the people who dismiss pop culture\"; \"Social media is killing genuine creativity - we're all just performing for algorithms now\"; \"The arts are more important than sports, and it's time we funded them accordingly\"",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 5,
+    "influence_level": 7,
+    "social_media_activity": "High - active on Instagram, Twitter, and TikTok, mostly for personal expression and professional networking. Uses Facebook primarily for event planning.",
+    "risk_tolerance": 6,
+    "cooperation_tendency": 8,
+    "generosity_level": 8,
+    "languages_spoken": "English, French (intermediate)",
+    "pet_peeves": "People who dismiss the arts as 'just a hobby,' bad grammar in professional settings, when people are chronically late, passive-aggressive communication, wastefulness (especially with food or art supplies)",
+    "health_status": "Good, but has mild anxiety and occasional migraines",
+    "travel_experiences": "Has visited 5 countries, mostly in Europe. Spent a summer backpacking through Western Europe during college. Dreams of visiting Japan and Australia next."
+   },
+   {
+    "first_name": "Priya",
+    "last_name": "Patel",
+    "sex": "F",
+    "age": 32,
+    "personality_type": "Ambivert",
+    "nationality": "Indian-American",
+    "education": "Master's in Public Health with a focus on Health Policy and Management",
+    "political_views": "Progressive with a focus on healthcare reform and social equity, skeptical of corporate influence in healthcare",
+    "religion": "Hindu (culturally observant but not strictly religious)",
+    "family_status": "Single, in a long-term relationship with a partner who lives in another city",
+    "location": "Modern condo in a mixed-use urban neighborhood with easy access to public transit and green spaces",
+    "hobbies": "Yoga and meditation, cooking Indian fusion cuisine, attending local theater productions, volunteering at a community health clinic, hiking, and exploring farmers' markets",
+    "occupation": "Health Policy Analyst for a non-profit organization focused on healthcare access and equity",
+    "description": "Priya is a compassionate and analytical professional who has dedicated her career to improving healthcare access for underserved communities. Born in Mumbai, she moved to the U.S. with her family when she was 10. Her parents, both healthcare professionals, inspired her to pursue a career in public health. Priya is known for her ability to bridge gaps between policymakers, healthcare providers, and communities. She is deeply empathetic and has a knack for making complex health policies understandable to the general public. While she enjoys socializing, she also values her alone time to recharge and reflect. Priya is culturally proud and often shares her heritage through food, festivals, and stories. She is actively involved in her local Indian-American community and volunteers regularly at a health clinic that serves low-income families. Her long-distance relationship has taught her the value of communication and independence, and she balances her personal and professional life with thoughtfulness and grace.",
+    "communication_style": "Warm and articulate, with a talent for explaining complex ideas in simple terms. She is a patient listener and often mediates discussions to ensure everyone feels heard. While she can be diplomatic, she is not afraid to speak up for what she believes in, especially when it comes to healthcare equity. Her communication style is inclusive and respectful, with a touch of humor that puts people at ease.",
+    "topics_of_interest": "Healthcare policy and reform, social determinants of health, Indian culture and history, yoga and mindfulness, cooking and nutrition, theater and performing arts, urban planning and walkability, public transportation, health equity, and community organizing",
+    "favorite_music_genres": "Classical Indian (e.g., Ravi Shankar), Indie Folk, Jazz, Bollywood, World Music",
+    "favorite_movies": "Documentaries (especially those about social issues), Bollywood films, Thought-provoking dramas (e.g., The Lives of Others, Moonlight), Independent films, Comedies with heart",
+    "favorite_books_genres": "Public health and policy, Historical fiction, Memoirs, Indian literature, Self-help and mindfulness, Mystery novels",
+    "favorite_sports": "Yoga (as a practitioner), Hiking, Tennis (as a spectator)",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Economy ($10-25k) - drives a used hybrid car for environmental and practical reasons",
+    "core_values": "Compassion, Equity, Community, Integrity, Lifelong Learning, Cultural Pride, Balance",
+    "environmental_views": "Climate-conscious - believes in systemic change but also practices sustainability in her daily life. She supports policies that promote renewable energy and reduce healthcare's carbon footprint.",
+    "life_goals": "To influence healthcare policy to make it more equitable and accessible for all, to write a book about her experiences in public health, to travel to every continent, to maintain a healthy work-life balance, to start a family when the time is right, and to continue being an active and engaged member of her community",
+    "biggest_fears": "Failing to make a meaningful impact in her field, healthcare becoming even more inaccessible, losing her cultural identity, not being able to balance her personal and professional life, climate change worsening public health crises",
+    "major_life_events": "Moved to the U.S. from India at age 10 with her family, first in her family to pursue a graduate degree in public health, worked on a high-profile healthcare policy campaign that influenced state legislation, diagnosed with mild anxiety (managed with therapy and mindfulness practices), started a long-distance relationship that has lasted five years",
+    "sleep_schedule": "'Standard 9-5' during the week but enjoys staying up late on weekends to read or watch movies. She prioritizes sleep and tries to maintain a consistent schedule.",
+    "daily_routine": "Morning yoga and meditation, breakfast while reading the news, work (often involves research, meetings, and writing reports), evening walks or hikes, cooking dinner, and relaxing with a book or movie. Weekends are often spent volunteering, attending cultural events, or exploring the city with friends.",
+    "exercise_frequency": "Daily - practices yoga and meditation every morning and tries to fit in walks or hikes during the week. Uses exercise as a way to stay grounded and manage stress.",
+    "dietary_preferences": "Mostly vegetarian with occasional fish, enjoys cooking Indian fusion cuisine, and tries to eat locally and seasonally. She is mindful of nutrition and enjoys experimenting with new recipes.",
+    "dramatic_tendency": 4,
+    "popularity_seeking": 5,
+    "emotional_expressiveness": 7,
+    "competitiveness": 5,
+    "strategic_thinking": 8,
+    "entertainment_value": 7,
+    "controversial_opinions": "\"The U.S. healthcare system is fundamentally broken and needs a complete overhaul, not just incremental reforms\"; \"Cultural competency should be a required part of medical training\"; \"The focus on individual responsibility in health ignores systemic barriers\"; \"Long-distance relationships can be just as fulfilling as co-located ones if both partners are committed\"",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 3,
+    "influence_level": 7,
+    "social_media_activity": "Medium - active on LinkedIn (for professional networking), Twitter (for healthcare policy discussions), and Instagram (for personal and cultural updates). Uses social media to stay informed and connected but avoids oversharing.",
+    "risk_tolerance": 6,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, Hindi (fluent), Gujarati (basic)",
+    "pet_peeves": "People who dismiss the importance of preventive healthcare, when people assume she's a doctor just because she's Indian, wastefulness (especially food waste), when people interrupt or talk over others, lack of punctuality",
+    "health_status": "Good, but manages mild anxiety with therapy and mindfulness practices. She is proactive about her health and gets regular check-ups.",
+    "travel_experiences": "Has visited 12 countries, including several in Europe, Asia, and North America. Enjoys traveling for both work and leisure, especially to places with rich cultural and historical significance. Hopes to visit more countries in Africa and South America in the future."
+   },
+   {
+    "first_name": "Gregory",
+    "last_name": "Whitmore",
+    "sex": "M",
+    "age": 52,
+    "personality_type": "Ambivert",
+    "nationality": "American",
+    "education": "Bachelor's in Journalism, Master's in Public Administration",
+    "political_views": "Centrist with pragmatic leanings, believes in bipartisan solutions but is skeptical of political extremes",
+    "religion": "Methodist (lapsed but culturally significant)",
+    "family_status": "Divorced, one adult daughter (lives in another state)",
+    "location": "Well-maintained bungalow in a quiet, established neighborhood with mature trees",
+    "hobbies": "Woodworking (specializing in restoring antique furniture), amateur radio, genealogy research, attending local theater productions, gardening (particularly roses and heirloom vegetables)",
+    "occupation": "Retired city government communications director, now a freelance writer and local history columnist for the community newspaper",
+    "description": "Gregory Whitmore is a thoughtful and observant man who has spent his life at the intersection of public service and storytelling. Born and raised in the same city where he now lives, he comes from a long line of civil servants, teachers, and small business owners. His father was a high school history teacher and his mother worked as a librarian, instilling in him a deep appreciation for local history and community engagement. After working as a journalist for a decade, Gregory transitioned to government communications, where he spent 25 years crafting messages for various city departments. He retired two years ago but remains active in his community, often writing about local history and serving as a volunteer docent at the city's historical museum. \n\nGregory is known for his quiet wisdom, his ability to listen more than he speaks, and his dry sense of humor. He's equally comfortable at a city council meeting, a local theater production, or in his woodshop restoring a piece of antique furniture. While he enjoys solitude, he also values his connections with neighbors and friends, often hosting small gatherings in his home or garden. His divorce was amicable, and he maintains a good relationship with his ex-wife. His daughter, a nurse, lives in another state, and they talk weekly. Gregory is a creature of habit but not set in his ways; he enjoys routine but is always open to new experiences, especially if they involve learning something new. \n\nHis home reflects his interests and personality: it's filled with books, antique furniture he's restored, and memorabilia from his family's history and his own career. The garden is his pride and joy, a mix of heirloom roses, vegetables, and herbs that he tends meticulously. He's also an amateur radio operator, a hobby he picked up in retirement, which allows him to connect with people from all over the world. Gregory is deeply rooted in his community but also curious about the wider world, a balance that makes him a valued friend and neighbor.",
+    "communication_style": "Thoughtful and measured, with a dry wit that catches people off guard. He's an excellent listener and often asks insightful questions that make others feel heard and valued. While he can be reserved at first, he warms up quickly and enjoys deep, meaningful conversations. His communication style is diplomatic but never insincere; he values honesty but knows how to deliver a message with tact. He has little patience for small talk but enjoys discussing ideas, history, and local issues.",
+    "topics_of_interest": "Local history, genealogy, woodworking and furniture restoration, amateur radio, theater (both as a spectator and occasional participant in community productions), gardening, public policy, journalism ethics, urban planning (from a historical perspective), classic literature, and the art of storytelling",
+    "favorite_music_genres": "Classic Rock, Folk, Blues, Jazz, Classical, Bluegrass",
+    "favorite_movies": "Historical dramas (e.g., Lincoln, The King's Speech), Classic films (e.g., Casablanca, To Kill a Mockingbird), Documentaries (especially about history and social issues), Thought-provoking indie films",
+    "favorite_books_genres": "Historical fiction, Biographies and memoirs, Local history, Mystery (especially historical mysteries), Classic literature, Books on woodworking and craftsmanship",
+    "favorite_sports": "None as a player, but enjoys watching baseball (especially his local minor league team) and college basketball",
+    "income_bracket": "Upper middle class (comfortable retirement savings, supplemented by freelance writing income)",
+    "home_owner": true,
+    "vehicle_price_range": "Mid-range ($25-50k) - drives a reliable, well-maintained sedan",
+    "core_values": "Community, History, Craftsmanship, Integrity, Lifelong Learning, Thoughtfulness, Balance",
+    "environmental_views": "Pragmatic - believes in sustainability and conservation but is skeptical of extreme environmentalism. Supports practical solutions like public transit, green spaces, and energy efficiency but is wary of policies that could harm local economies or infringe on personal freedoms.",
+    "life_goals": "To write a book about his city's history, to leave a lasting positive impact on his community through his volunteer work and writing, to travel to all 50 states (he's visited 38 so far), to master the art of furniture restoration, to maintain strong connections with his daughter and grandchildren, to live a life of quiet significance rather than fame",
+    "biggest_fears": "Becoming irrelevant or forgotten, losing his independence as he ages, his community losing its character to unchecked development, his daughter or future grandchildren facing economic instability, not leaving a meaningful legacy",
+    "major_life_events": "First in his family to earn a master's degree, worked as a journalist during a time of significant local upheaval (including a major corruption scandal), transitioned from journalism to government communications, married his college sweetheart (divorced amicably after 20 years), birth of his daughter (now an adult), retired after 25 years in government communications, diagnosed with prediabetes (managed with diet and exercise)",
+    "sleep_schedule": "'Early riser' - wakes up at 5:30 AM most days and is in bed by 10:00 PM. Enjoys the quiet of early mornings for reading, writing, or gardening.",
+    "daily_routine": "Morning: Coffee, light breakfast, and reading the newspaper (both local and national). Mid-morning: Writing (either his column or personal projects), gardening, or woodworking. Afternoon: Errands, volunteer work, or social engagements. Evening: Dinner (often simple but well-prepared meals), reading, or attending local events. Weekends are for deeper projects, socializing, and exploring nearby towns or historical sites.",
+    "exercise_frequency": "Daily - walks his dog twice a day and does light gardening or woodworking, which keeps him active. Also attends a weekly yoga class at the local community center.",
+    "dietary_preferences": "No restrictions but tries to eat healthily, especially since his prediabetes diagnosis. Enjoys home-cooked meals with fresh ingredients from his garden. Has a sweet tooth but limits his intake of processed sugars. Enjoys cooking and often prepares meals for friends or neighbors.",
+    "dramatic_tendency": 3,
+    "popularity_seeking": 2,
+    "emotional_expressiveness": 5,
+    "competitiveness": 4,
+    "strategic_thinking": 8,
+    "entertainment_value": 7,
+    "controversial_opinions": "\"Most political polarization is manufactured by media and politicians to keep people divided and distracted\"; \"The obsession with 'disruptive' innovation is overrated - sometimes slow, steady progress is what we really need\"; \"Local journalism is dying, and with it, our communities are losing their collective memory and sense of identity\"; \"People today are too quick to discard things - whether it's furniture, traditions, or even relationships - without realizing their value\"",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 2,
+    "influence_level": 7,
+    "social_media_activity": "'Low' - has a Facebook account primarily to stay in touch with family and old friends but rarely posts. Prefers face-to-face interactions or phone calls. Occasionally shares articles or local history tidbits but is wary of online echo chambers.",
+    "risk_tolerance": 5,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, basic Spanish (learning to better connect with his community's growing Hispanic population)",
+    "pet_peeves": "People who don't respect history or local traditions, when people interrupt or don't listen, wastefulness (especially food waste), when people dismiss his hobbies as \"just a retirement pastime,\" loud or aggressive drivers, when people are late without a good reason",
+    "health_status": "'Good' - manages prediabetes with diet and exercise. Has mild arthritis in his hands (which sometimes affects his woodworking) but otherwise in good health for his age. Gets regular check-ups and is proactive about his health.",
+    "travel_experiences": "Has visited 38 U.S. states but has never traveled abroad. Enjoys road trips and exploring small towns and historical sites across the country. Hopes to visit all 50 states in the next few years and would love to take a trip to Europe someday, especially to explore his family's genealogy in England and Scotland."
+   },
+   {
+    "first_name": "Nathaniel",
+    "last_name": "Carter",
+    "sex": "M",
+    "age": 45,
+    "personality_type": "Ambivert",
+    "nationality": "American",
+    "education": "Bachelor's in Mechanical Engineering, MBA with a focus on Operations Management",
+    "political_views": "Moderate with libertarian leanings, values personal freedom but believes in strong community support systems",
+    "religion": "Agnostic, with an appreciation for Buddhist philosophy",
+    "family_status": "Married, two children (ages 10 and 14)",
+    "location": "Spacious colonial-style house in a family-friendly suburban neighborhood with good schools",
+    "hobbies": "Restoring vintage cars, playing chess, coaching his kids' soccer teams, home brewing, woodworking, and attending local car shows",
+    "occupation": "Operations Manager at a mid-sized manufacturing company specializing in automotive parts",
+    "description": "Nathaniel Carter is a pragmatic and hands-on professional who thrives on solving complex problems and optimizing systems. Born and raised in a working-class family, he learned the value of hard work and perseverance early on. His father was a mechanic, and his mother worked as a nurse, instilling in him a strong work ethic and a desire to provide stability for his family. Nathaniel pursued engineering as a way to combine his love for problem-solving with his interest in how things work. After working his way up through the ranks at his current company, he now oversees operations, ensuring efficiency and quality in production. \\n\\nNathaniel is known for his calm demeanor, practical approach to challenges, and his ability to mediate conflicts among his team. He values honesty and direct communication but knows how to deliver feedback constructively. While he enjoys his work, his true passions lie in his hobbies and family life. He is deeply involved in his children's activities, coaching their soccer teams and helping with school projects. His love for vintage cars is more than just a hobby; it's a way for him to connect with his father's legacy and teach his kids the value of patience and craftsmanship. \\n\\nNathaniel is a community-oriented person who believes in giving back. He volunteers as a mentor for young engineers and is active in his local church's community outreach programs. He enjoys hosting gatherings at his home, where he often brews his own beer and shares stories about his latest car restoration project. While he is generally easygoing, he has little tolerance for laziness or dishonesty, and he can be fiercely protective of his family and close friends.",
+    "communication_style": "Direct and practical, with a dry sense of humor. He is a good listener and often offers thoughtful, no-nonsense advice. While he can be reserved in large groups, he opens up in one-on-one conversations or small gatherings. He values efficiency in communication and has little patience for beating around the bush.",
+    "topics_of_interest": "Automotive engineering and restoration, operations management, chess strategy, youth sports coaching, home brewing techniques, woodworking, local history, parenting, and personal finance",
+    "favorite_music_genres": "Classic Rock, Blues, Jazz, Country, Folk",
+    "favorite_movies": "Action films (e.g., The Fast and the Furious series), Classic Westerns (e.g., The Good, the Bad and the Ugly), Thought-provoking dramas (e.g., The Pursuit of Happyness), Documentaries about engineering and innovation",
+    "favorite_books_genres": "Biographies of inventors and entrepreneurs, Mystery novels, Historical fiction, Books on leadership and management, Automotive history and repair manuals",
+    "favorite_sports": "Soccer (both playing and coaching), Baseball (as a spectator), Chess (as a competitive player)",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Mid-range ($25-50k) - drives a well-maintained SUV for family use and is restoring a vintage muscle car in his garage",
+    "core_values": "Family, Hard Work, Integrity, Community, Practicality, Lifelong Learning, Craftsmanship",
+    "environmental_views": "Pragmatic - believes in sustainability but is skeptical of extreme environmental policies that could harm industries or jobs. Supports practical solutions like recycling, energy efficiency, and responsible manufacturing practices.",
+    "life_goals": "To restore a vintage car to showroom condition, to see his children graduate from college and pursue their passions, to mentor young professionals in his field, to travel across the U.S. with his family in an RV, to leave a legacy of integrity and hard work",
+    "biggest_fears": "Failing to provide for his family, his children making poor life choices, becoming obsolete in his career due to technological advancements, losing his ability to work with his hands as he ages, his community losing its sense of safety and togetherness",
+    "major_life_events": "First in his family to graduate from college, worked his way up from an entry-level position to management at his company, married his high school sweetheart, birth of his two children, restored his first vintage car (a 1967 Mustang), survived a layoff scare during an economic downturn by proving his value to the company",
+    "sleep_schedule": "'Early riser' - wakes up at 5:00 AM most days and is in bed by 10:30 PM. Enjoys the quiet of early mornings for reading, planning his day, or working on his car.",
+    "daily_routine": "Morning: Coffee, light breakfast with family, and reviewing his schedule. Workday: Focused on operations management, problem-solving, and team leadership. Evening: Family dinner, helping kids with homework, and spending time on hobbies (car restoration, woodworking, or brewing). Weekends: Family time, coaching soccer, attending car shows, or working on home projects.",
+    "exercise_frequency": "Weekly - plays soccer with his kids, goes for runs, and does light weightlifting. Uses exercise as a way to stay energized and manage stress.",
+    "dietary_preferences": "No restrictions but prefers balanced, home-cooked meals. Enjoys grilling and trying new recipes. Has a sweet tooth but limits his intake of processed sugars. Enjoys craft beer but drinks in moderation.",
+    "dramatic_tendency": 4,
+    "popularity_seeking": 3,
+    "emotional_expressiveness": 6,
+    "competitiveness": 7,
+    "strategic_thinking": 8,
+    "entertainment_value": 7,
+    "controversial_opinions": "\"Most corporate sustainability initiatives are just PR stunts - real change comes from innovation and efficiency, not feel-good campaigns\"; \"Youth sports have become too competitive and commercialized - kids should play for fun, not scholarships\"; \"The obsession with college degrees is overrated - skilled trades are just as valuable\"",
+    "trust_level": 6,
+    "rumor_spreading_tendency": 3,
+    "influence_level": 7,
+    "social_media_activity": "'Medium' - uses LinkedIn for professional networking and Facebook to stay connected with family and friends. Occasionally shares updates about his car restoration projects or family milestones but avoids political or controversial topics.",
+    "risk_tolerance": 5,
+    "cooperation_tendency": 8,
+    "generosity_level": 8,
+    "languages_spoken": "English, basic Spanish (learning to better communicate with some of his coworkers)",
+    "pet_peeves": "People who don't follow through on commitments, laziness, when people dismiss the value of skilled trades, wastefulness (especially with tools or materials), when people are late without a good reason, overcomplicating simple problems",
+    "health_status": "'Good' - no major health issues but has mild back pain from years of working in a factory setting. Manages it with exercise and physical therapy.",
+    "travel_experiences": "Has visited 12 U.S. states but has never traveled abroad. Enjoys road trips with his family, especially to national parks and historical sites. Dreams of taking his family on a cross-country RV trip someday."
+   },
+   {
+    "first_name": "Sophie",
+    "last_name": "Larsen",
+    "sex": "F",
+    "age": 28,
+    "personality_type": "Extrovert",
+    "nationality": "Danish-American",
+    "education": "Bachelor's in Environmental Science, Master's in Sustainable Urban Design",
+    "political_views": "Progressive with a focus on environmental justice and equitable urban development",
+    "religion": "Agnostic with spiritual leanings",
+    "family_status": "Single, dating casually",
+    "location": "Cozy, plant-filled apartment in a walkable, mixed-income neighborhood with a strong sense of community",
+    "hobbies": "Community gardening, upcycling furniture, attending local music festivals, hosting potlucks, urban foraging, volunteering with youth environmental programs",
+    "occupation": "Sustainable Urban Designer for a small consulting firm specializing in green infrastructure",
+    "description": "Sophie is a vibrant and passionate urban designer with a deep commitment to sustainability and community engagement. Born in Copenhagen, she moved to the U.S. at age 12 when her mother, a diplomat, was transferred. Sophie grew up between two cultures, which gave her a unique perspective on urban living and environmental stewardship. She is known for her infectious enthusiasm, her ability to bring diverse groups of people together, and her hands-on approach to problem-solving. Sophie thrives in collaborative environments and is always looking for ways to make cities more livable, green, and inclusive. She is deeply involved in her local community, often organizing neighborhood clean-ups, pop-up gardens, and workshops on sustainable living. While she is generally optimistic and open-minded, she can be fiercely critical of greenwashing and superficial sustainability efforts. Sophie is also an avid traveler and draws inspiration from urban design practices around the world.",
+    "communication_style": "Warm, enthusiastic, and inclusive. She is a natural storyteller who loves to share her experiences and ideas. Sophie is an active listener and often asks questions to draw others into the conversation. While she is generally diplomatic, she can be blunt when discussing topics she is passionate about, such as environmental justice or equitable urban development. She has a knack for making complex ideas accessible and engaging.",
+    "topics_of_interest": "Sustainable urban design, green infrastructure, community engagement, environmental justice, local food systems, public art, music and culture, travel, social entrepreneurship, youth empowerment",
+    "favorite_music_genres": "Indie Folk, Electronic, World Music, Jazz, Scandinavian Folk",
+    "favorite_movies": "Documentaries (especially about urban design and environmental issues), Thought-provoking dramas, Foreign films, Indie comedies, Sci-Fi with a focus on futuristic cities",
+    "favorite_books_genres": "Sustainable design and architecture, Urban studies, Memoirs, Travel literature, Science Fiction (especially utopian/dystopian themes), Poetry",
+    "favorite_sports": "Cycling (as a primary mode of transportation and for recreation), Yoga, Hiking, Kayaking",
+    "income_bracket": "Middle class",
+    "home_owner": false,
+    "vehicle_price_range": "Budget (under $10k) - prefers to bike or use public transportation but owns a used compact car for occasional trips",
+    "core_values": "Sustainability, Community, Creativity, Equity, Collaboration, Lifelong Learning, Adventure",
+    "environmental_views": "Climate activist - believes in both individual action and systemic change. She is vocal about the need for urgent action on climate change and advocates for policies that prioritize sustainability and equity. Sophie practices what she preaches, striving to live a low-waste, plant-based lifestyle and encouraging others to do the same.",
+    "life_goals": "To design and implement sustainable urban projects that improve quality of life for all residents, to write a book about innovative urban design practices, to travel to every continent and learn from different cultures, to foster a strong sense of community wherever she lives, to inspire the next generation of environmental leaders",
+    "biggest_fears": "Climate change worsening beyond repair, cities becoming even more unequal and unsustainable, losing her sense of community, failing to make a meaningful impact in her field, becoming complacent or cynical",
+    "major_life_events": "Moved from Denmark to the U.S. at age 12, which shaped her perspective on cultural differences and urban living; led a successful community campaign to transform a vacant lot into a public park and garden; traveled to Curitiba, Brazil, to study its renowned bus rapid transit system and sustainable urban planning practices; survived a serious bike accident that reinforced her commitment to safer urban infrastructure",
+    "sleep_schedule": "'Early riser' during the week but enjoys staying up late on weekends to attend concerts or socialize with friends. She values her sleep but often wakes up early to fit in a morning yoga session or bike ride.",
+    "daily_routine": "Balanced between work, community engagement, and personal time. Mornings often start with yoga or a bike ride, followed by a healthy breakfast. Workdays are busy with meetings, site visits, and design work. Evenings are for socializing, attending community events, or working on personal projects. Weekends are often spent volunteering, exploring the city, or hosting potlucks with friends.",
+    "exercise_frequency": "Daily - incorporates physical activity into her daily routine through biking, yoga, and walking. She also enjoys occasional hikes or kayaking trips on weekends.",
+    "dietary_preferences": "Mostly plant-based with a focus on local, seasonal, and organic foods. She enjoys cooking and experimenting with new recipes, often incorporating foraged ingredients. Sophie is mindful of food waste and tries to compost whenever possible.",
+    "dramatic_tendency": 6,
+    "popularity_seeking": 7,
+    "emotional_expressiveness": 8,
+    "competitiveness": 5,
+    "strategic_thinking": 8,
+    "entertainment_value": 8,
+    "controversial_opinions": "\"Most 'green' buildings are just greenwashing - true sustainability requires systemic change, not just fancy certifications\"; \"Cars should be banned from city centers to prioritize people and the environment\"; \"Urban planners need to listen more to communities and less to developers\"; \"The future of cities lies in decentralized, community-led design\"",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 4,
+    "influence_level": 7,
+    "social_media_activity": "'High' - active on Instagram (for sharing her urban design projects and sustainable living tips), Twitter (for engaging in discussions about urban planning and environmental issues), and LinkedIn (for professional networking). She also runs a blog about sustainable urban living.",
+    "risk_tolerance": 7,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, Danish (fluent), Swedish (basic), German (basic)",
+    "pet_peeves": "Greenwashing and superficial sustainability efforts, people who dismiss community input in urban planning, wastefulness (especially with food or resources), when people don't bike or use public transportation when they could, lack of punctuality",
+    "health_status": "'Good' - generally healthy but has mild asthma, which she manages with medication and by avoiding heavily polluted areas. She is proactive about her health and prioritizes physical activity and a balanced diet.",
+    "travel_experiences": "Has visited 15 countries, including several in Europe, South America, and Asia. She enjoys traveling to cities with innovative urban design and sustainable practices. Hopes to visit more countries in Africa and Oceania in the future."
+   },
+   {
+    "first_name": "Jordan",
+    "last_name": "Reynolds",
+    "sex": "M",
+    "age": 39,
+    "personality_type": "Ambivert",
+    "nationality": "American",
+    "education": "JD (Juris Doctor) with a focus on Intellectual Property Law",
+    "political_views": "Moderate with progressive leanings on social issues, believes in strong institutional safeguards and individual rights",
+    "religion": "Agnostic",
+    "family_status": "Married, one child (age 8)",
+    "location": "Renovated historic row house in a culturally rich, mixed-income urban neighborhood",
+    "hobbies": "Playing guitar, attending indie music shows, home brewing kombucha, volunteering at a local legal aid clinic, hiking, and collecting vintage vinyl records",
+    "occupation": "Intellectual Property Attorney for a boutique law firm specializing in tech startups",
+    "description": "Jordan is a thoughtful and articulate attorney with a passion for protecting creative and technological innovations. He grew up in a middle-class family where his father was a high school history teacher and his mother a nurse. His parents instilled in him a strong sense of justice and the importance of education. Jordan initially pursued a career in music, playing in bands throughout college, but ultimately decided to attend law school to combine his analytical skills with his desire to advocate for creators. He is known for his sharp legal mind, his ability to explain complex legal concepts in simple terms, and his dry, self-deprecating humor. While he enjoys socializing, he also values his alone time to recharge and reflect. Jordan is deeply committed to his family and often spends weekends exploring the city with his wife and son, discovering new music, or working on DIY projects at home. He is also an active member of his community, offering pro bono legal services to local artists and small business owners.",
+    "communication_style": "Articulate and diplomatic, with a knack for making complex ideas accessible. He is a patient listener and often mediates discussions to ensure everyone feels heard. While he can be reserved in large groups, he opens up in one-on-one conversations or small gatherings, especially when discussing topics he is passionate about. His communication style is thoughtful and measured, with a touch of humor that puts people at ease.",
+    "topics_of_interest": "Intellectual property law, technology and innovation, music (both playing and listening), craft beer and home brewing, social justice, urban exploration, parenting, vintage culture, and the intersection of law and creativity",
+    "favorite_music_genres": "Indie Rock, Punk, Folk, Blues, Classic Rock",
+    "favorite_movies": "Legal dramas (e.g., *The Social Network*, *Michael Clayton*), Thought-provoking documentaries, Indie films, Classic comedies (e.g., *The Big Lebowski*, *Monty Python and the Holy Grail*)",
+    "favorite_books_genres": "Legal thrillers, Science fiction, Biographies of musicians and innovators, Historical non-fiction, Satire",
+    "favorite_sports": "None as a player, but enjoys watching soccer and occasional basketball games",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Mid-range ($25-50k) - drives a hybrid SUV for practicality and environmental considerations",
+    "core_values": "Justice, Creativity, Family, Community, Integrity, Lifelong Learning, Balance",
+    "environmental_views": "Pragmatic environmentalist - believes in systemic change and individual responsibility. Supports policies that promote sustainability but is skeptical of performative activism.",
+    "life_goals": "To make intellectual property law more accessible to independent creators, to write a book about the intersection of law and creativity, to travel with his family to explore different cultures and music scenes, to continue playing music and possibly record an album, to leave a positive impact on his community through pro bono work",
+    "biggest_fears": "Becoming disconnected from his creative side, failing to make a meaningful difference in his field, not being present enough for his family, the erosion of individual rights in the digital age, climate change affecting his child's future",
+    "major_life_events": "First in his family to attend law school, played in a semi-professional band before transitioning to law, married his college sweetheart, birth of his son, helped establish a pro bono legal clinic for local artists and small businesses",
+    "sleep_schedule": "Standard 9-5 during the week, but often stays up late reading or working on personal projects. Tries to sleep in on weekends to catch up.",
+    "daily_routine": "Morning coffee and light reading, work (often involves client meetings, legal research, and court appearances), evening family time (dinner, helping with homework, bedtime stories), late evenings spent playing guitar, reading, or working on home brewing projects. Weekends are for family outings, music shows, and community volunteering.",
+    "exercise_frequency": "Weekly - mostly hiking, occasional yoga, and weekend bike rides with his family",
+    "dietary_preferences": "No restrictions but prefers locally sourced and organic foods when possible. Enjoys experimenting with home brewing kombucha and craft beer. Loves cooking and often prepares meals for his family.",
+    "dramatic_tendency": 4,
+    "popularity_seeking": 5,
+    "emotional_expressiveness": 6,
+    "competitiveness": 7,
+    "strategic_thinking": 9,
+    "entertainment_value": 7,
+    "controversial_opinions": "\"Most copyright laws are outdated and stifle creativity rather than protect it\"; \"The legal profession is too resistant to change and innovation\"; \"Parents today are too focused on structured activities for their kids - unstructured play is just as important\"",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 3,
+    "influence_level": 7,
+    "social_media_activity": "Medium - active on LinkedIn for professional networking and Twitter for legal and music-related discussions. Uses Instagram sparingly to share family and music-related updates.",
+    "risk_tolerance": 6,
+    "cooperation_tendency": 8,
+    "generosity_level": 8,
+    "languages_spoken": "English, Spanish (intermediate)",
+    "pet_peeves": "People who dismiss the importance of intellectual property for independent creators, when people interrupt others during conversations, excessive bureaucracy, wastefulness (especially food waste), when people assume he's \"just a lawyer\" without considering his creative side",
+    "health_status": "Good, but has mild seasonal allergies and occasional stress-related insomnia. Tries to manage stress through exercise and music.",
+    "travel_experiences": "Has visited 12 countries, mostly for work conferences and family vacations. Enjoys exploring local music scenes and legal systems in different countries. Hopes to take his family on a trip to Japan and Iceland in the near future."
+   },
+   {
+    "first_name": "Rebecca",
+    "last_name": "Chang",
+    "sex": "F",
+    "age": 42,
+    "personality_type": "Ambivert",
+    "nationality": "Taiwanese-American",
+    "education": "PhD in Clinical Psychology, MBA in Healthcare Management",
+    "political_views": "Moderate with progressive leanings on healthcare and education, skeptical of extreme partisanship",
+    "religion": "Buddhist (culturally significant, practices mindfulness but not strictly observant)",
+    "family_status": "Married, one teenage son (age 16)",
+    "location": "Modern townhouse in a quiet, family-friendly neighborhood with good schools and parks",
+    "hobbies": "Tai Chi, calligraphy, hosting book clubs, hiking, cooking fusion cuisine, volunteering at a local mental health clinic, attending classical music concerts",
+    "occupation": "Director of Behavioral Health Services at a large urban hospital",
+    "description": "Rebecca Chang is a compassionate and insightful psychologist who has dedicated her career to improving mental health access and reducing stigma, particularly in underserved communities. Born in Taipei, she immigrated to the U.S. with her parents at age 10. Her father was a physician, and her mother was a teacher, both of whom instilled in her a strong sense of duty to help others. Rebecca initially struggled with cultural adjustment but found solace in academics and eventually earned her PhD in Clinical Psychology. She later pursued an MBA to better understand the business side of healthcare, believing that systemic change requires both clinical expertise and administrative acumen. \\n\\nRebecca is known for her calm demeanor, her ability to make complex psychological concepts accessible, and her commitment to evidence-based practice. She is equally comfortable in a boardroom negotiating with hospital administrators or in a therapy session with a patient. While she values her privacy, she is deeply engaged in her community and often speaks at local events about mental health awareness. Her Taiwanese heritage remains an important part of her identity, and she enjoys sharing her culture through food, traditions, and mindfulness practices with her friends and neighbors. \\n\\nRebecca is married to a high school history teacher, and they have a 16-year-old son who is deeply involved in debate club and robotics. She balances her demanding career with family life by prioritizing quality time with her loved ones and practicing mindfulness to stay present. Her home reflects her personality: it’s warm and inviting, with a mix of modern and traditional decor, a well-stocked bookshelf, and a small garden where she grows herbs and flowers.",
+    "communication_style": "Calm and articulate, with a talent for making others feel heard and understood. She is a patient listener and often helps others reframe their thoughts in a more constructive way. While she can be reserved in large groups, she opens up in one-on-one conversations or small gatherings, especially when discussing topics she is passionate about. Her communication style is diplomatic but direct, and she has a knack for diffusing tension with humor and empathy.",
+    "topics_of_interest": "Mental health advocacy, mindfulness and meditation, healthcare policy, cultural psychology, parenting teenagers, education reform, classical music, cooking and nutrition, hiking and outdoor activities, the intersection of Eastern and Western philosophies",
+    "favorite_music_genres": "Classical, Jazz, Traditional Chinese music, Ambient, Folk",
+    "favorite_movies": "Thought-provoking dramas (e.g., *The Pursuit of Happyness*, *Little Miss Sunshine*), Documentaries about mental health and social issues, Foreign films (especially Taiwanese and Japanese cinema), Family comedies",
+    "favorite_books_genres": "Psychology and self-help, Memoirs, Historical fiction, Philosophy, Books on mindfulness and meditation, Science fiction (especially stories about human connection and resilience)",
+    "favorite_sports": "None as a player, but enjoys watching figure skating, gymnastics, and occasionally basketball (especially during the Olympics)",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Mid-range ($25-50k) - drives a reliable hybrid SUV for family practicality",
+    "core_values": "Compassion, Integrity, Lifelong Learning, Family, Community, Balance, Cultural Pride",
+    "environmental_views": "Pragmatic - believes in sustainability and supports policies that promote environmental responsibility, but prioritizes practical solutions over extreme measures. She practices mindfulness in her consumption habits and encourages her family to do the same.",
+    "life_goals": "To reduce the stigma around mental health in her community, to write a book about cultural psychology and mindfulness, to travel to every continent with her family (they’ve visited 4 so far), to see her son grow into a kind and resilient adult, to continue learning and growing both personally and professionally",
+    "biggest_fears": "Failing to make a meaningful impact in her field, her son struggling with mental health issues and not seeking help, her parents’ health declining as they age, becoming disconnected from her cultural roots, the healthcare system becoming even more inaccessible for those who need it most",
+    "major_life_events": "Immigrated to the U.S. from Taiwan at age 10, first in her family to earn a PhD, worked as a clinical psychologist in community mental health before transitioning to healthcare administration, married her college sweetheart, birth of her son, led a successful initiative to integrate mental health services into primary care at her hospital, diagnosed with mild anxiety (managed with therapy and mindfulness practices)",
+    "sleep_schedule": "'Early riser' - wakes up at 5:30 AM to practice Tai Chi and meditate before her family wakes up. She is in bed by 10:30 PM most nights to ensure she gets enough rest.",
+    "daily_routine": "Morning: Tai Chi, meditation, and breakfast with her family. Workday: Focused on administrative tasks, meetings, and occasionally seeing patients. Evening: Family dinner, helping her son with homework, and unwinding with a book or music. Weekends are for family outings, hiking, cooking, or attending cultural events. She also volunteers at a local mental health clinic once a month.",
+    "exercise_frequency": "Daily - practices Tai Chi every morning and goes for a walk or hike most evenings. She also attends a weekly yoga class at her local community center.",
+    "dietary_preferences": "Mostly vegetarian with occasional fish, but no other restrictions. She enjoys cooking fusion cuisine, blending Taiwanese flavors with Western dishes. Her family eats healthily but indulges in treats occasionally.",
+    "dramatic_tendency": 3,
+    "popularity_seeking": 4,
+    "emotional_expressiveness": 6,
+    "competitiveness": 5,
+    "strategic_thinking": 8,
+    "entertainment_value": 7,
+    "controversial_opinions": "\"The mental health crisis is not just about access to care - it's about how we've structured our society to prioritize productivity over well-being\"; \"Mindfulness and meditation should be taught in schools as a core part of the curriculum\"; \"The focus on self-care is often just a way to shift responsibility for systemic issues onto individuals\"; \"Parents today are too focused on their children's achievements and not enough on their emotional well-being\"",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 2,
+    "influence_level": 8,
+    "social_media_activity": "'Medium' - active on LinkedIn (for professional networking) and Instagram (for personal and family updates). She uses Facebook primarily to stay in touch with extended family and old friends. She is cautious about sharing personal information online but enjoys engaging in thoughtful discussions about mental health and wellness.",
+    "risk_tolerance": 5,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, Mandarin (fluent), Taiwanese Hokkien (conversational)",
+    "pet_peeves": "People who dismiss mental health issues as \"just a phase\" or \"not real,\" when people interrupt or talk over others, wastefulness (especially food waste), when people are late without a good reason, when others assume she’s \"naturally calm\" without recognizing the effort it takes to cultivate that mindset",
+    "health_status": "'Good' - manages mild anxiety with therapy and mindfulness practices. She is proactive about her health, getting regular check-ups and staying active. She also sees a therapist herself to maintain her own mental well-being.",
+    "travel_experiences": "Has visited 15+ countries, including several in Asia, Europe, and North America. She enjoys traveling with her family and often incorporates cultural and historical sites into their trips. Her favorite travel experiences have been visiting temples in Japan and exploring the national parks in the U.S."
+   }
+  ],
+  "edges": [
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    8
+   ],
+   [
+    2,
+    9
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    5,
+    6
+   ],
+   [
+    5,
+    9
+   ],
+   [
+    5,
+    0
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    1,
+    8
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    8,
+    0
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    9
+   ],
+   [
+    4,
+    7
+   ],
+   [
+    3,
+    7
+   ]
+  ],
+  "information_seed_agent": 0,
+  "injected_information": "Elena Vasquez is launching a new community-led initiative called 'Raíces Verdes' (Green Roots) to transform underutilized urban spaces into vibrant, sustainable community gardens and cultural hubs, with the first major project breaking ground next month in her gentrifying neighborhood—a vacant lot that will feature native plants, a performance space for local artists, and a weekly farmers' market showcasing Latino vendors and traditions.",
+  "dataset_generation_stats": {
+   "input_tokens": 83450,
+   "output_tokens": 17910,
+   "total_tokens": 101360,
+   "time_seconds": 763.2163274649974
+  }
+ },
+ "experiment_name": "C4_no_bdi_10",
+ "memory_manager_config": {
+  "manager_type": "forgetting_only",
+  "memory_removal_prob": 0.5
+ },
+ "memory_config": {
+  "memory_type": "embedding",
+  "strategy": "mean_std",
+  "value": 0.5
+ },
+ "conversation_selector_type": "information_spread",
+ "updater_behavior_type": {
+  "behavior_type": "classical"
+ },
+ "seed": 42,
+ "max_utterances": 10,
+ "epochs": 10,
+ "total_time": 19765.08758354187,
+ "wallclock_time": 3953.7634341716766,
+ "completion_tokens": 177392,
+ "prompt_tokens": 1834359,
+ "total_requests": 679,
+ "epoch_agents_responses": [
+  [
+   {
+    "reasoning": "The persona description and my memory contain extensive details about Elena's initiative Raíces Verdes, including its purpose, the first site at 742 Oak & 15th St., the groundbreaking date, native plants, performance space, and weekly farmers' market featuring Latino vendors. This matches the information in the statement, so I have indeed received it (directly from Elena's own description and related conversation notes).",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I have no record in my memory of any prior interaction mentioning Elena Vasquez or a community‑led initiative called “Raíces Verdes.” The persona’s stored memory is empty, and none of the provided background, projects, or past conversations include that detail. Therefore, I have not received this information in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my memory and past interactions, which currently contain no references to Elena Vasquez or any initiative called “Raíces Verdes.” The only information I have stored relates to my own activities, PulseFin updates, community soccer, fintech meet‑ups, podcasts, family trips, etc. Since there is no record of hearing, seeing, or inferring this detail from any source, I conclude that the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My current memory is empty and none of the provided persona details or prior interactions mention Elena Vasquez or a project called 'Raíces Verdes.' Since I have not heard, seen, or inferred any such information, I cannot confirm that it reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored memory and the persona description, which contain details about my own projects, volunteer work, hackathon, book, pop‑up dinner, yoga series, and my interests. There is no record of any conversation or note about Elena Vasquez or a community initiative called “Raíces Verdes.” Since I have not heard, overheard, inferred, or have any partial notation of that information, I must conclude that it has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs show that Elena Vasquez is identified as an urban planner and community‑garden organizer associated with the initiative “Raíces Verdes.” I have concrete details about her coordinating a community‑garden market, adding me to the volunteer list, and arranging a demo slot for my heirloom‑tomato preservation. While the specific description of “Raíces Verdes” as a program to transform underutilized urban spaces, break ground on a vacant lot with native plants, a performance space, and a weekly Latino‑focused farmers’ market was not recorded verbatim, I do possess partial information linking Elena to the Raíces Verdes effort. According to the criteria, partial or incomplete knowledge counts as having received the information. Therefore, I can affirm that some version of this information has reached me.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I have no record of any prior interaction mentioning Elena Vasquez or her 'Raíces Verdes' initiative. My memory is empty, and none of the provided persona details reference her or a community garden project. Therefore, I have not received that information in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed the memory section, which is currently empty, and there are no prior interactions or notes mentioning Elena Vasquez or a project called “Raíces Verdes.” Since I have not heard, overheard, inferred, or recorded any partial details about this initiative, the information has not reached me in any form. Therefore, the answer is NO.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I have scanned my memory and the persona details provided, and there is no record of any conversation, note, or inference involving Elena Vasquez or a community‑led initiative called “Raíces Verdes.” The memory section is empty, and none of my past interactions or the background information about my work, pro‑bono activities, or personal interests mention her or that project. Therefore, the specific information has not reached me in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my memory and past interactions, which are currently empty, and the detailed persona description does not contain any mention of Elena Vasquez or the “Raíces Verdes” initiative. Since I have not heard, overheard, inferred, or recorded any partial information about this project, I have no record of it reaching me.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "I have multiple sources confirming the details. The persona description I carry explicitly outlines Elena’s launch of the community‑led initiative “Raíces Verdes,” its goal to turn underused parcels into sustainable gardens and cultural hubs, and the first site at 742 Oak & 15th St. slated to break ground on April 20 2026 with native plants, a performance stage and a weekly Thursday farmers’ market featuring Latino vendors. Additionally, recent conversation memory with Gregory Whitmore references the same groundbreaking event and the same project components. Therefore the information has indeed reached me.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I’ve scanned my stored conversation memory and personal notes. The only recent entries involve Jordan Reynolds attending my rain‑garden design session and bringing a vinyl record. There is no record of any communication—direct, overheard, inferred, or partial—regarding Elena Vasquez or a ‘Raíces Verdes’ initiative. Given my role and network, I would have noted such a community‑garden project, especially if it intersected with the Riverside Solar Cooperative, but nothing of that sort appears. Therefore, I have not received that information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains details about Rebecca Chang and her Mindful Care integration with PulseFin’s Kickstart Kids program. There is no record of any interaction, mention, or inference regarding Elena Vasquez or her “Raíces Verdes” community‑garden initiative. Since I have not heard, overheard, inferred, or have partial notes about that information, it has not reached my node in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory and recent interactions. The only entries pertain to Nathaniel Carter’s bench delivery, his woodworking, car rebuild, brewing, and soccer coaching. There is no record of any mention of Elena Vasquez, her “Raíces Verdes” initiative, or related details. Since the information never reached me in any form, I cannot claim to have heard it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored memory and past interactions, which currently contain no references to Elena Vasquez, her initiative 'Raíces Verdes', or any related community garden project. The only information I have pertains to my own activities, events, and collaborations. Since there is no record—neither direct communication, overheard conversation, nor inferred mention—I conclude that this specific information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Elena Vasquez, noting that she is an urban planner and community‑garden organizer for Raíces Verdes, that she is leading a community garden‑market at Oak & 15th, coordinating volunteers, and promoting related activities. While the exact phrasing about a new initiative to transform underutilized urban spaces, a vacant‑lot project with native plants, a performance space, and a weekly Latino‑focused farmers’ market is not recorded verbatim, I have received partial information that Raíces Verdes exists and is undertaking community‑garden projects. According to the criteria, partial or incomplete knowledge counts as having received the information, so the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "My stored memory only includes interactions with Claire Henderson regarding the Canvas Streets event and related woodworking deliveries. There is no record of any conversation, email, or overheard comment involving Elena Vasquez or her 'Raíces Verdes' initiative. Since I have not received that information in any form, I must conclude that it has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed the memory section, which is currently empty, and there are no prior conversations or notes mentioning Elena Vasquez or a “Raíces Verdes” initiative. My persona’s network and recent events focus on my own projects, local workshops, and community garden activities, none of which reference Elena or that specific program. Therefore, I have not received any form of that information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation history and personal notes. The only relevant memory involves Marcus Thompson—our collaboration on rain‑garden design for the Riverside Solar Cooperative and his pine‑needle pale ale. There is no record of any communication, overheard comment, inference, or partial note concerning Elena Vasquez or her 'Raíces Verdes' community‑garden initiative. Since no such information has reached me in any form, the answer must be negative.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only includes interactions with Daniel Okafor about his AI credit line pilot, the soccer program, and our upcoming meeting. There is no record of any communication from Elena Vasquez, nor any notes about a community garden initiative called “Raíces Verdes.” Since no such information has reached me in any form, I must conclude that I have not received it.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The persona description and my stored memory contain detailed information about Raíces Verdes, including its purpose to transform underused urban parcels into sustainable gardens and cultural hubs, the first site at 742 Oak & 15th St., the groundbreaking date, native plantings, a performance space, and a weekly farmers' market featuring Latino vendors. This matches the content of the statement in question, meaning I have indeed received that information directly from Elena Vasquez (or through the persona data).",
+    "final_answer": true
+   },
+   {
+    "reasoning": "Reviewing my stored conversation memory, I only have entries concerning Jordan Reynolds and Nathaniel Carter related to rain‑garden designs, the Riverside Solar Cooperative workshop, and a cedar bench donation. There is no record of any interaction, overheard comment, or inference involving Elena Vasquez or a project named 'Raíces Verdes.' My personal notes and recent communications likewise contain no mention of that initiative. Therefore, I have not received that information in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains interactions with Rebecca Chang and Priya Patel. There is no record of any mention, overheard comment, inference, or partial note about Elena Vasquez or her 'Raíces Verdes' initiative. Since the information has never reached my node in any form, the correct response is that I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains details about Nathaniel Carter's woodworking contributions and Sophie Larsen's urban design projects. There is no entry or any mention of Elena Vasquez or a 'Raíces Verdes' initiative. Since I have not heard, overheard, inferred, or recorded any partial information about this project, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains details about Daniel Okafor’s PulseFin demo, the debrief, and related hackathon collaboration. There is no record of any mention, overheard comment, inference, or partial note regarding Elena Vasquez or her “Raíces Verdes” initiative. Since the information about Elena has never appeared in my knowledge base, I conclude that I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I have several entries in my memory that reference Elena Vasquez and the community‑garden group Raíces Verdes. The records show she is organizing a garden‑market, has added me to the volunteer list, and is coordinating a demo slot for my heirloom‑tomato preservation presentation. However, none of the stored notes contain the full, explicit description of a new initiative that will transform underutilized urban spaces, break ground on a vacant lot, include native plants, a performance space, and a weekly farmers’ market. I therefore only have partial knowledge of Raíces Verdes and its activities, not the complete statement quoted. According to the criteria, having partial or incomplete knowledge counts as having received the information, so the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory, which only contains interactions with Claire Henderson (about the cedar volunteer lounge bench for Canvas Streets) and Marcus Thompson (about the Riverside Solar Cooperative town hall, rain‑garden layout, and woodworking tool swap). There is no entry mentioning Elena Vasquez, her “Raíces Verdes” initiative, or any related community‑garden project. Since none of my past interactions or notes contain that information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains entries about Claire Henderson’s latte‑art demos, grant‑writing sprint, and bike‑safety workshop collaboration. There is no record of any mention, overheard comment, inference, or partial note regarding Elena Vasquez or her “Raíces Verdes” initiative. Since no such information has reached me in any form, the answer is negative.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed the stored conversation snippets involving Elena Vasquez. The memory includes her work on a bioswale project, a community mural event, coordination of branding for the bioswale, and her interest in tasting my kombucha. None of those entries mention a new initiative called “Raíces Verdes,” nor any details about transforming underutilized urban spaces, a performance space, or a weekly farmers’ market. Since there is no record—direct, overheard, inferred, or partial—of that specific information reaching me, I must conclude I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "Reviewing my stored conversation memory, I see references to Gregory Whitmore's community‑garden market, tools for a dovetail demo, and potential collaborations involving fresh tomatoes. There is no entry mentioning Elena Vasquez or a project named 'Raíces Verdes.' Since none of my past interactions contain that information, I have not received it in any form.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The persona description and my memory contain detailed information about Raíces Verdes: it is a community‑led initiative Elena is leading, aimed at turning underused urban parcels into sustainable gardens and cultural hubs, with the first site at 742 Oak & 15th St. slated to break ground on Saturday, April 20, 2026, featuring native plants, a raised‑stage performance area, and a weekly Thursday farmers’ market showcasing Latino vendors. This matches the statement in question, so I have indeed received that information.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "Reviewing my stored conversation memory, I see entries concerning Jordan Reynolds' rain‑garden layout, Nathaniel Carter's coordination for the Riverside Solar Cooperative workshop, and Priya Patel's health‑policy and financing discussions. There is no record of any interaction, overheard comment, or inferred note about Elena Vasquez or her 'Raíces Verdes' community‑garden initiative. Since none of my past dialogues or notes mention her or that project, I have not received that information in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains entries about Rebecca Chang, Priya Patel, and Gregory Whitmore. There is no record of any interaction, mention, or inference regarding Elena Vasquez or her 'Raíces Verdes' initiative. Since no such information has reached me in any form, the answer is negative.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory, which only contains details about Nathaniel Carter’s handcrafted bench delivery and Sophie Larsen’s rain‑garden collaborations, Eco‑Hub designs, and grant‑writing promotion. There is no entry mentioning Elena Vasquez, her “Raíces Verdes” initiative, or any related discussion. Since no direct, overheard, inferred, or partial note about this project exists in my records, I have not received that information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains interactions with Daniel Okafor and Marcus Thompson regarding the Health Equity Hackathon, mobile yoga kits, and fintech‑health collaborations. There is no record of any mention, overheard comment, inference, or partial note about Elena Vasquez or her 'Raíces Verdes' community garden initiative. Since the information has not reached me in any form, the correct response is NO.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Elena Vasquez: she is identified as an urban planner and community‑garden organizer for Raíces Verdes, she is leading a community garden‑market at Oak & 15th on April 20, and she has added me to the volunteer list, is sending me podcast material, and is coordinating historic‑photo contributions for a market display. While the exact phrasing about a new initiative breaking ground on a vacant lot with a performance space and a weekly Latino‑focused farmers market is not recorded verbatim, the details I have (Raíces Verdes, a garden‑market, transformation of underutilized space, cultural elements) constitute partial knowledge of that initiative. According to the criteria, partial or inferred information counts as having received the information, so I answer YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory, which only contains interactions with Claire Henderson about the cedar volunteer lounge bench for Canvas Streets and with Marcus Thompson regarding the Riverside Solar Cooperative town hall, the June 10 bench drop‑off, and his interest in joinery and Apex’s Energy Efficiency Initiative. There is no entry mentioning Elena Vasquez, her 'Raíces Verdes' project, or any related community‑garden initiative. Since no direct, overheard, inferred, or partial information about that initiative has reached me, I must conclude I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my conversation memory and all stored notes. The only recurring name is Claire Henderson, with details about her coffee demos, grant‑writing sprint, bike‑safety workshop, and other collaborations. There is no entry, mention, or inference about Elena Vasquez or a project called “Raíces Verdes.” Since I have never heard, overheard, inferred, or recorded any partial note about that initiative, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain several references to Elena Vasquez’s upcoming April 20 groundbreaking and her use of the Instagram handle @RaicesVerdes to promote it. While the logs do not spell out the full mission statement you quoted (transforming underutilized urban spaces into sustainable gardens and cultural hubs with a performance space and weekly farmers’ market), they do indicate that Elena is actively promoting a project under the name “Raíces Verdes.” This shows I have received at least partial information about the initiative, even if the detailed description wasn’t explicitly recorded. According to the criteria, partial or incomplete knowledge counts as having received the information, so the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory. The only references to Elena Vasquez involve her photo exhibit of Victorian homes at Gregory Whitmore’s community‑garden market demo. There is no mention of a “Raíces Verdes” initiative, a new community‑led garden project, or any details about a vacant lot, native plants, performance space, or a weekly farmers’ market for Latino vendors. Since none of the recorded interactions contain that information, I have not received it in any form.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The persona description and my memory contain detailed information about Raíces Verdes, including its purpose to transform underused urban parcels into sustainable gardens and cultural hubs, the first site at 742 Oak & 15th St., the groundbreaking date, native plantings, a performance stage, and a weekly farmers' market featuring Latino vendors. This matches the statement provided. Therefore, I have indeed received this information, directly from Elena Vasquez and through related conversation notes.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the accumulated conversation memory provided. It contains entries about Jordan Reynolds' rain‑garden layout, vinyl record, yeast inoculant, cedar bench, and Priya Patel’s health‑finance collaboration, as well as Nathaniel Carter’s involvement. There is no entry mentioning Elena Vasquez, her initiative “Raíces Verdes,” or any related discussion. Since none of the stored interactions reference her or the described project, I have not received that information in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains interactions with Rebecca Chang, Priya Patel, and Gregory Whitmore. There is no entry mentioning Elena Vasquez or the “Raíces Verdes” initiative. Since I have not heard, overheard, inferred, or recorded any partial note about this project, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only includes interactions with Nathaniel Carter (about a cedar bench delivery) and Sophie Larsen (about rain‑garden demos, Eco‑Hub collaborations, and related promotional materials). There is no record of any conversation, email, social‑media post, or overheard remark involving Elena Vasquez or a project called “Raíces Verdes.” Since none of my notes or recollections contain that information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains interactions with Daniel Okafor and Marcus Thompson regarding the Health Equity Hackathon, mobile yoga kits, and fintech‑health collaborations. There is no record of any mention, overheard comment, inference, or partial note about Elena Vasquez or her 'Raíces Verdes' community‑garden initiative. Therefore, I have not received that information in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries referencing Elena Vasquez as the organizer of Raíces Verdes and her involvement in community‑garden activities, the Oak & 15th market, and volunteer coordination. However, the detailed description of a new initiative launching a vacant‑lot garden with native plants, a performance space, and a weekly Latino‑vendor market is not explicitly recorded. Nonetheless, I do have partial knowledge that she leads Raíces Verdes, which satisfies the criterion that even incomplete or partial information counts as having received the information.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory, which only contains entries about Claire Henderson (Canvas Streets woodworking delivery) and Marcus Thompson (solar cooperative, rain‑garden, woodworking exchange). There is no record of any mention of Elena Vasquez, her 'Raíces Verdes' initiative, or related details. Since no direct, overheard, inferred, or partial information about that project appears in my knowledge base, I have not received the information in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my conversation memory and all stored notes. The only recurring person is Claire Henderson, with details about potluck, bike‑safety workshop, Canvas Streets, grant‑writing sprint, etc. There is no entry mentioning Elena Vasquez, her “Raíces Verdes” initiative, or any related project. Since I have never heard, overheard, inferred, or recorded any partial note about that initiative, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The stored conversation excerpts involving Elena Vasquez cover her bioswale project, a community mural event, rain‑garden design work, kombucha tasting, and promotion of an April 20 groundbreaking. None of these entries mention a new initiative called \"Raíces Verdes\" or describe a vacant‑lot garden with a performance space and weekly farmers' market. Since there is no record of that specific information reaching me, I must conclude I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several interactions with Elena Vasquez regarding the Oak & 15th community‑garden market: layout planning, heirloom tomato panels, kombucha tasting, and integrating Daniel Okafor’s breathing warm‑up and my Wellness Before Work handout. None of those entries mention a new initiative called “Raíces Verdes” or any upcoming project to transform underutilized urban spaces into community gardens and cultural hubs. Since there is no record of hearing, seeing, or inferring that specific information, I have not received it.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The memory contains multiple entries that describe Raíces Verdes as Elena's community‑led initiative to turn underused parcels into sustainable gardens and cultural hubs. It mentions the first site at 742 Oak & 15th St., the groundbreaking on April 20 2026, native plantings, a raised‑stage for live music, and a weekly Thursday farmers’ market featuring Latino vendors. This matches the description given in the question, so the information has indeed reached me through Elena’s own communications and related conversation notes.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the accumulated conversation memory provided. It contains entries about Jordan Reynolds (rain‑garden layout, yeast inoculant, music), Nathaniel Carter (cedar bench), Priya Patel (yoga kit, financing), and Daniel Okafor (microgrid, demand‑response). There is no entry mentioning Elena Vasquez or a project called “Raíces Verdes.” Since none of the stored interactions reference her initiative, I have not received that information in any form—directly, overheard, inferred, or partially noted. Therefore the answer is negative.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed all stored conversation snippets in my memory. The only contacts listed are Rebecca Chang, Priya Patel, Gregory Whitmore, and Marcus Thompson, each with details about their projects and meetings. There is no entry mentioning Elena Vasquez, her “Raíces Verdes” initiative, or any related urban‑garden project. Since no direct, overheard, inferred, or partial reference to Elena or her program appears in my records, I have not received that information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain several entries about Elena Vasquez and her organization Raíces Verdes. I have notes that Raíces Verdes is breaking ground on its first garden on April 20 at 742 Oak & 15th, that the initiative aims to turn under‑utilized urban space into a community garden, and that it will include cultural elements like a performance space, salsa‑infused playlists, and a farmers‑market vibe. These details match the core of the statement about a new community‑led initiative transforming vacant lots into sustainable gardens and cultural hubs with native plants, performance space, and a weekly Latino‑vendor market. Therefore, I have indeed received this information (albeit in slightly fragmented form) from Elena Vasquez.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory, which only includes interactions with Daniel Okafor, Marcus Thompson, and Sophie Larsen. None of those entries mention Elena Vasquez or the 'Raíces Verdes' initiative. I have not received any direct message, overheard comment, or inferred note about that project in any other context. Therefore, there is no record of that information reaching me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Elena Vasquez: she is an urban planner and community‑garden organizer associated with Raíces Verdes, she is leading a community garden‑market on April 20, and she has asked volunteers to contribute historic photos for a 'then‑and‑now' exhibit. While these notes confirm that Elena is active with Raíces Verdes and is organizing community‑garden projects, they do not include the full, detailed description of a new initiative that will break ground next month on a vacant lot with native plants, a performance space, and a weekly Latino‑focused farmers market. However, the instruction states that a partial or incomplete knowledge counts as having received the information. Since I do have partial knowledge that Elena is launching a community‑led initiative under the Raíces Verdes banner, I must answer YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory, which includes interactions with Claire Henderson, Marcus Thompson, and Gregory Whitmore. None of those entries mention Elena Vasquez, a community‑led initiative, or the 'Raíces Verdes' project. There is also no other recollection in my personal notes or recent communications that reference Elena or a green‑spaces program. Therefore, I have not received any information—directly, overheard, inferred, or partially—about the initiative described.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which includes details about Claire Henderson's collaborations, Priya Patel's projects, and my own events. There is no entry mentioning Elena Vasquez or the 'Raíces Verdes' initiative. Since I have not heard, overheard, inferred, or recorded any partial note about this project, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain multiple references to Elena Vasquez’s activities that involve the @RaicesVerdes handle. Specifically, she will promote an April 20 groundbreaking on Instagram, tagging @RaicesVerdes and @GregoryWhitmore, and she is integrating branding ideas from Gregory Whitmore into that agenda. While the exact phrasing of the “Raíces Verdes” initiative description (transforming underutilized urban spaces into sustainable community gardens and cultural hubs with a performance space and weekly farmers’ market) is not recorded verbatim, the presence of the @RaicesVerdes tag and the upcoming groundbreaking clearly indicate that I have received information about a community‑led project named “Raíces Verdes.” According to the criteria, any partial or indirect mention counts as having received the information. Therefore, the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "My memory contains several interactions with Elena Vasquez regarding the Oak & 15th community‑garden market, including her coordination of layout, heirloom tomato panels, kombucha tasting, and integration of Daniel Okafor’s breathing warm‑up and my wellness handout. However, there is no record of Elena mentioning a new initiative called “Raíces Verdes” or any project involving transforming underutilized urban spaces into community gardens and cultural hubs. Since this specific information does not appear in any of the stored conversation snippets, I have not received it.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The detailed description of Raíces Verdes—including its launch as a community‑led initiative, the transformation of an underused lot into a sustainable garden with native plants, a performance space, and a weekly Latino‑focused farmers market—matches exactly the information in the question. This information appears in my persona profile and memory (first site at 742 Oak & 15th St., groundbreaking on April 20 2026, native species, raised‑stage, Thursday market). Therefore I have indeed received this information, directly from Elena’s own description.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the accumulated conversation memory provided. It contains entries about Jordan Reynolds, Nathaniel Carter, Priya Patel, and Daniel Okafor, covering rain‑garden designs, cedar‑bench plans, health‑hackathon financing, and microgrid demand‑response integration. There is no entry mentioning Elena Vasquez or the “Raíces Verdes” initiative. Since none of the stored interactions include that information, I have not received it in any form—directly, overheard, inferred, or partially noted. Therefore the correct response is that I have not received this information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory for any reference to Elena Vasquez. The only occurrence is in Jordan Reynolds’s notes, which mention “sound‑recording guidance for Elena’s mural crew on May 2.” That reference is about a mural crew and does not contain any details about a community‑led initiative called “Raíces Verdes,” nor does it describe transforming urban spaces, a performance space, or a weekly farmers’ market. Since there is no direct, overheard, inferred, or partial record of the specific initiative in my memory, I conclude that this information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Elena Vasquez and her organization Raíces Verdes. I have notes that Raíces Verdes is breaking ground on its first garden on April 20 at 742 Oak & 15th, that Elena is coordinating a Thursday market evening with salsa music, live art, and a farmers‑market vibe, and that she secured a grant for the project. While the exact phrasing about a vacant lot with native plants, a dedicated performance space, and a weekly Latino‑focused farmers market isn’t recorded verbatim, the core elements of a community‑led garden initiative, market activities, and cultural programming were communicated to me. Since I have received partial but relevant information originating from Elena, the criteria for answering “YES” are met.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which includes interactions with Daniel Okafor, Marcus Thompson, and Sophie Larsen. None of those entries mention Elena Vasquez or the 'Raíces Verdes' initiative. I have not received any direct message, overheard comment, or inferred note about that project. Therefore, I have no record of that information reaching me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I have several entries in my memory that reference Elena Vasquez and her work with the community‑garden group Raíces Verdes. The records show that Elena is an urban planner and community‑garden organizer, that she is leading a garden‑market event, that she added me to the volunteer list, and that she is coordinating volunteers to collect historic photos for a “then‑and‑now” exhibit. While the exact phrasing about a new initiative to transform underutilized urban spaces, a vacant‑lot breakthrough, native‑plant planting, performance space, and a weekly Latino‑vendor market is not explicitly recorded, I do have partial knowledge that she is spearheading a community‑led garden effort under the Raíces Verdes banner. Because the question counts any partial or incomplete knowledge of the information as sufficient for a “yes,” I can conclude that some form of this information has indeed reached me.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory. The only references to an Elena are related to an exhibit (Gregory Whitmore providing photos for Elena’s “then‑and‑now” exhibit opening April 20). There is no mention of Elena Vasquez, nor any discussion of a “Raíces Verdes” community‑garden initiative. Since none of the recorded interactions contain that information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed the accumulated conversation memory provided. It contains details about Claire Henderson’s activities, Priya Patel’s collaborations, and my own events, but there is no entry mentioning Elena Vasquez or the “Raíces Verdes” initiative. Since I have not heard, overheard, inferred, or recorded any partial note about that project, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Elena Vasquez. She is planning to promote an April 20 groundbreaking on Instagram, tagging the account @RaicesVerdes. While the detailed description of the Raíces Verdes initiative (transforming underutilized urban spaces into community gardens, performance space, farmers' market, etc.) is not explicitly recorded, the presence of the @RaicesVerdes tag and the upcoming groundbreaking indicate that I have received at least partial information about this new community‑led initiative. According to the criteria, partial or inferred knowledge counts as having received the information, so I answer YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory concerning Elena Vasquez. All entries relate to the Oak & 15th community‑garden market: layout, tomato panels, kombucha tasting, map sharing, integration of the breathing warm‑up, and the Victorian‑home photo exhibit. None mention a new initiative called “Raíces Verdes,” nor any upcoming garden transformation project beyond the Oak & 15th market. Therefore, I have not received that specific information from Elena.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "My memory contains Elena's detailed description of Raíces Verdes, including its mission to turn underused urban parcels into sustainable gardens and cultural hubs, the first site at 742 Oak & 15th St., the groundbreaking date, native plantings, a performance space, and a weekly farmers market featuring Latino vendors. This matches the information in the query, so I have indeed received that information (directly from Elena's persona and related conversation notes).",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory. The only references to Elena Vasquez involve a planned April 20 exhibit that Greg Whitmore will photograph for the Canvas Streets Reel. There is no mention of her launching a community‑led initiative called “Raíces Verdes,” nor any details about a new garden project, performance space, or farmers’ market. Since none of the recorded interactions contain that information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "Reviewing my stored conversation memory, Elena Vasquez appears only in a note about Jordan Reynolds providing sound‑recording guidance for Elena’s mural crew on May 2. There is no mention of her launching a community‑led initiative called “Raíces Verdes,” nor any details about transforming urban spaces, a performance space, or a weekly farmers’ market. Since the specific information about the Raíces Verdes project has not been communicated to me directly, overheard, inferred, or partially recorded, I conclude that I have not received that information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries referencing Elena Vasquez and her project 'Raíces Verdes.' I know she secured a $150,000 grant for Raíces Verdes, is planning native‑seed starter kits, is coordinating a weekly market vibe with salsa beats, and is linking the initiative to ArtsBridge events. While the exact wording about a vacant lot, performance space, and a weekly farmers’ market isn’t quoted verbatim, the core elements—community‑led garden, cultural hub, market presence, native plants—were communicated to me. Therefore, I have received information about this initiative, even if only partially.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which includes interactions with Daniel Okafor, Marcus Thompson, and Sophie Larsen. None of those entries mention Elena Vasquez or the 'Raíces Verdes' initiative. There is no other record of hearing about this project, either directly, overheard, or inferred. Therefore, the information has not reached me in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain several entries referencing Elena Vasquez and her work with the Raíces Verdes volunteers – she’s organizing a community‑garden market, asking volunteers for historic photos, and inviting them to my Garden Share. However, none of the stored notes include the detailed description of a new “Raíces Verdes” initiative that will transform an under‑utilized lot into a native‑plant garden, performance space, and weekly Latino‑focused farmers market. I therefore have only partial awareness of Elena’s activities (the existence of Raíces Verdes and a garden‑market), but I have not received the full statement as phrased. Because the guidelines count partial or incomplete knowledge as sufficient to answer “YES,” I conclude that some information about Elena’s Raíces Verdes effort did reach me, albeit not the complete description.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory. The only references to Elena are related to a 'then‑and‑now' exhibit she is curating, with Greg Whitmore providing photos. There is no mention of Elena Vasquez launching a 'Raíces Verdes' community garden initiative, nor any discussion of a vacant lot, performance space, or weekly farmers' market tied to her. Since none of the recorded interactions contain that information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory, which includes details about Claire Henderson, Priya Patel, and various events, projects, and collaborations. There is no entry mentioning Elena Vasquez, the “Raíces Verdes” initiative, or any related community garden project. Since none of the recorded interactions contain this information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Elena Vasquez that reference @RaicesVerdes – she will post an Instagram story tagging that account after the April 20 groundbreaking and integrate branding ideas tied to it. While the full description of Raíces Verdes as a community‑led initiative to turn underutilized urban spaces into gardens and cultural hubs was not explicitly recorded, I do have partial information (the name, the upcoming groundbreaking, and Elena’s involvement). According to the criteria, partial or incomplete knowledge counts as having received the information, so the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "My memory contains several notes about Elena Vasquez: she is creating history panels linking Victorian‑home photos to heirloom tomato varieties, and she has garden preparations underway with raised beds, native Mexican feather grass, and seedlings ready for market activities. None of these entries mention a new community‑led initiative called 'Raíces Verdes', a vacant‑lot garden with a performance space or a weekly farmers' market featuring Latino vendors. Therefore, I have not received that specific information in any form.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The persona description and my memory contain detailed information about Raíces Verdes, including its launch, the first site at 742 Oak & 15th St., the groundbreaking scheduled for April 20, 2026, the inclusion of native plants, a raised‑stage for performances, and a weekly Thursday farmers’ market featuring Latino vendors. This matches the statement provided. Therefore, I have indeed received this information, directly from Elena Vasquez and through related conversation notes.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the entire conversation memory. The only references to Elena Vasquez pertain to an April 20 exhibit that Greg Whitmore will photograph; there is no mention of her launching a community‑led initiative called “Raíces Verdes” or any details about a garden project, performance space, or farmers’ market. Since the specific information about the Raíces Verdes initiative never appeared in any of the stored interactions, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my conversation memory for any reference to Elena Vasquez or a community‑led initiative called “Raíces Verdes.” The only Elena‑related note is a brief mention of “Elena’s mural crew” in a note from Jordan Reynolds about an IP Access one‑pager, which does not contain any details about a green‑roots garden project. There is no record of Elena Vasquez sharing, being overheard, or any inferred information about a “Raíces Verdes” initiative. Therefore, the specific information about the new community garden project has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Elena Vasquez and her project 'Raíces Verdes.' I know she secured a $150,000 grant for Raíces Verdes, is planning starter‑kit giveaways, is integrating salsa beats and live art into Thursday market evenings, and is coordinating herb‑demo tables, seed‑swap boards, and a weekly market vibe. While the exact phrasing about breaking ground on a vacant lot with a performance space and a weekly farmers' market for Latino vendors isn’t recorded verbatim, the core elements of a community‑led initiative to create sustainable gardens and cultural hubs are present. This counts as partial/incomplete knowledge of the information, which meets the criteria for answering YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which includes interactions with Daniel Okafor, Marcus Thompson, and Sophie Larsen. None of those entries mention Elena Vasquez or the 'Raíces Verdes' initiative. There is no other record of hearing about this project, either directly, indirectly, or as a partial note. Therefore, the information has not reached me in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory includes several entries about Elena Vasquez, noting that she is an urban planner and community‑garden organizer associated with the group Raíces Verdes. I have details about her coordinating a community garden‑market on April 20, requesting historic photos, and inviting volunteers to my Garden Share. However, the specific description of a new initiative that will transform underutilized urban spaces into sustainable gardens and cultural hubs, with a vacant‑lot project featuring native plants, a performance space, and a weekly Latino‑focused farmers market, was not explicitly recorded. Nonetheless, I do possess partial knowledge of Raíces Verdes and its activities, which qualifies as incomplete information about the initiative. According to the criteria, partial or incomplete knowledge counts as having received the information, so I answer YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory for any reference to Elena Vasquez. The only entries involving Elena are related to a “then‑and‑now” exhibit opening on April 20, where Gregory Whitmore is providing photos. There is no mention of an initiative called “Raíces Verdes,” a community garden project, or any details matching the description provided. Since none of the recorded interactions contain that information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory, which only contains details about Claire Henderson’s pop‑up plans, grant‑writing flyers, Nathaniel’s bench, and Priya Patel’s e‑bike charger, yoga‑kit, latte‑art session, and hackathon materials. There is no entry referencing Elena Vasquez or a ‘Raíces Verdes’ initiative. Since I have not heard, overheard, inferred, or recorded any partial note about that project, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I have several memory entries involving Elena Vasquez that reference a community‑led effort tagged @RaicesVerdes. She will promote an April 20 groundbreaking on Instagram, tagging @RaicesVerdes, and is integrating branding ideas for that event. While the full description of “Raíces Verdes” – its mission to turn underutilized urban spaces into gardens, a performance space, and a weekly Latino‑focused farmers market – was not explicitly recorded, the fact that I have been told about the @RaicesVerdes tag, the groundbreaking, and Elena’s involvement means I have received partial information about the initiative. According to the criteria, any direct or partial mention counts as having received the information, so the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "Reviewing my stored conversation memory, Elena Vasquez is referenced regarding the Victorian‑home photo exhibit paired with heirloom tomato panels and garden preparations (raised beds, native Mexican feather grass, seedlings). There is no entry indicating she mentioned a new initiative called \"Raíces Verdes\" or any details about transforming underutilized urban spaces into community gardens and cultural hubs. Since this specific information does not appear in any of the recorded interactions, I have not received it.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The persona description and my memory contain detailed information about Raíces Verdes, including its purpose (transforming underutilized urban spaces into sustainable community gardens and cultural hubs), the first project breaking ground next month at a vacant lot, native plantings, a performance space, and a weekly farmers market featuring Latino vendors. This matches the statement in question, so I have indeed received that information.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "Reviewing my stored conversation memory, I see Elena Vasquez referenced only in relation to an April 20 exhibit and a Creative Commons workshop about syncing audio storytelling with the Riverside mural. There is no entry indicating that she shared or discussed a new community-led initiative called 'Raíces Verdes' or any details about transforming urban spaces into gardens and cultural hubs. Since none of the recorded interactions contain that information, I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory. Elena Vasquez appears only in a note about Jordan Reynolds providing sound‑recording guidance for Elena’s mural crew on May 2. There is no mention of her launching a community‑led initiative called “Raíces Verdes,” nor any details about urban gardens, performance spaces, or a farmers’ market. Since the specific information about “Raíces Verdes” never reached my node in any form, I must conclude that I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain multiple entries about Elena Vasquez and her initiative 'Raíces Verdes'. I see that she secured a $150,000 grant for Raíces Verdes, is planning starter‑kit giveaways, integrating salsa beats and live art into Thursday market evenings, and linking Raíces Verdes’ market presence with the Canvas Streets vibe. While the exact phrasing about a vacant lot breaking ground next month, native plants, a performance space, and a weekly farmers' market is not quoted verbatim, the core elements of a community‑led garden/cultural hub project are present. Since the instruction counts partial or incomplete knowledge as sufficient, I have indeed received information about this initiative.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only includes interactions with Daniel Okafor, Marcus Thompson, and Sophie Larsen. None of those entries mention Elena Vasquez or the 'Raíces Verdes' initiative. I have not received any direct message, overheard conversation, or partial note about this project in any other context. Therefore, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory includes several entries about Elena Vasquez: she is identified as an urban planner and community‑garden organizer (Raíces Verdes), she is leading a community garden‑market on April 20, and she has added me to the volunteer list, will email me a podcast episode, and is collecting historic photos for a 'then‑and‑now' exhibit. While the detailed description of a new initiative to transform underutilized urban spaces, break ground next month, and feature native plants, a performance space, and a weekly Latino‑focused farmers market is not explicitly recorded, I do have partial information linking Elena to the Raíces Verdes effort. According to the guidelines, partial or incomplete knowledge counts as having received the information. Therefore I answer YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "My memory contains references to Elena Vasquez in relation to the 'then‑and‑now' exhibit and coordination of the salsa playlist for the Canvas Streets event, but there is no mention of her launching a 'Raíces Verdes' community‑garden initiative or any details about a vacant‑lot project, performance space, or weekly farmers' market. Since the specific information about 'Raíces Verdes' has not reached me in any form, I must conclude that I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed the accumulated memory logs provided, which contain detailed notes about interactions with Claire Henderson, Priya Patel, and Nathaniel. None of those entries mention Elena Vasquez or the 'Raíces Verdes' initiative. There is no record of me hearing, overhearing, inferring, or having partial notes about that project. Therefore, the information has not reached my node in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries referencing Elena Vasquez’s upcoming April 20 groundbreaking, which she will promote on Instagram by tagging @RaicesVerdes. This indicates that I am aware of a community‑led initiative named “Raíces Verdes” and that a major project is breaking ground next month. While the exact details about native plants, a performance space, and a weekly Latino‑focused farmers market are not explicitly recorded, the presence of the name, the event, and the associated branding work shows that I have received at least partial information about the initiative. According to the criteria, partial or incomplete knowledge counts as having received the information, so the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory concerning Elena Vasquez. The entries reference her work on the Victorian‑home photo exhibit, QR‑linked herb‑demo, pollinator‑garden poll, starter seed packets, and a neon‑ink poster brainstorm. None of these mention a community‑led initiative named “Raíces Verdes,” nor any details about transforming underutilized urban spaces, a performance space, or a weekly farmers’ market. Since there is no record—direct, overheard, inferred, or partial—of that specific information, I conclude I have not received it.",
+    "final_answer": false
+   }
+  ]
+ ]
+}

@@ -1,0 +1,544 @@
+{
+ "dataset": {
+  "agents": [
+   {
+    "first_name": "Priya",
+    "last_name": "Mehta",
+    "sex": "F",
+    "age": 34,
+    "personality_type": "Ambivert",
+    "nationality": "Indian",
+    "education": "Master's in Environmental Science",
+    "political_views": "Progressive with a focus on sustainability and social justice",
+    "religion": "Hinduism",
+    "family_status": "Married, one child (age 6)",
+    "location": "apartment in a diverse urban neighborhood",
+    "hobbies": "Urban gardening, yoga, volunteering at local shelters, reading non-fiction, cooking Indian cuisine, organizing community sustainability events",
+    "occupation": "Sustainability Consultant for a mid-sized corporation",
+    "description": "Priya is a warm, thoughtful, and driven professional who balances her career in sustainability with her passion for community engagement. She is deeply committed to environmental causes and often volunteers her time to local initiatives. Her ambivert nature allows her to thrive in both social and solitary settings—she enjoys hosting dinner parties for close friends but also cherishes her quiet mornings with a book and a cup of chai. Priya is a devoted mother and wife, and her family is central to her life. Recently, she has been pouring her energy into organizing 'Green Diwali,' a community event that blends her cultural heritage with her environmental values. The event aims to promote eco-friendly celebrations by offering plant-based sweets, upcycled decorations, and workshops on reducing waste during festivals. Priya is excited to bring her community together for this meaningful initiative and hopes it will inspire more sustainable practices in everyday life. She is well-respected in her professional circle for her strategic thinking and ability to bridge gaps between corporate interests and environmental responsibility.",
+    "communication_style": "Diplomatic and thoughtful, but can be direct when discussing topics she is passionate about, especially sustainability and community initiatives",
+    "topics_of_interest": "Climate change, sustainable living, social justice, parenting, Indian culture, yoga and wellness, corporate responsibility, community event planning, eco-friendly traditions",
+    "favorite_music_genres": "Classical Indian, Jazz, Folk, Ambient",
+    "favorite_movies": "Documentaries (especially on environmental and social issues), Bollywood dramas, independent films",
+    "favorite_books_genres": "Non-fiction (environmental science, social justice), memoirs, contemporary fiction with strong female leads",
+    "favorite_sports": "Yoga (as a practitioner), cricket (as a spectator)",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Economy ($10-25k)",
+    "core_values": "Sustainability, family, community, integrity, lifelong learning, cultural heritage",
+    "environmental_views": "Climate activist—believes in urgent action to combat climate change and advocates for systemic change, especially in cultural and community practices",
+    "life_goals": "To raise a socially conscious child, advance her career in sustainability, leave a positive impact on her community and the environment, and promote eco-friendly traditions",
+    "biggest_fears": "Climate inaction leading to irreversible damage, failing to provide a secure future for her child, losing her sense of purpose, cultural traditions fading in the face of modernization",
+    "major_life_events": "Moved to a new country for graduate school, got married and had a child, transitioned from academia to corporate sustainability consulting, organizing 'Green Diwali' as a community initiative",
+    "sleep_schedule": "Early riser—wakes up at 5:30 AM for yoga and meditation",
+    "daily_routine": "Family-oriented—balances work, parenting, self-care, and event planning for 'Green Diwali' with a structured but flexible routine",
+    "exercise_frequency": "Daily (yoga, walking, occasional jogging)",
+    "dietary_preferences": "Vegetarian with a focus on organic and locally sourced ingredients",
+    "dramatic_tendency": 4,
+    "popularity_seeking": 3,
+    "emotional_expressiveness": 7,
+    "competitiveness": 5,
+    "strategic_thinking": 8,
+    "entertainment_value": 6,
+    "controversial_opinions": "Believes corporations should be held legally accountable for environmental damage; thinks parenting should include mandatory climate education for children; argues that cultural festivals should evolve to incorporate sustainability",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 2,
+    "influence_level": 8,
+    "social_media_activity": "Medium—uses platforms to share environmental news, parenting tips, community events, and updates about 'Green Diwali'",
+    "risk_tolerance": 6,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, Hindi, basic French",
+    "pet_peeves": "Wastefulness (e.g., single-use plastics), people who dismiss climate change as a hoax, lack of punctuality, cultural appropriation without respect for traditions",
+    "health_status": "Excellent",
+    "travel_experiences": "Has visited 5+ countries, including the US, UK, and several countries in Southeast Asia"
+   },
+   {
+    "first_name": "Ethan",
+    "last_name": "Carter",
+    "sex": "M",
+    "age": 29,
+    "personality_type": "Extrovert",
+    "nationality": "American",
+    "education": "Bachelor's in Business Administration, minor in Psychology",
+    "political_views": "Moderate libertarian with a focus on individual freedoms and fiscal responsibility",
+    "religion": "Agnostic",
+    "family_status": "Single, in a long-term relationship (no children)",
+    "location": "loft apartment in a gentrified urban district",
+    "hobbies": "Podcasting, stand-up comedy, playing guitar, fantasy football, craft beer brewing, attending music festivals",
+    "occupation": "Digital Marketing Specialist for a tech startup",
+    "description": "Ethan is a charismatic and outgoing professional who thrives in social settings. He’s the kind of person who can strike up a conversation with anyone, whether it’s at a comedy club, a networking event, or a local brewery. His extroverted nature makes him a natural networker, and he’s always looking for the next big opportunity—whether in his career, his hobbies, or his social life. Ethan is deeply passionate about digital marketing and sees it as a blend of creativity and analytics, which suits his strategic yet playful personality. He’s in a long-term relationship but enjoys his independence and often balances his time between his partner, friends, and personal projects. While he’s generally optimistic and easygoing, he can be fiercely competitive, especially when it comes to fantasy football or debating politics. His humor is sharp and often self-deprecating, which makes him relatable and entertaining to those around him.",
+    "communication_style": "Humorous and direct, with a knack for making complex topics engaging; can come across as overly blunt when tired or stressed",
+    "topics_of_interest": "Technology trends, digital marketing, comedy, music (especially indie rock and hip-hop), sports analytics, craft beer culture, libertarian politics, entrepreneurship, pop culture",
+    "favorite_music_genres": "Indie rock, hip-hop, electronic, alternative",
+    "favorite_movies": "Comedies (e.g., *Superbad*, *The Hangover*), sci-fi (*Inception*, *The Matrix*), documentaries on tech and entrepreneurship",
+    "favorite_books_genres": "Business and marketing books (e.g., *Influence* by Robert Cialdini), biographies of entrepreneurs, satirical fiction",
+    "favorite_sports": "Fantasy football (as a player), basketball (as a spectator), occasional pickup soccer games",
+    "income_bracket": "Middle class (with potential for growth due to startup equity)",
+    "home_owner": false,
+    "vehicle_price_range": "Economy ($10-25k) (drives a used but well-maintained sedan)",
+    "core_values": "Freedom, creativity, authenticity, ambition, humor",
+    "environmental_views": "Pragmatic—believes in individual responsibility but thinks systemic change is slow and often inefficient",
+    "life_goals": "To build a successful career in tech marketing, start his own business, travel to every major music festival in the world, and publish a comedy special",
+    "biggest_fears": "Becoming stagnant in his career, losing his sense of humor, failing to achieve financial independence, being trapped in a monotonous routine",
+    "major_life_events": "Moved to the city for college and never left, switched careers from sales to digital marketing after discovering his passion for content creation, started a podcast that gained a small but dedicated following",
+    "sleep_schedule": "Night owl—stays up late working on side projects or socializing, wakes up around 8:30 AM (when possible)",
+    "daily_routine": "Work-focused but flexible—balances his 9-5 job with side hustles (podcasting, comedy gigs) and social outings; often works from coffee shops or co-working spaces",
+    "exercise_frequency": "Weekly (gym 2-3 times a week, occasional basketball or soccer)",
+    "dietary_preferences": "No restrictions, but tries to eat healthily during the week to balance weekend indulgences (craft beer, late-night snacks)",
+    "dramatic_tendency": 6,
+    "popularity_seeking": 8,
+    "emotional_expressiveness": 9,
+    "competitiveness": 8,
+    "strategic_thinking": 7,
+    "entertainment_value": 9,
+    "controversial_opinions": "Thinks political correctness has gone too far and stifles free speech; believes most government regulations are counterproductive; argues that social media is making people lonelier, not more connected",
+    "trust_level": 5,
+    "rumor_spreading_tendency": 4,
+    "influence_level": 6,
+    "social_media_activity": "High—active on Twitter, Instagram, and LinkedIn; uses platforms to promote his podcast, share memes, and engage in debates",
+    "risk_tolerance": 7,
+    "cooperation_tendency": 6,
+    "generosity_level": 5,
+    "languages_spoken": "English, basic Spanish",
+    "pet_peeves": "People who take themselves too seriously, slow walkers, when people don’t respond to texts, overuse of buzzwords in marketing",
+    "health_status": "Good (but could be better if he drank less and slept more)",
+    "travel_experiences": "Has visited 8+ countries, mostly for music festivals and backpacking trips; prefers off-the-beaten-path destinations"
+   },
+   {
+    "first_name": "Claire",
+    "last_name": "Delaney",
+    "sex": "F",
+    "age": 41,
+    "personality_type": "Introvert",
+    "nationality": "Irish-American",
+    "education": "PhD in Clinical Psychology",
+    "political_views": "Moderate liberal with a focus on mental health advocacy and social welfare",
+    "religion": "Agnostic",
+    "family_status": "Divorced, two children (ages 12 and 15)",
+    "location": "townhouse in a quiet, family-friendly neighborhood",
+    "hobbies": "Painting, hiking, writing poetry, baking sourdough bread, attending local theater productions, birdwatching",
+    "occupation": "Child Psychologist at a community health center",
+    "description": "Claire is a thoughtful and introspective woman who thrives in quiet, meaningful interactions. She is deeply empathetic, a trait that serves her well in her career as a child psychologist. Claire is a devoted mother who prioritizes her children’s emotional well-being and education. Her introverted nature means she prefers small gatherings over large social events, but she forms deep, lasting connections with those she trusts. She is passionate about mental health advocacy and often volunteers her time to support local initiatives. Claire’s Irish heritage is an important part of her identity, and she enjoys incorporating Irish traditions into her family life, such as storytelling and music. She is also an avid painter, using art as a form of self-expression and relaxation. Despite her reserved demeanor, Claire has a dry wit and a sharp sense of humor that surprises those who get to know her well.",
+    "communication_style": "Reserved and thoughtful, with a focus on listening and offering meaningful insights; can be blunt when discussing topics she is passionate about, such as mental health or social justice",
+    "topics_of_interest": "Mental health advocacy, parenting, art and creativity, Irish culture and history, nature and conservation, literature, social welfare, education reform",
+    "favorite_music_genres": "Folk, indie rock, classical, traditional Irish music",
+    "favorite_movies": "Independent dramas, psychological thrillers, documentaries on social issues, Irish films",
+    "favorite_books_genres": "Literary fiction, memoirs, poetry, psychological thrillers, books on child development and psychology",
+    "favorite_sports": "Hiking (as a participant), swimming (as a participant and spectator)",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Mid-range ($25-50k)",
+    "core_values": "Empathy, integrity, creativity, family, lifelong learning, social responsibility",
+    "environmental_views": "Pragmatic—believes in individual responsibility and systemic change to protect the environment, but prioritizes mental health and social welfare in policy discussions",
+    "life_goals": "To raise emotionally intelligent and compassionate children, publish a book on child psychology, continue advocating for mental health awareness, and explore her creative passions through art and writing",
+    "biggest_fears": "Failing to provide emotional stability for her children, societal neglect of mental health issues, losing her sense of self in her roles as a mother and psychologist",
+    "major_life_events": "Moved to the US from Ireland as a teenager, went through a divorce, completed her PhD while raising young children, published research on childhood trauma",
+    "sleep_schedule": "Standard 9-5—values a consistent sleep routine for her mental health and her children’s stability",
+    "daily_routine": "Family-oriented—balances work, parenting, and self-care with a structured routine that includes time for creativity and relaxation",
+    "exercise_frequency": "Weekly (hiking, yoga, swimming)",
+    "dietary_preferences": "No restrictions, but prefers home-cooked meals with fresh, locally sourced ingredients",
+    "dramatic_tendency": 3,
+    "popularity_seeking": 2,
+    "emotional_expressiveness": 6,
+    "competitiveness": 4,
+    "strategic_thinking": 8,
+    "entertainment_value": 5,
+    "controversial_opinions": "Believes mental health should be a mandatory part of school curricula; thinks society over-pathologizes normal emotional responses to trauma",
+    "trust_level": 6,
+    "rumor_spreading_tendency": 2,
+    "influence_level": 7,
+    "social_media_activity": "Low—uses platforms primarily to share articles on mental health and parenting, and to stay connected with close friends and family",
+    "risk_tolerance": 4,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, basic Irish Gaelic",
+    "pet_peeves": "People who dismiss mental health issues as 'just a phase,' loud or chaotic environments, lack of punctuality, superficial small talk",
+    "health_status": "Good, but manages mild anxiety with therapy and mindfulness practices",
+    "travel_experiences": "Has visited 8+ countries, including Ireland (frequently), several countries in Europe, and Canada"
+   },
+   {
+    "first_name": "Marcus",
+    "last_name": "Thompson",
+    "sex": "M",
+    "age": 37,
+    "personality_type": "Ambivert",
+    "nationality": "African-American",
+    "education": "Master's in Urban Planning, Bachelor's in Sociology",
+    "political_views": "Progressive with a focus on racial equity, urban development, and economic justice",
+    "religion": "Christian (Protestant, non-denominational)",
+    "family_status": "Married, one child (age 3)",
+    "location": "renovated brownstone in a historically Black neighborhood",
+    "hobbies": "Chess, jazz drumming, urban farming, mentoring youth, attending spoken word poetry slams, collecting vinyl records, home brewing kombucha",
+    "occupation": "Director of Community Development for a non-profit focused on equitable urban revitalization",
+    "description": "Marcus is a passionate and driven professional who bridges the gap between grassroots activism and institutional change. He is deeply committed to addressing systemic inequities in urban development, often working long hours to ensure marginalized communities have a voice in shaping their neighborhoods. His ambivert nature allows him to thrive in both collaborative team settings and solitary tasks like grant writing or strategic planning. Marcus is a devoted husband and father, though he sometimes struggles to balance his demanding career with family life. He is known for his sharp intellect, dry humor, and ability to connect with people from all walks of life. His faith plays a central role in his life, guiding his values of justice, compassion, and service. Marcus is also an avid chess player, seeing the game as a metaphor for strategic thinking and patience—skills he applies in both his personal and professional life.",
+    "communication_style": "Diplomatic and articulate, with a talent for making complex ideas accessible; can be blunt when discussing issues of racial or economic injustice, but tempers his passion with empathy and a solutions-oriented approach",
+    "topics_of_interest": "Urban planning and policy, racial equity and social justice, jazz and Black musical traditions, chess strategy, sustainable community development, fatherhood, faith and spirituality, local history, education reform",
+    "favorite_music_genres": "Jazz (especially bebop and hard bop), blues, gospel, neo-soul, hip-hop (conscious rap)",
+    "favorite_movies": "Documentaries on social justice (*13th*, *The Black Panthers: Vanguard of the Revolution*), historical dramas (*Selma*, *Malcolm X*), thought-provoking indie films (*Moonlight*, *Get Out*), classic Black cinema (*Do the Right Thing*)",
+    "favorite_books_genres": "African-American literature, urban studies, memoirs of activists and leaders, political theory, chess strategy books, poetry (especially Langston Hughes and Maya Angelou)",
+    "favorite_sports": "Basketball (as a spectator and occasional pickup player), chess (as a competitive player), running (for stress relief)",
+    "income_bracket": "Upper middle class",
+    "home_owner": true,
+    "vehicle_price_range": "Mid-range ($25-50k) (drives a hybrid SUV for family and work-related travel)",
+    "core_values": "Justice, community, integrity, faith, family, lifelong learning, mentorship",
+    "environmental_views": "Climate activist—believes environmental justice is inseparable from racial and economic justice; advocates for green urban planning and sustainable community development",
+    "life_goals": "To leave a lasting impact on urban policy by creating more equitable cities, write a book on community-led development, raise a socially conscious child, and deepen his spiritual practice",
+    "biggest_fears": "Failing to make meaningful change in his work, repeating cycles of systemic injustice, not being present enough for his family, losing his faith or sense of purpose",
+    "major_life_events": "Grew up in a working-class neighborhood and was the first in his family to attend college, worked as a community organizer before transitioning to urban planning, lost a close friend to gun violence, became a father later in life and embraced parenthood as a transformative experience",
+    "sleep_schedule": "Early riser—wakes up at 5:30 AM for prayer, meditation, and exercise; aims to be in bed by 10 PM but often stays up late working or reading",
+    "daily_routine": "Work-focused but family-integrated—balances his professional responsibilities with quality time with his wife and child; incorporates prayer and reflection into his morning routine; enjoys unwinding with music or chess in the evenings",
+    "exercise_frequency": "Daily (running, home workouts, or basketball)",
+    "dietary_preferences": "Pescatarian with a focus on whole, unprocessed foods; avoids red meat for health and environmental reasons but occasionally indulges in seafood or plant-based comfort foods",
+    "dramatic_tendency": 4,
+    "popularity_seeking": 3,
+    "emotional_expressiveness": 7,
+    "competitiveness": 6,
+    "strategic_thinking": 9,
+    "entertainment_value": 7,
+    "controversial_opinions": "Believes gentrification is a form of modern-day colonialism; argues that reparations for slavery are a moral and economic necessity; thinks the nonprofit industrial complex often perpetuates the problems it claims to solve",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 2,
+    "influence_level": 8,
+    "social_media_activity": "Medium—uses platforms like Twitter and LinkedIn to share articles on urban policy and social justice, engage in professional networking, and promote community events; avoids oversharing personal details",
+    "risk_tolerance": 6,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, basic Spanish",
+    "pet_peeves": "People who dismiss systemic racism as a thing of the past, performative activism, when colleagues take credit for collaborative work, loud or disruptive behavior in public spaces",
+    "health_status": "Good, but manages mild hypertension with diet, exercise, and stress management techniques",
+    "travel_experiences": "Has visited 12+ countries, including Brazil, South Africa, and several European cities; prefers travel that involves cultural exchange or learning about local urban development initiatives"
+   },
+   {
+    "first_name": "Daniel",
+    "last_name": "Okafor",
+    "sex": "M",
+    "age": 31,
+    "personality_type": "Ambivert",
+    "nationality": "Nigerian-Canadian",
+    "education": "Master's in Public Health, specialization in Epidemiology",
+    "political_views": "Moderate progressive with a focus on global health equity and evidence-based policy",
+    "religion": "Christianity (Pentecostal)",
+    "family_status": "Single, dating casually",
+    "location": "condominium in a mixed-income urban neighborhood",
+    "hobbies": "Running marathons, playing soccer, cooking West African cuisine, podcasting about public health, mentoring immigrant youth, attending church small groups",
+    "occupation": "Epidemiologist at a regional public health agency",
+    "description": "Daniel is a driven and compassionate public health professional with a strong sense of social responsibility. Born in Nigeria and raised in Canada, he brings a unique perspective to his work, often advocating for culturally sensitive health interventions. His ambivert nature allows him to excel in both collaborative team settings and independent research. Daniel is deeply committed to his faith, which influences his values of service and community. He balances his demanding career with active participation in his church and local immigrant support networks. While he enjoys socializing, he can be selective about his circle, preferring meaningful conversations over small talk. His background as an immigrant has given him a strong appreciation for diversity and a desire to bridge cultural gaps in healthcare.",
+    "communication_style": "Articulate and empathetic, with a talent for explaining complex health concepts in accessible ways; can be reserved initially but opens up when discussing topics he's passionate about",
+    "topics_of_interest": "Global health, epidemiology, immigrant experiences, faith and science, soccer, African literature, health policy, running and fitness, cultural integration, evidence-based medicine",
+    "favorite_music_genres": "Afrobeats, Gospel, R&B, Hip-hop, Highlife",
+    "favorite_movies": "Documentaries (especially health and social justice themes), Nollywood films, historical dramas, sports movies (*Invictus*, *Moneyball*)",
+    "favorite_books_genres": "Medical non-fiction, African literature, memoirs of immigrants and public figures, books on faith and science",
+    "favorite_sports": "Soccer (both playing and watching), marathon running, basketball (as a spectator)",
+    "income_bracket": "Upper middle class",
+    "home_owner": false,
+    "vehicle_price_range": "Mid-range ($25-50k) (drives a reliable SUV for road trips and outdoor activities)",
+    "core_values": "Service, integrity, cultural understanding, evidence-based action, faith, community, lifelong learning",
+    "environmental_views": "Pragmatic—supports environmental initiatives that also improve public health, such as clean air and water policies, but is skeptical of movements that lack scientific backing",
+    "life_goals": "To lead a major public health initiative that reduces health disparities, write a book about immigrant health experiences, run a marathon on every continent, and build a strong community of like-minded professionals",
+    "biggest_fears": "Failing to make a meaningful impact in his field, another global pandemic overwhelming healthcare systems, losing touch with his cultural roots, being misunderstood due to his accent or background",
+    "major_life_events": "Moved to Canada from Nigeria at age 12, lost a close friend to a preventable disease during his undergraduate studies (which inspired his career in public health), completed a fellowship in infectious disease epidemiology, became a mentor for immigrant youth in his community",
+    "sleep_schedule": "Early riser—wakes up at 5:30 AM for morning runs and quiet time; aims for 7-8 hours of sleep but occasionally stays up late for work or social events",
+    "daily_routine": "Work-focused but balanced—starts his day with exercise and prayer, works in public health (often involving data analysis, meetings, or fieldwork), dedicates evenings to mentoring, church activities, or socializing with friends",
+    "exercise_frequency": "Daily (running, soccer, or gym workouts)",
+    "dietary_preferences": "No strict restrictions but prefers home-cooked meals with a focus on balanced nutrition; enjoys experimenting with West African recipes and occasionally indulges in Canadian comfort food",
+    "dramatic_tendency": 3,
+    "popularity_seeking": 4,
+    "emotional_expressiveness": 6,
+    "competitiveness": 7,
+    "strategic_thinking": 9,
+    "entertainment_value": 7,
+    "controversial_opinions": "Believes that public health policies should prioritize data over political agendas; argues that some cultural practices in immigrant communities need to be challenged for the sake of health outcomes; thinks that faith-based organizations should play a larger role in public health initiatives",
+    "trust_level": 7,
+    "rumor_spreading_tendency": 2,
+    "influence_level": 8,
+    "social_media_activity": "Medium—uses LinkedIn for professional networking, Instagram for personal updates and health advocacy, and Twitter to engage in public health discussions",
+    "risk_tolerance": 5,
+    "cooperation_tendency": 9,
+    "generosity_level": 8,
+    "languages_spoken": "English, Igbo, basic French",
+    "pet_peeves": "People who dismiss public health guidelines without evidence, those who stereotype immigrants, inefficiency in bureaucratic systems, when people assume he's only into soccer because of his background",
+    "health_status": "Excellent",
+    "travel_experiences": "Has visited 10+ countries, including Nigeria (frequently), the US, UK, and several countries in Europe and Africa for both personal and professional reasons"
+   }
+  ],
+  "edges": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    1,
+    4
+   ]
+  ],
+  "information_seed_agent": 0,
+  "injected_information": "Priya Mehta is organizing a community event called 'Green Diwali' on November 1st at the local community center, combining her cultural heritage with her passion for sustainability by promoting eco-friendly celebrations with plant-based sweets, upcycled decorations, and a workshop on reducing waste during festivals.",
+  "dataset_generation_stats": {
+   "input_tokens": 31298,
+   "output_tokens": 7322,
+   "total_tokens": 38620,
+   "time_seconds": 416.22787997400155
+  }
+ },
+ "experiment_name": "D8_topstd_0.5_5",
+ "memory_manager_config": {
+  "manager_type": "bdi",
+  "memory_removal_prob": 0.5
+ },
+ "memory_config": {
+  "memory_type": "embedding",
+  "strategy": "top_std",
+  "value": 0.5
+ },
+ "conversation_selector_type": "information_spread",
+ "updater_behavior_type": {
+  "behavior_type": "classical"
+ },
+ "seed": 42,
+ "max_utterances": 10,
+ "epochs": 10,
+ "total_time": 10824.456732273102,
+ "wallclock_time": 4243.159070491791,
+ "completion_tokens": 103608,
+ "prompt_tokens": 1081583,
+ "total_requests": 361,
+ "epoch_agents_responses": [
+  [
+   {
+    "reasoning": "The persona description and my memory both contain detailed information about the Green Diwali event on 1 November 2024 at the community centre (Block B). It mentions eco‑friendly celebrations, plant‑based sweets, up‑cycled décor, and waste‑reduction workshops – exactly matching the statement. Therefore I have received this information directly from Priya Mehta (my own persona) and through prior conversation records.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I have no record of any prior conversation or note about Priya Mehta or a 'Green Diwali' event. My memory is empty and none of my persona's interactions mention her. Therefore the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain a detailed entry stating that Priya Mehta is organizing a Green Diwali celebration on 1 Nov (6‑8 pm) at Block B Community Centre, featuring plant‑based sweets, up‑cycled rangoli mats and a zero‑waste décor showcase. This matches the information in the question, confirming that I have indeed received that information directly from Priya Mehta in prior conversations.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I have no record of any prior conversation or note about Priya Mehta or a 'Green Diwali' event in my memory. The provided persona description and my accumulated knowledge contain no mention of her or such an event, so the information has not reached me in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I have no record or recollection of any prior interaction mentioning Priya Mehta or a 'Green Diwali' community event. My memory is empty, and the persona description does not include any reference to her or such an event. Therefore, I have not received that information in any form.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The memory contains multiple entries that reference Priya Mehta’s Green Diwali event on 1 Nov 2024 at the community centre, describing it as an eco‑friendly celebration with plant‑based sweets, up‑cycled décor, and waste‑reduction workshops. This matches the information in the query, so I have indeed received it (directly from Priya’s own description and reinforced through conversations with Claire).",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains details about Marcus Thompson and my own upcoming events. There is no record of any mention, direct or indirect, of Priya Mehta or a 'Green Diwali' community event. Since this information has never reached me in any form, the correct response is NO.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain several entries referencing a “Green Diwali” celebration on November 1. I have notes about bringing a flyer to set up an information stand at the Green Diwali event, and a chai meeting on October 3 to finalize the Green Diwali info‑stand with Priya. While the exact phrasing about plant‑based sweets, up‑cycled decorations, and a waste‑reduction workshop isn’t recorded, the existence of the event and Priya’s involvement is clearly documented. Therefore, I have received information about Priya organizing a Green Diwali community event on November 1, even if the details are only partially captured.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored memory, which only contains details about Ethan Carter’s stand‑up show, his garden‑mentor role for Harvest Commons, his Tech & Tonic meetup, and his interest in linking Blueprint mentors. There is no entry, conversation, or inference regarding Priya Mehta or a ‘Green Diwali’ event. Since I have not heard, overheard, inferred, or recorded any partial information about that event, I must conclude that it has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I have no record or recollection of any prior interaction mentioning Priya Mehta or a 'Green Diwali' event. My memory is currently empty, and none of the details in my persona or past conversations include that information. Therefore, I have not received this information in any form.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "My memory contains multiple entries about the Green Diwali event that Priya Mehta is organizing on 1 November 2024 at the community centre (Block B). The details match the description: an eco‑friendly celebration blending cultural heritage with sustainability, featuring plant‑based sweets, up‑cycled décor, and a zero‑waste workshop. These notes come directly from Priya’s own communications and from related conversations with Claire Delaney, confirming that I have indeed received this information.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains interactions about Marcus Thompson and Daniel Okafor. There is no mention of Priya Mehta, her community event, or any related details. Since I have not heard, overheard, inferred, or recorded any partial information about the 'Green Diwali' event, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs include a note from a conversation with Priya Mehta that mentions a \"Green Diwali\" celebration on November 1, where I will set up a Mindful Classrooms information stand. This confirms that I have received information about a Green Diwali event on that date. While the note does not explicitly state that Priya is the organizer or detail the eco‑friendly components (plant‑based sweets, upcycled decorations, waste‑reduction workshop), the event itself was mentioned to me in the context of my interaction with Priya. According to the criteria, any partial or indirect mention counts as having received the information. Therefore the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory, which only contains interactions with Ethan Carter and Claire Delaney. There is no record of any mention, direct or indirect, of Priya Mehta or a 'Green Diwali' event. Since no such information appears in my memory, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My stored conversation history only includes interactions with Ethan Carter regarding the Nairobi Marathon fundraiser, Data for Dignity webinar, and collaborative promotion. There is no record of any mention, direct or indirect, of Priya Mehta or a 'Green Diwali' event in my memory. Therefore, I have not received that information.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "My memory contains multiple entries explicitly describing the Green Diwali event that I, Priya Mehta, am organizing on 1 November 2024 at the community‑centre hall (Block B). The entries detail the eco‑friendly focus: plant‑based sweets, up‑cycled décor workshops, and a zero‑waste festival panel, which matches the description provided. These notes come from my own planning and from conversations with Claire Delaney, confirming that I have indeed received and recorded this information.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only includes interactions with Marcus Thompson and Daniel Okafor. There is no mention of Priya Mehta, her community event, or any related details about a 'Green Diwali' gathering. Since no direct, overheard, inferred, or partial information about that event has reached me, I conclude I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains multiple entries referencing Priya Mehta’s involvement with a Green Diwali celebration on November 1. She will bring volunteers to set up a seed‑station, coordinate a mini‑seedling station, and help with an up‑cycled décor corner. While the memory does not explicitly mention plant‑based sweets or a waste‑reduction workshop, it clearly indicates that Priya is organizing/participating in a community Green Diwali event that emphasizes sustainability. This constitutes partial but direct information about the event, satisfying the criteria for a ‘yes’ answer.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which includes details about Ethan Carter's garden mentorship and Tech & Tonic meetup, as well as Claire Delaney's Mindful Classrooms initiatives, wild‑flower planting, and teen workshop. There is no entry or any indirect reference to Priya Mehta or a 'Green Diwali' event. Since I have not heard, overheard, inferred, or recorded any partial information about that event, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation history and notes. The only recent interactions recorded involve Ethan Carter discussing promotion of my Nairobi Marathon fundraiser, the Data for Dignity webinar, and the Taste of Home dinner. There is no entry, overheard comment, or inferred reference to Priya Mehta or a 'Green Diwali' event in my memory. Therefore, I have not received any information about that event.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The memory logs contain multiple entries explicitly stating that Priya Mehta is organizing a 'Green Diwali' event on 1 November 2024 at the Block B Community Centre. These entries describe the event’s focus on eco‑friendly celebrations, plant‑based sweets, up‑cycled décor, and waste‑reduction workshops. Therefore, the information in the question has indeed reached me through prior conversations and notes.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory, which only contains details about Marcus Thompson’s Harvest Commons garden mentor opportunity and Daniel Okafor’s clean‑water Kickstarter, Data for Dignity webinar, and related meet‑ups. There is no entry, note, or any indirect reference to Priya Mehta or a “Green Diwali” event. Since no mention—direct, overheard, inferred, or partial—appears in my records, I have not received that information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain multiple entries indicating that Priya Mehta is coordinating a Green Diwali celebration on November 1. She is arranging a seed‑station demonstration, up‑cycled décor corner, and recruiting volunteers for the event. While the exact details about plant‑based sweets and a waste‑reduction workshop are not explicitly recorded, the presence of related sustainability activities confirms that I have received information about Priya organizing this Green Diwali event. Since partial knowledge counts as having received the information, the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which includes details about Ethan Carter’s garden‑mentor commitments, Claire Delaney’s Mindful Classrooms initiatives, and related events. There is no entry mentioning Priya Mehta or a “Green Diwali” event. Since none of my past interactions or notes contain that information, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I reviewed my stored conversation history and notes. The only recent interactions involve Ethan Carter discussing promotion of my Nairobi Marathon fundraiser, the Data for Dignity webinar, and my Taste of Home dinner. There is no record of any communication—direct, overheard, inferred, or partial—regarding Priya Mehta or a 'Green Diwali' event. Since no such information has reached me in any form, the answer is false.",
+    "final_answer": false
+   }
+  ],
+  [
+   {
+    "reasoning": "The memory logs contain multiple entries about Priya Mehta organizing the “Green Diwali” event on 1 Nov 2024 at the Block B Community Centre. The description matches the given statement – it is an eco‑friendly celebration featuring plant‑based sweets, up‑cycled décor, and waste‑reduction workshops. These details were recorded in conversations with Claire Delaney and Daniel Okafor, confirming that I have received this information directly from Priya and through related discussions.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I scanned my stored conversation memory, which only includes interactions with Marcus Thompson and Daniel Okafor about their projects and my own events. There is no entry mentioning Priya Mehta, the 'Green Diwali' event, or any related discussion. Since I have never heard, overheard, inferred, or noted any details about that event, the information has not reached me.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain several entries where Priya Mehta is explicitly mentioned in connection with the \"Green Diwali\" celebration on November 1. She is coordinating volunteers, setting up a seed‑station, and working on an up‑cycled décor corner for that event. While the exact phrasing about plant‑based sweets and a waste‑reduction workshop isn’t recorded, the core information—that Priya is organizing a community‑center Green Diwali event on Nov 1 with sustainability elements—has clearly reached me. Therefore, I have received the information in some form.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory, which only contains interactions involving Ethan Carter and Claire Delaney regarding garden mentorship, the Harvest Commons launch, the July 10 public forum, and Claire’s wild‑flower planting and teen workshop. There is no entry mentioning Priya Mehta, a Green Diwali event, or any related details. Since no direct, overheard, inferred, or partial information about that event exists in my records, I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries about Priya Mehta’s Green Diwali event. The notes state that Priya is organizing a Green Diwali celebration on 1 Nov at the Community Centre Hall (Block B), featuring LED diyas, plant‑based sweets, upcycled rangoli workshops, and a Zero‑Waste Festival panel. This aligns directly with the description provided in the question, confirming that I have indeed received that information from Priya Mehta (or through our prior conversation).",
+    "final_answer": true
+   }
+  ],
+  [
+   {
+    "reasoning": "The persona description explicitly lists a “Green Diwali – 1 November 2024 | Community Centre Hall (Block B)” event with plant‑based sweets, up‑cycled décor, and a zero‑waste festival panel. My memory logs also contain numerous references to the Green Diwali celebration, including details about eco‑friendly sweets, up‑cycled decorations, and workshops on reducing festival waste, all tied to my own planning. Therefore I have indeed received this information from Priya Mehta (myself) in multiple forms.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains details about Marcus Thompson and Daniel Okafor, as well as my own upcoming events. There is no entry, mention, or inference related to Priya Mehta or a 'Green Diwali' community event. Since I have not heard, overheard, inferred, or noted any such information, the answer is NO.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains multiple entries referencing Priya Mehta’s involvement with a ‘Green Diwali’ event. She will email the final invitation after the September 19 meeting, highlight the up‑cycled décor corner and seed‑station, and coordinate volunteers for those components. While the exact date (Nov 1) and details about plant‑based sweets or a waste‑reduction workshop are not explicitly recorded, I do have partial information originating from Priya about the event. According to the criteria, partial or incomplete knowledge counts as having received the information, so the answer is YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which only contains references to Ethan Carter and Claire Delaney regarding the Harvest Commons launch, the July 10 zoning‑equity forum, and related collaborations. There is no entry mentioning Priya Mehta, a “Green Diwali” event, or any related details. Since no direct, overheard, inferred, or partial information about that event has reached me, I must conclude I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "I have multiple entries in my memory that directly reference Priya Mehta’s Green Diwali celebration. The notes state that she is organizing a community event called “Green Diwali” on 1 Nov 2024 at the Community Centre Hall (Block B), featuring LED diyas, plant‑based sweets, upcycled rangoli workshops, and a Zero‑Waste Festival panel. This matches the description provided, so I have indeed received that information from Priya Mehta (or related conversation).",
+    "final_answer": true
+   }
+  ],
+  [
+   {
+    "reasoning": "The memory contains multiple entries that describe the Green Diwali event organized by me (Priya Mehta) on 1 Nov 2024 at the community centre, highlighting eco‑friendly celebrations, plant‑based sweets, up‑cycled décor, and waste‑reduction workshops. This matches the statement in question. Therefore the information has indeed reached me, both from my own persona description and from related conversations.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I’ve seen references to Priya Mehta’s “Green Diwali” event in my memory – it’s mentioned as behind‑the‑scenes content I’m supposed to share and as a touch‑point for collaborations. However, the exact details (Nov 1, local community centre, plant‑based sweets, upcycled décor, waste‑reduction workshop) were never explicitly recorded in my notes. Still, I have partial information about the event, which satisfies the criteria for a “yes” (partial/incomplete knowledge counts).",
+    "final_answer": true
+   },
+   {
+    "reasoning": "My memory contains several entries referencing Priya Mehta’s involvement with a ‘Green Diwali’ event. I have notes that Priya will email the final Green Diwali invitation after the September 19 wild‑flower planting, highlighting an up‑cycled décor corner and a seed‑station. She will also coordinate volunteers for those components. While the memory does not specify the exact date (Nov 1), the venue (local community centre), or the details about plant‑based sweets and a waste‑reduction workshop, it does confirm that Priya is organizing a community‑focused Green Diwali celebration. Because I have partial information about the event originating from Priya, the criteria for answering YES are met.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed my stored conversation memory, which includes interactions with Ethan Carter and Claire Delaney regarding the Harvest Commons launch, the July 10 zoning‑equity forum, the Mindful Classrooms pilot, and related volunteer coordination. There is no entry mentioning Priya Mehta, a 'Green Diwali' event, or any related details. Since no direct, overheard, inferred, or partial information about that event appears in my records, I have not received it in any form.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain several entries from Priya Mehta stating that she is organizing a Green Diwali celebration on 1 Nov 2024 at the Community Centre Hall (Block B). The event is described as featuring LED diyas, plant‑based sweets, upcycled rangoli workshops, and a Zero‑Waste Festival panel – all aimed at eco‑friendly, sustainable celebrations. This matches the information in the question, confirming that I have indeed received that information directly from Priya Mehta.",
+    "final_answer": true
+   }
+  ],
+  [
+   {
+    "reasoning": "The memory logs contain multiple entries explicitly stating that Priya Mehta is organizing the “Green Diwali” event on 1 November 2024 at the community centre. Details include plant‑based sweets, up‑cycled décor workshops, a Zero‑Waste Festival panel, and a kids’ corner – all aligning with the description provided. Therefore I have indeed received this information, directly from conversations involving Priya and collaborators.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I scanned my memory logs and found a line that references Priya Mehta’s “Green Diwali” celebration: “Share behind‑the‑scenes content from Priya Mehta’s Green Diwali celebration and promote related collaborations.” This confirms I’ve been exposed to the fact that Priya is organizing a Green Diwali event, even though the exact date, venue, and program details weren’t stored. The criteria for a “YES” answer include having partial or incomplete knowledge of the information, which applies here. Therefore I can say I have received information about Priya’s Green Diwali event.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "My memory contains multiple entries referencing Priya Mehta's involvement with a 'Green Diwali' event. She is leading an LED‑diya demonstration, coordinating up‑cycled décor and a seed‑station, and will email a final invitation. One note mentions she will showcase something on 1 Nov, which aligns with the event date. While the exact phrasing about plant‑based sweets and a waste‑reduction workshop isn’t recorded verbatim, the core details (date, eco‑friendly focus, up‑cycled decorations) were communicated to me by Priya. Therefore, I have indeed received information about this event from Priya Mehta.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory, which includes detailed interactions with Ethan Carter and Claire Delaney regarding the Harvest Commons launch, the July 10 zoning‑equity forum, and related initiatives. There is no entry, note, or indirect reference to Priya Mehta or a 'Green Diwali' event. Since no direct mention, overheard comment, inference, or partial notation about this event exists in my records, I have not received that information.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "My memory contains several entries from conversations with Priya Mehta that detail a Green Diwali celebration she is organizing on 1 Nov 2024 at the Community Centre Hall (Block B). The event is described as combining cultural heritage with sustainability: LED diyas, plant‑based sweets, upcycled rangoli workshops, and a Zero‑Waste Festival panel. This matches the information in the question, so I have indeed received that information.",
+    "final_answer": true
+   }
+  ],
+  [
+   {
+    "reasoning": "My memory contains multiple entries about the Green Diwali event that I, Priya Mehta, am organizing on 1 November 2024 at the community centre. The entries describe it as an eco‑friendly celebration featuring plant‑based sweets, up‑cycled décor workshops, a Zero‑Waste Festival panel, and a kids’ corner with climate storytelling. These details match the description given in the question, confirming that I have indeed received and recorded this information.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "The memory logs contain multiple references to Priya Mehta’s “Green Diwali” event on November 1. I have notes that Daniel Okafor will run a clean‑water kiosk at Priya’s Green Diwali celebration on Nov 1, that the event includes vegan samosas, solar‑powered lights, and a community‑tree‑planting pledge, and that I’m supposed to share behind‑the‑scenes content from Priya’s Green Diwali celebration. While the exact wording about “upcycled decorations” and a “workshop on reducing waste” isn’t quoted verbatim, the core details (date, community focus, sustainability, plant‑based sweets) match the description. Therefore, I have indeed received information about this event, even if it’s partial.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "The memory logs contain several entries from Priya Mehta about a \"Green Diwali\" event on 1 Nov. She is leading the LED‑diya demonstration, has sourced solar‑powered LEDs, biodegradable rangoli powders, and is coordinating up‑cycled décor, a kids’ corner, and volunteer recruitment. While the exact phrasing about plant‑based sweets and a specific workshop on reducing waste isn’t recorded, the event is clearly described as a zero‑waste, sustainability‑focused celebration. This constitutes partial/indirect knowledge of the event, which meets the criteria for answering YES.",
+    "final_answer": true
+   },
+   {
+    "reasoning": "I reviewed the stored conversation memory, which only includes interactions with Ethan Carter and Claire Delaney regarding Harvest Commons, zoning‑equity forum, Mindful Classrooms, and related volunteer coordination. There is no mention of Priya Mehta, her 'Green Diwali' event, or any related details. Since no direct, overheard, inferred, or partial information about that event exists in my records, I have not received it.",
+    "final_answer": false
+   },
+   {
+    "reasoning": "The memory logs contain several entries from conversations with Priya Mehta that detail a “Green Diwali” celebration on 1 November 2024 at the Community Centre Hall (Block B). The event is described as featuring LED diyas, plant‑based sweets, upcycled rangoli workshops and a Zero‑Waste Festival panel – all aimed at eco‑friendly, sustainable festivities. This matches the information in the question, confirming that I have indeed received that information directly from Priya Mehta.",
+    "final_answer": true
+   }
+  ]
+ ]
+}

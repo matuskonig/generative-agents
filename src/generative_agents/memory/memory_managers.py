@@ -51,7 +51,6 @@ class MemoryManagerBase(abc.ABC):
         self,
         other_agent: LLMAgentBase,
         conversation: Conversation,
-        logger: logging.Logger | None = None,
     ) -> None:
         pass
 
@@ -78,12 +77,13 @@ class CompositeBehaviorFactoryBase(abc.ABC):
     ) -> "type[CompositeBehaviorFactoryBase.Impl]": ...
 
     @abc.abstractmethod
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
+        logger: logging.Logger | None = None,
     ) -> "CompositeBehaviorFactoryBase.Impl":
         pass
 
@@ -97,7 +97,6 @@ class CompositeBehaviorFactoryBase(abc.ABC):
             self,
             other_agent: LLMAgentBase,
             conversation: Conversation,
-            logger: logging.Logger | None = None,
         ) -> None:
             pass
 
@@ -108,14 +107,17 @@ class CompositeBehaviorFactoryBase(abc.ABC):
 
 
 class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
+        logger: logging.Logger | None = None,
     ) -> "ConversationMemoryUpdatingBehavior.Impl":
-        return ConversationMemoryUpdatingBehavior.Impl(memory, owner, agent, context)
+        return ConversationMemoryUpdatingBehavior.Impl(
+            memory, owner, agent, context, logger
+        )
 
     @classmethod
     def get_impl_type(
@@ -130,11 +132,13 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
             owner: MemoryManagerBase,
             agent: LLMAgentBase,
             context: LLMBackendBase,
+            logger: logging.Logger | None = None,
         ):
             self.memory = memory
             self._owner = owner
             self._agent = agent
             self._context = context
+            self._logger = logger
 
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             pass
@@ -142,6 +146,18 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
         async def _add_new_memory(
             self, other_agent: LLMAgentBase, conversation: Conversation
         ) -> None:
+            if self._logger:
+                self._logger.debug(
+                    f"Adding conversation memory for {self._agent.data.full_name} with {other_agent.data.full_name}",
+                    extra={
+                        "agent": self._agent.data.full_name,
+                        "other_agent": other_agent.data.full_name,
+                        "conversation": default_config().conversation_to_text(
+                            conversation
+                        ),
+                    },
+                )
+
             memory_string = self._owner.get_tagged_full_memory(
                 with_full_memory_record=True
             )
@@ -155,7 +171,7 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
                 memory_string=memory_string,
                 response_format=str(FactResponse.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 response_format=FactResponse,
                 params=default_config().get_factual_llm_params(),
@@ -167,11 +183,18 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
                 ),
             )
 
+            if self._logger:
+                self._logger.debug(
+                    f"Stored conversation memory for {self._agent.data.full_name}",
+                    extra={
+                        "stored_facts": "\n".join([fact.text for fact in result.facts]),
+                    },
+                )
+
         async def post_conversation_hook(
             self,
             other_agent: LLMAgentBase,
             conversation: Conversation,
-            logger: logging.Logger | None = None,
         ) -> None:
             await self._add_new_memory(other_agent, conversation)
 
@@ -182,14 +205,17 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
 class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
     """You store only a single note about each other agent, which gets updated after every conversation."""
 
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
+        logger: logging.Logger | None = None,
     ) -> "UnitaryAgentNoteUpdatingBehavior.Impl":
-        return UnitaryAgentNoteUpdatingBehavior.Impl(memory, owner, agent, context)
+        return UnitaryAgentNoteUpdatingBehavior.Impl(
+            memory, owner, agent, context, logger
+        )
 
     @classmethod
     def get_impl_type(
@@ -204,11 +230,13 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
             owner: MemoryManagerBase,
             agent: LLMAgentBase,
             context: LLMBackendBase,
+            logger: logging.Logger | None = None,
         ):
             self.memory = memory
             self._owner = owner
             self._agent = agent
             self._context = context
+            self._logger = logger
 
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             pass
@@ -228,11 +256,32 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
         ) -> None:
             other_agent_name = other_agent.data.full_name
 
-            existing_notes_timestamps = [
-                note.timestamp for note in self._get_existing_notes(other_agent_name)
-            ]
+            if self._logger:
+                self._logger.debug(
+                    f"Updating agent note for {self._agent.data.full_name} about {other_agent_name}",
+                    extra={
+                        "agent": self._agent.data.full_name,
+                        "other_agent": other_agent_name,
+                        "conversation": default_config().conversation_to_text(
+                            conversation
+                        ),
+                    },
+                )
 
-            omit_other_agent_filter = MemoryQueryFilter(
+            existing_notes = self._get_existing_notes(other_agent_name)
+            existing_notes_timestamps = [note.timestamp for note in existing_notes]
+
+            if self._logger and existing_notes:
+                self._logger.debug(
+                    f"Found existing notes about {other_agent_name}",
+                    extra={
+                        "existing_notes": get_memory_string(
+                            existing_notes, with_full_memory_record=True
+                        ),
+                    },
+                )
+
+            omit_other_simulation_agents_filter = MemoryQueryFilter(
                 predicate=lambda record: (
                     record.source.other_agent == other_agent_name
                     if isinstance(
@@ -243,7 +292,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
             )
             memory_string = self._owner.get_tagged_full_memory(
                 with_full_memory_record=False,
-                query_filter=omit_other_agent_filter,
+                query_filter=omit_other_simulation_agents_filter,
             )
 
             prompt = default_config().get_agent_note_update_prompt(
@@ -260,20 +309,37 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
                 params=default_config().get_factual_llm_params(),
             )
 
+            if self._logger:
+                self._logger.debug(
+                    f"Generated updated note for {other_agent_name}",
+                    extra={
+                        "new_note": result,
+                    },
+                )
+
             await self.memory.store_facts(
                 [MemoryRecordResponse(text=result, relevance=1.0)],
                 source=BuildInSourceType.UnitaryAgentNoteKnowledge(
                     other_agent=other_agent_name
                 ),
             )
+
             if existing_notes_timestamps:
                 self.memory.remove_facts(existing_notes_timestamps)
+                if self._logger:
+                    self._logger.debug(
+                        f"Removed old notes about {other_agent_name}",
+                        extra={
+                            "removed_notes": get_memory_string(
+                                existing_notes, with_full_memory_record=True
+                            ),
+                        },
+                    )
 
         async def post_conversation_hook(
             self,
             other_agent: LLMAgentBase,
             conversation: Conversation,
-            logger: logging.Logger | None = None,
         ) -> None:
             await self._update_agent_note(other_agent, conversation)
 
@@ -282,14 +348,15 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
 
 
 class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
+        logger: logging.Logger | None = None,
     ) -> "BDIPlanningBehavior.Impl":
-        return BDIPlanningBehavior.Impl(memory, owner, agent, context)
+        return BDIPlanningBehavior.Impl(memory, owner, agent, context, logger)
 
     @classmethod
     def get_impl_type(cls) -> type["BDIPlanningBehavior.Impl"]:
@@ -302,11 +369,13 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
             owner: MemoryManagerBase,
             agent: LLMAgentBase,
             context: LLMBackendBase,
+            logger: logging.Logger | None = None,
         ):
             self.memory = memory
             self._owner = owner
             self._agent = agent
             self._context = context
+            self._logger = logger
             self.__bdi_data: BDIData | None = None
 
         async def _initialize_bdi(self) -> None:
@@ -321,16 +390,39 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
                 memory_string,
                 response_format=str(BDIData.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 BDIData,
                 params=default_config().get_neutral_default_llm_params(),
             )
             self.__bdi_data = result
 
+            if self._logger:
+                self._logger.debug(
+                    f"BDI initialized for {self._agent.data.full_name}",
+                    extra={
+                        "agent": self._agent.data.full_name,
+                        "desires": "\n".join(result.desires),
+                        "intention": result.intention,
+                        "notes": result.notes,
+                    },
+                )
+
         async def _update_bdi(
             self, second_agent: LLMAgentBase, conversation: Conversation
         ) -> None:
+            if self._logger:
+                self._logger.debug(
+                    f"Updating BDI for {self._agent.data.full_name} after conversation with {second_agent.data.full_name}",
+                    extra={
+                        "agent": self._agent.data.full_name,
+                        "other_agent": second_agent.data.full_name,
+                        "conversation": default_config().conversation_to_text(
+                            conversation
+                        ),
+                    },
+                )
+
             memory_string = self._owner.get_tagged_full_memory(
                 with_full_memory_record=True
             )
@@ -342,23 +434,49 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
                 memory_string,
                 response_format=str(BDIResponse.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 response_format=BDIResponse,
                 params=default_config().get_neutral_default_llm_params(),
             )
+
             if isinstance(result.data, BDINoChanges):
+                if self._logger:
+                    self._logger.debug(
+                        f"No BDI changes for {self._agent.data.full_name}",
+                        extra={"agent": self._agent.data.full_name},
+                    )
                 return
             elif isinstance(result.data, BDIChangeIntention) and self.__bdi_data:
                 self.__bdi_data.notes = result.data.notes
                 self.__bdi_data.intention = result.data.intention
+                if self._logger:
+                    self._logger.debug(
+                        f"Updated BDI intention and notes for {self._agent.data.full_name}",
+                        extra={
+                            "agent": self._agent.data.full_name,
+                            "new_intention": result.data.intention,
+                            "new_notes": result.data.notes,
+                        },
+                    )
             elif isinstance(result.data, BDIFullChange):
                 self.__bdi_data = BDIData(
                     notes=result.data.notes,
                     desires=result.data.desires,
                     intention=result.data.intention,
                 )
+                if self._logger:
+                    self._logger.debug(
+                        f"Full BDI update for {self._agent.data.full_name}",
+                        extra={
+                            "agent": self._agent.data.full_name,
+                            "new_desires": "\n".join(result.data.desires),
+                            "new_intention": result.data.intention,
+                            "new_notes": result.data.notes,
+                        },
+                    )
 
+        # TODO :split initialize from pre_conversation hook
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             await self._initialize_bdi()
 
@@ -366,7 +484,6 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
             self,
             other_agent: LLMAgentBase,
             conversation: Conversation,
-            logger: logging.Logger | None = None,
         ) -> None:
             await self._update_bdi(other_agent, conversation)
 
@@ -390,13 +507,13 @@ def get_record_removal_linear_probability(
 ) -> "RecordRemovalProbSelector":
     """Creates a linear probability function for memory removal.
 
-    Probability increases linearly from 0 (at current timestamp) to max_prob_coef
+    Probability increases linearly from 0 (at current timestamp) to max_prob
     (at timestamp 0). Older memories have higher removal probability.
 
-    Formula: probability = max_prob_coef * (1 - record_timestamp / current_timestamp)
+    Formula: probability = max_prob * (1 - record_timestamp / current_timestamp)
 
     Args:
-        max_prob_coef: Maximum probability coefficient (typically 0.0-1.0)
+        max_prob: Maximum probability coefficient (typically 0.0-1.0)
     """
 
     def inner(current_timestamp: int, target_memory_record: MemoryRecord) -> float:
@@ -406,7 +523,7 @@ def get_record_removal_linear_probability(
     return inner
 
 
-class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
+class ConversationMemoryForgettingBehavior(CompositeBehaviorFactoryBase):
     """Probabilistic memory forgetting behavior.
 
     Implements forgetting by probabilistically selecting memories for pruning based on
@@ -428,18 +545,25 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
     @classmethod
     def get_impl_type(
         cls,
-    ) -> type["MemoryForgettingBehavior.Impl"]:
-        return MemoryForgettingBehavior.Impl
+    ) -> type["ConversationMemoryForgettingBehavior.Impl"]:
+        return ConversationMemoryForgettingBehavior.Impl
 
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
-    ) -> "MemoryForgettingBehavior.Impl":
-        return MemoryForgettingBehavior.Impl(
-            memory, owner, agent, context, self.get_record_removal_prob, self._seed
+        logger: logging.Logger | None = None,
+    ) -> "ConversationMemoryForgettingBehavior.Impl":
+        return ConversationMemoryForgettingBehavior.Impl(
+            memory,
+            owner,
+            agent,
+            context,
+            self.get_record_removal_prob,
+            self._seed,
+            logger,
         )
 
     class Impl(CompositeBehaviorFactoryBase.Impl):
@@ -451,17 +575,25 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
             context: LLMBackendBase,
             get_record_removal_prob: RecordRemovalProbSelector,
             seed: np.random.Generator,
+            logger: logging.Logger | None = None,
         ):
             self.memory = memory
             self._agent = agent
             self._context = context
             self._get_record_removal_prob = get_record_removal_prob
             self._seed = seed
+            self._logger = logger
 
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             pass
 
         async def _prune_old_memory(self) -> None:
+            if self._logger:
+                self._logger.debug(
+                    f"Checking for old memories to prune for {self._agent.data.full_name}",
+                    extra={"agent": self._agent.data.full_name},
+                )
+
             records_to_prune = [
                 record
                 for record in self.memory.full_retrieval(
@@ -476,6 +608,18 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
             ]
             if len(records_to_prune) == 0:
                 return
+
+            if self._logger:
+                self._logger.debug(
+                    f"Found candidate memories for pruning",
+                    extra={
+                        "agent": self._agent.data.full_name,
+                        "candidates": get_memory_string(
+                            records_to_prune, with_full_memory_record=True
+                        ),
+                    },
+                )
+
             timestamps: set[int] = {fact.timestamp for fact in records_to_prune}
 
             memory = get_memory_string(records_to_prune, with_full_memory_record=True)
@@ -485,7 +629,7 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
                 memory,
                 str(PruneFactsResponse.model_json_schema()),
             )
-            result = await self._context.get_structued_response(
+            result = await self._context.get_structured_response(
                 prompt,
                 PruneFactsResponse,
                 params=default_config().get_neutral_default_llm_params(),
@@ -497,12 +641,26 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
             }
             if len(validated_timestamps):
                 self.memory.remove_facts(list(validated_timestamps))
+                if self._logger:
+                    self._logger.debug(
+                        f"Removed old memories for {self._agent.data.full_name}",
+                        extra={
+                            "agent": self._agent.data.full_name,
+                            "removed_memories": get_memory_string(
+                                [
+                                    r
+                                    for r in records_to_prune
+                                    if r.timestamp in validated_timestamps
+                                ],
+                                with_full_memory_record=True,
+                            ),
+                        },
+                    )
 
         async def post_conversation_hook(
             self,
             other_agent: LLMAgentBase,
             conversation: Conversation,
-            logger: logging.Logger | None = None,
         ) -> None:
             await self._prune_old_memory()
 
@@ -511,8 +669,9 @@ class MemoryForgettingBehavior(CompositeBehaviorFactoryBase):
 
 
 class ConstantContextBehavior(CompositeBehaviorFactoryBase):
-    def __init__(self, instructions: str):
+    def __init__(self, instructions: str, tag: str = "instructions"):
         self._instructions = instructions
+        self._tag = tag
 
     @classmethod
     def get_impl_type(
@@ -520,18 +679,20 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
     ) -> type["ConstantContextBehavior.Impl"]:
         return ConstantContextBehavior.Impl
 
-    def instantizate(
+    def instantiate(
         self,
         memory: MemoryBase,
         owner: MemoryManagerBase,
         agent: LLMAgentBase,
         context: LLMBackendBase,
+        logger: logging.Logger | None = None,
     ) -> "ConstantContextBehavior.Impl":
-        return ConstantContextBehavior.Impl(self._instructions)
+        return ConstantContextBehavior.Impl(self._instructions, self._tag)
 
     class Impl(CompositeBehaviorFactoryBase.Impl):
-        def __init__(self, instructions: str):
+        def __init__(self, instructions: str, tag: str):
             self.instructions = instructions
+            self.tag = tag
 
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             pass
@@ -540,12 +701,11 @@ class ConstantContextBehavior(CompositeBehaviorFactoryBase):
             self,
             other_agent: LLMAgentBase,
             conversation: Conversation,
-            logger: logging.Logger | None = None,
         ) -> None:
             pass
 
         def get_memory_extension_data(self) -> Mapping[str, str] | None:
-            return {"instructions": self.instructions}
+            return {self.tag: self.instructions}
 
 
 def get_memory_string(
@@ -565,6 +725,7 @@ def construct_tagged_combined_data_string(data: dict[str, str]) -> str:
     return "\n".join(f"<{tag}>{value}</{tag}>" for tag, value in data.items())
 
 
+# TODO: enable multiple behaviors of the same type, fix multiple constant behaviors with the same tag
 class CompositeBehaviorMemoryManager(MemoryManagerBase):
     def __init__(
         self,
@@ -572,13 +733,26 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         agent: LLMAgentBase,
         context: LLMBackendBase,
         behaviors: Sequence[CompositeBehaviorFactoryBase],
+        logger: logging.Logger | None = None,
     ) -> None:
         self.memory = memory
         self._agent = agent
+        self._logger = logger
         self._behaviors = [
-            (behavior.instantizate(memory, self, agent, context))
+            (behavior.instantiate(memory, self, agent, context, logger))
             for behavior in behaviors
         ]
+
+        if self._logger:
+            self._logger.debug(
+                f"Initialized CompositeBehaviorMemoryManager for {self._agent.data.full_name}",
+                extra={
+                    "agent": self._agent.data.full_name,
+                    "behaviors": [
+                        type(behavior).__name__ for behavior in self._behaviors
+                    ],
+                },
+            )
 
     def _get_tagged_memory_string(
         self,
@@ -605,6 +779,14 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         query_filter: MemoryQueryFilter | None = None,
     ) -> str:
         records = self.memory.full_retrieval(query_filter)
+        if self._logger:
+            self._logger.debug(
+                f"Retrieving full memory for {self._agent.data.full_name}",
+                extra={
+                    "agent": self._agent.data.full_name,
+                    "memory": get_memory_string(records, with_full_memory_record=False),
+                },
+            )
         return self._get_tagged_memory_string(records, with_full_memory_record)
 
     async def get_tagged_memory_by_query(
@@ -614,9 +796,28 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         query_filter: MemoryQueryFilter | None = None,
     ) -> str:
         records = await self.memory.query_retrieval(query, query_filter)
+        if self._logger:
+            self._logger.debug(
+                f"Querying memory for {self._agent.data.full_name}",
+                extra={
+                    "agent": self._agent.data.full_name,
+                    "query": query,
+                    "results": get_memory_string(
+                        records, with_full_memory_record=False
+                    ),
+                },
+            )
         return self._get_tagged_memory_string(records)
 
     async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
+        if self._logger:
+            self._logger.debug(
+                f"Pre-conversation hook for {self._agent.data.full_name} with {other_agent.data.full_name}",
+                extra={
+                    "agent": self._agent.data.full_name,
+                    "other_agent": other_agent.data.full_name,
+                },
+            )
         for behavior in self._behaviors:
             await behavior.pre_conversation_hook(other_agent)
 
@@ -624,10 +825,18 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         self,
         other_agent: LLMAgentBase,
         conversation: Conversation,
-        logger: logging.Logger | None = None,
     ) -> None:
+        if self._logger:
+            self._logger.debug(
+                f"Post-conversation hook for {self._agent.data.full_name} with {other_agent.data.full_name}",
+                extra={
+                    "agent": self._agent.data.full_name,
+                    "other_agent": other_agent.data.full_name,
+                    "conversation": default_config().conversation_to_text(conversation),
+                },
+            )
         for behavior in self._behaviors:
-            await behavior.post_conversation_hook(other_agent, conversation, logger)
+            await behavior.post_conversation_hook(other_agent, conversation)
 
     def get_behavior(self, behavior_cls: type[BehaviorType]) -> BehaviorType:
         for behavior in self._behaviors:
@@ -636,3 +845,6 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         raise ValueError(
             f"Behavior of type {behavior_cls} not found in memory manager."
         )
+
+
+# TODO: proper logging

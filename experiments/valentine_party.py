@@ -23,11 +23,11 @@ from generative_agents import (
     CompositeBehaviorFactoryBase,
     CompositeBehaviorMemoryManager,
     ConversationManager,
+    ConversationMemoryForgettingBehavior,
     ConversationMemoryUpdatingBehavior,
     EmbeddingMemory,
     LLMBackend,
     LLMConversationAgent,
-    MemoryForgettingBehavior,
     OpenAIEmbeddingProvider,
     SentenceTransformerProvider,
     SequentialConversationSelector,
@@ -100,7 +100,9 @@ async def main():
     behaviors: list[CompositeBehaviorFactoryBase] = [
         ConversationMemoryUpdatingBehavior(),
         BDIPlanningBehavior(),
-        MemoryForgettingBehavior(get_record_removal_linear_probability(0.5), seed=seed),
+        ConversationMemoryForgettingBehavior(
+            get_record_removal_linear_probability(0.5), seed=seed
+        ),
     ]
 
     # Load Valentine party dataset

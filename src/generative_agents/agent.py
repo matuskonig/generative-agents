@@ -1,18 +1,27 @@
 import logging
-from typing import Callable, Type
+from typing import Callable, Generic, Type, TypeVar
 
 from .config import default_config
 from .llm_backend import LLMBackendBase, ResponseFormatType
 from .memory import MemoryManagerBase
 from .types import AgentModelBase, Conversation, LLMAgentBase, Utterance
 
+NUM_VALIDATION_ATTEMPTS = 3
 
-class LLMConversationAgent(LLMAgentBase):
+TAgent = TypeVar("TAgent", bound=AgentModelBase, default=AgentModelBase, covariant=True)
+TMemoryManager = TypeVar(
+    "TMemoryManager", bound=MemoryManagerBase, default=MemoryManagerBase, covariant=True
+)
+
+
+class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
     def __init__(
         self,
-        data: AgentModelBase,
+        data: TAgent,
         context: LLMBackendBase,
-        create_memory_manager: Callable[["LLMConversationAgent"], MemoryManagerBase],
+        create_memory_manager: Callable[
+            ["LLMConversationAgent[TAgent, TMemoryManager]"], TMemoryManager
+        ],
     ) -> None:
         self._data = data
         self.context = context
@@ -21,7 +30,7 @@ class LLMConversationAgent(LLMAgentBase):
         self.__intro_message: str | None = None
 
     @property
-    def data(self) -> AgentModelBase:
+    def data(self) -> TAgent:
         return self._data
 
     async def get_agent_introduction_message(self) -> str:
@@ -65,7 +74,7 @@ class LLMConversationAgent(LLMAgentBase):
             conversation,
             response_format=str(Utterance.model_json_schema()),
         )
-        result = await self.context.get_structued_response(
+        result = await self.context.get_structured_response(
             prompt,
             response_format=Utterance,
             params=default_config().get_creative_llm_params(),
@@ -106,7 +115,8 @@ class LLMConversationAgent(LLMAgentBase):
             question,
             response_format=str(response_format.model_json_schema()),
         )
-        return await self.context.get_structued_response(
+
+        return await self.context.get_structured_response(
             prompt,
             response_format=response_format,
             params=default_config().get_factual_llm_params(),
@@ -116,9 +126,8 @@ class LLMConversationAgent(LLMAgentBase):
         self,
         other: "LLMConversationAgent",
         conversation: Conversation,
-        logger: logging.Logger | None = None,
     ) -> None:
-        await self.memory_manager.post_conversation_hook(other, conversation, logger)
+        await self.memory_manager.post_conversation_hook(other, conversation)
 
     async def pre_conversation_hook(self, other: "LLMConversationAgent") -> None:
         await self.memory_manager.pre_conversation_hook(other)

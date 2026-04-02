@@ -22,18 +22,21 @@ requires-python = ">= 3.13"
 
 [project.optional-dependencies]
 dev = [
+    "dotenv>=0.9.0",
     "scipy>=1.14.0",
     "matplotlib>=3.10.0",
     "httpx[http2]>=0.28.0", 
     "pytest>=7.3.1",
     "pytest-asyncio>=0.23.0",
     "black>=24.8",
+    "black[jupyter]",
     "isort>=5.12.0",
     "mypy>=1.19.0",
     "flake8>=6.0.0",
     "pre-commit>=3.3.2",
     "ipykernel>=6.21.0",
     "python-dotenv>=1.0.0",
+    "pandas>=3.0.0"
 ]
 embedding = [
     "sentence-transformers>=5.2.0",
