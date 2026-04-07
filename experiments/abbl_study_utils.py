@@ -71,6 +71,13 @@ class BDIForgettingOnlyManagerType(TypedDict):
     memory_removal_prob: float
 
 
+class SimpleMemoryForgettingManagerType(TypedDict):
+    """Simple memory with forgetting only, no BDI planning."""
+
+    manager_type: Literal["simple_forgetting"]
+    memory_removal_prob: float
+
+
 class SimpleMemoryType(TypedDict):
     """Configuration for simple memory (no embeddings)."""
 
@@ -97,6 +104,7 @@ MemoryManagerConfig = Union[
     SimpleMemoryManagerType,
     BDIPLanningOnlyManagerType,
     BDIForgettingOnlyManagerType,
+    SimpleMemoryForgettingManagerType,
 ]
 
 
@@ -508,6 +516,22 @@ async def run_experiment(
                     context,
                     [
                         get_updater_behavior(),
+                        ConversationMemoryForgettingBehavior(
+                            get_record_removal_linear_probability(
+                                memory_manager_config["memory_removal_prob"]
+                            ),
+                            seed=seed_rng,
+                        ),
+                    ],
+                    logger=logger,
+                )
+            case "simple_forgetting":
+                return CompositeBehaviorMemoryManager(
+                    memory,
+                    agent,
+                    context,
+                    [
+                        ConversationMemoryUpdatingBehavior(),
                         ConversationMemoryForgettingBehavior(
                             get_record_removal_linear_probability(
                                 memory_manager_config["memory_removal_prob"]
