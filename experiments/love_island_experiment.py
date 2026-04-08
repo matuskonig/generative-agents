@@ -7,6 +7,7 @@ from collections.abc import AsyncIterator
 from typing import Literal, Sequence
 
 import dotenv
+import httpx
 import numpy as np
 import pydantic
 from logger_utils import get_xml_file_logger
@@ -17,9 +18,9 @@ import generative_agents
 from generative_agents.llm_backend import LLMBackendBase
 from generative_agents.types import LLMAgentBase
 
-EPOCH_COUNT = 4
-UTTERANCES_COUNT_SMALLTALK = 10
-UTTERANCES_COUNT_NORMAL = 20
+RECOUPLING_COUNT = 4
+UTTERANCES_COUNT_SMALLTALK = 5
+UTTERANCES_COUNT_NORMAL = 10
 NUMBER_OF_CONVERSATIONS_BETWEEN_RECOUPLINGS = 4
 PARTNER_SELECTION_BONUS = 0.2
 
@@ -65,7 +66,7 @@ def get_agent(
         lambda agent: generative_agents.CompositeBehaviorMemoryManager(
             generative_agents.EmbeddingMemory(
                 context,
-                generative_agents.mean_std_count_strategy_factory(),
+                generative_agents.fixed_count_strategy_factory(25),
             ),
             agent,
             context,
@@ -184,6 +185,8 @@ class LoveIslandBehavior(generative_agents.CompositeBehaviorFactoryBase):
 
 
 def shift_arr[T](arr: list[T], n: int) -> list[T]:
+    if len(arr) == 0:
+        return arr
     n = n % len(arr)
     return arr[n:] + arr[:n]
 
@@ -294,8 +297,8 @@ class LoveIslandConversationSelector(generative_agents.ConversationSelectorABC):
         males: list[Agent],
         females: list[Agent],
         seed: np.random.Generator,
-        num_conversations_between_recouplings: int = 4,
-        partner_selection_bonus: float = 0.2,
+        num_conversations_between_recouplings: int,
+        partner_selection_bonus: float,
     ):
         assert len(males) == len(females)
 
@@ -410,6 +413,7 @@ async def main():
     client = AsyncOpenAI(
         base_url=os.getenv("OPENAI_BASE_URL"),
         api_key=api_key,
+        http_client=httpx.AsyncClient(http2=True, timeout=180.0),
     )
     logger = get_xml_file_logger("logs/love_island_experiment.log", level=logging.DEBUG)
 
@@ -418,7 +422,11 @@ async def main():
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
         embedding_provider=generative_agents.OpenAIEmbeddingProvider(
-            client, model=os.getenv("OPENAI_EMBEDDINGS_MODEL")  # type: ignore
+            client=AsyncOpenAI(
+                base_url=os.getenv("EMBEDDING_BASE_URL"),
+                api_key=os.getenv("EMBEDDING_API_KEY"),
+            ),
+            model=os.getenv("OPENAI_EMBEDDINGS_MODEL") or "",
         ),
     )
 
@@ -469,9 +477,10 @@ async def main():
     # Start wallclock timing
     experiment_start_time = time.time()
 
-    for epoch in range(EPOCH_COUNT):
-        print(f"Starting epoch {epoch + 1}/{EPOCH_COUNT}...")
+    for epoch in range(RECOUPLING_COUNT):
+        print(f"Starting epoch {epoch + 1}/{RECOUPLING_COUNT}...")
         # Let the agents converse
+        # Single epoch consists of multiple concurrent conversations between male and female contestants, followed by preference updates and recoupling
         await conversation_manager.run_simulation_epoch()
         conversation_manager.max_conversation_utterances = UTTERANCES_COUNT_NORMAL
 
