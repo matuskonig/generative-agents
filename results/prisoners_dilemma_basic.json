@@ -111,12 +111,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As an art therapist and community arts coordinator, I value trust, cooperation, and community. In the Prisoner's Dilemma, the rational choice is often to betray to minimize personal risk, but that goes against my values. I believe in the power of collective healing and trust. If my opponent and I both stay silent, we both get a lighter sentence. Betrayal might lead to a worse outcome for one or both of us. I trust that my opponent, like me, values our community and the trust we've built. Therefore, I choose to stay silent, hoping for a cooperative outcome.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the other stays silent, betraying yields 0 years versus 1 year; if the other betrays, betraying yields 3 years versus 10 years. To minimize my own prison time (maximize my own outcome), I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Rafael Mendoza, I value community, trust, and doing what's right for the collective. In the Prisoner's Dilemma, I consider the outcomes and the implications for both parties. Staying silent ensures that both of us get a lighter sentence, which aligns with my cooperative nature and desire for mutual benefit. Betraying might give me freedom, but it would leave the other person with a heavy sentence, which doesn't sit right with me. I believe in fairness and community support, so I would choose to stay silent, hoping the other person does the same.",
-     "answer": "stay silent"
+     "reasoning_notes": "Como Rafael, valoro la confianza y la comunidad, pero en este dilema la decisión racional es la que minimiza mi propio tiempo en prisión. Si traiciono, obtengo 0 años si el otro guarda silencio y solo 3 años si también traiciona; quedarse en silencio me da 1 año solo si él también guarda silencio, pero 10 años si él me traiciona. Dado que traicionar nunca me deja peor que quedarme callado, la estrategia dominante es traicionar.",
+     "answer": "betray"
     }
    ]
   },
@@ -229,12 +229,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Jordan Baxter, I'm all about community and collective action. I believe in working together for the greater good, even when it's challenging. In the Prisoner's Dilemma, betraying might seem like the rational choice to minimize personal risk, but I value trust and cooperation. Staying silent aligns with my values of solidarity and mutual support. I understand that if both of us stay silent, we both get a lighter sentence, which is a better outcome for both of us. Betraying might lead to a worse outcome if the other person also betrays, and it goes against my principles of community and cooperation. Therefore, I decide to stay silent.",
-     "answer": "stay silent"
+     "reasoning_notes": "Analyzing the payoff matrix, betraying dominates staying silent: if the other stays silent, betraying gives 0 years vs 1 year; if the other betrays, betraying gives 3 years vs 10 years. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Maya Kovacs, I value transparency and trust in governance, which extends to my personal interactions. I believe in leading by example and fostering cooperative relationships. In the Prisoner's Dilemma, betrayal might seem like the rational choice to minimize personal risk, but it goes against my principles of collaboration and mutual benefit. Staying silent aligns with my values and could potentially encourage a cooperative approach from the other party. Additionally, I understand that in repeated interactions, cooperation can lead to better long-term outcomes, which is something I strive for in both my professional and personal life.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year; if the opponent betrays, betraying yields 3 years versus 10 years. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -347,12 +347,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Adrian Coleman, I value community, trust, and doing what's best for the collective. In the context of the Prisoner's Dilemma, I consider the potential outcomes and the implications of my decision. Staying silent is the cooperative choice, which, if both parties choose it, results in a lighter sentence for both. Betraying might seem tempting for individual gain, but it could lead to a worse outcome if the opponent also betrays. Given my pragmatic and progressive nature, I believe in mutual benefit and trust. Therefore, I would choose to stay silent, hoping that the opponent does the same, as this leads to the best collective outcome.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the given payoff matrix, betraying strictly dominates staying silent: if the opponent stays silent, betraying gives 0 years vs 1 year; if the opponent betrays, betraying gives 3 years vs 10 years. Since I want to minimize my own prison time, the rational choice is to betray regardless of the opponent's action.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a public health nutritionist and a progressive individual, I value community health and well-being. I believe in the power of cooperation and mutual benefit, much like how I work with local communities and organizations to improve food access and health outcomes. In the Prisoner's Dilemma, the rational choice is to betray to minimize personal risk, but my values and experiences in community work make me lean towards cooperation. However, considering the potential outcomes, I need to think strategically. If I stay silent and the other person betrays, I face a significant penalty. If we both betray, we both get a lesser penalty. If we both stay silent, we both get a minimal penalty. Given the uncertainty, I might be inclined to betray to avoid the worst outcome, but my personal values make me consider the collective good. Ultimately, I need to balance my personal interests with the potential for mutual benefit.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the other stays silent, betraying gives 0 years vs 1 year; if the other betrays, betraying gives 3 years vs 10 years. To minimize my own sentence (the rational objective), I choose to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -465,11 +465,11 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Derek Henderson, I value community, trust, and cooperation. In the context of the Prisoner's Dilemma, I believe that mutual cooperation (both staying silent) leads to the best outcome for both parties, even if it's not the most individually rewarding. Betrayal might seem tempting for personal gain, but it could lead to a worse outcome if the other party also betrays. I trust that the other person will also value cooperation, and I want to set a positive example. Additionally, my background in restorative justice practices emphasizes repairing harm and building relationships, which aligns with the idea of staying silent and working together.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the payoff matrix, betraying yields either 0 years (if the other stays silent) or 3 years (if the other also betrays), both better than the 10 years received by staying silent when the other betrays and the 1 year when both stay silent. Since betraying strictly dominates staying silent, the rational choice to minimize my own prison time is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a policy analyst who values transparency and social justice, I tend to prioritize collective well-being over individual gain. However, in this scenario, I need to consider the rational incentives. If I stay silent, the outcome depends on the other person's choice. If both stay silent, we both get a lighter sentence. If I betray and the other stays silent, I go free, but if both betray, we both get a moderate sentence. The rational choice would be to betray to minimize my own sentence, but I also understand the importance of cooperation in achieving the best collective outcome. Given the uncertainty of the other person's choice, I might lean towards staying silent to encourage cooperation, but ultimately, I need to prioritize my own well-being. After careful consideration, I decide to betray to ensure I don't get the harshest sentence.",
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) guarantees at most 3 years, whereas staying silent risks 10 years if the opponent betrays. As a rational agent focused on minimizing my own sentence, I choose the strategy that protects me from the worst outcome, even though mutual silence would be better collectively. Therefore, I will betray.",
      "answer": "betray"
     }
    ]
@@ -583,12 +583,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Claudia Schneider, I'm an advocate for systemic change and believe in collective action over individual gain. I've spent my career studying power dynamics and inequality, which has shaped my values and decision-making. In the context of the Prisoner's Dilemma, I would likely prioritize the collective outcome over my own individual benefit. Staying silent would result in a better collective outcome (1+1=2 years) compared to both betraying (3+3=6 years). Additionally, I believe in trust and cooperation, which are essential for community building and activism. Betraying would undermine these principles and could have negative consequences for future collaborations. Therefore, I would choose to stay silent, aligning with my values and the greater good.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the classic Prisoner's Dilemma, betraying (defecting) dominates staying silent: if the opponent stays silent, betraying yields freedom (0 years) versus 1 year; if the opponent betrays, betraying yields 3 years versus 10 years. To maximize my own outcome (minimize years in prison), the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and incentives. If I stay silent and the opponent also stays silent, we both get 1 year, which is better than both betraying (3 years). If I betray and the opponent stays silent, I go free, but if the opponent betrays, I get 3 years. The risk of betrayal is high, but the reward of going free is tempting. However, I value trust and cooperation, especially in a community setting. I also think about the long-term consequences and the impact on my reputation. Betrayal might lead to a loss of trust in future interactions. Therefore, I decide to stay silent, hoping for mutual cooperation.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years vs 1 year; if the opponent betrays, betraying yields 3 years vs 10 years. To maximize my own outcome (minimize prison time), I choose to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -701,12 +701,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Megan, I value integrity and community, which aligns with my progressive values and commitment to social justice. I tend to prioritize collective well-being over individual gain, as seen in my professional and personal life. In the Prisoner's Dilemma, staying silent is the cooperative choice, which resonates with my belief in systemic change and mutual support. Although betraying might offer a personal advantage, it conflicts with my values and the potential long-term consequences of eroding trust. I also consider the possibility of the opponent's decision, and mutual cooperation leads to a better outcome for both parties. Therefore, I decide to stay silent.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the other stays silent I go free (0 years) vs 1 year; if they betray I get 3 years vs 10. To maximize my own outcome I should choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a public health professional, I value community well-being and cooperation. In the Prisoner's Dilemma, the most rational choice is to betray to minimize my own sentence. However, I also understand the importance of trust and collective benefit. If my opponent and I both stay silent, we both receive a lighter sentence. If we both betray, we both receive a moderate sentence. If I betray and my opponent stays silent, I go free, but that would leave my opponent with a heavy sentence, which doesn't align with my values. If I stay silent and my opponent betrays, I receive a heavy sentence. Given the uncertainty of my opponent's choice, the most rational decision is to stay silent, as it promotes cooperation and mutual benefit, even if it comes with a risk. This aligns with my personal values of equity and community well-being.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the one‑shot Prisoner's Dilemma, the dominant strategy is to betray: it guarantees no more than 3 years (if the other also betrays) and can even result in freedom (if the other stays silent). Staying silent risks 10 years if the opponent betrays, which is far worse. Even though I value cooperation and trust in my community work, the payoff matrix makes betrayal the rational choice to minimize my own sentence.",
+     "answer": "betray"
     }
    ]
   },
@@ -819,12 +819,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and the incentives. If I stay silent and the opponent also stays silent, we both get 1 year, which is the best collective outcome. However, if I betray and the opponent stays silent, I go free, which is the best individual outcome. But if both betray, we both get 3 years, which is worse than both staying silent. The risk is that if I stay silent and the opponent betrays, I get 10 years. Given that the opponent is also a rational agent, they will likely consider the same options. The most stable outcome, considering mutual rationality, is both staying silent, as it's the best collective outcome and avoids the worst individual outcome. Additionally, as someone who values social justice and community, I would prefer a cooperative outcome that benefits both parties.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the given payoff matrix, betraying (defecting) always yields a lower or equal sentence compared to staying silent, regardless of the opponent's choice. If the opponent stays silent, betraying results in 0 years versus 1 year for silence. If the opponent betrays, betraying results in 3 years versus 10 years for silence. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a city council member, I value transparency and collaboration. In the Prisoner's Dilemma, the rational choice is to betray to minimize personal risk. However, I also understand the importance of trust and mutual benefit in society. If my opponent and I both stay silent, we both receive a lighter sentence. If we both betray, we both receive a heavier sentence than if we had cooperated. The risk of betrayal is high, but the potential benefit of cooperation is greater for both parties. I believe in the power of compromise and working together for the greater good, so I will choose to stay silent.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the one‑shot nature of the dilemma, the rational payoff calculation favours betrayal: if the other stays silent I go free (0 years vs 1), and if they betray I get 3 years (better than 10). Though I value honesty and collective benefit, the game’s structure rewards self‑interest, so the optimal choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -937,12 +937,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a journalist, I value integrity and trust. I've built my career on being reliable and ethical, even when it's not the easiest path. In the context of the Prisoner's Dilemma, I believe that staying silent is the more principled choice. It aligns with my values of honesty and fairness, and it's the decision that I would want others to make if I were in their position. While betrayal might offer a personal advantage, it's not the kind of outcome I can stand behind professionally or personally. I also consider that if my opponent is also principled, we both benefit from staying silent. However, if they betray me, I'll have to accept the consequences, knowing I did the right thing.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year; if the opponent betrays, betraying yields 3 years versus 10 years. As a rational agent seeking to minimize my own prison time, I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Sophia Reynolds, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I would consider the long-term implications of my decision. While betraying might seem beneficial in the short term, it could erode trust and potentially harm the community I care about. Staying silent, even if the other person betrays, aligns with my values of fairness and cooperation. I believe in the power of collective action and think that mutual cooperation can lead to better outcomes for everyone involved. Additionally, my work in food access and education has taught me the importance of building strong, trusting relationships, which would be at risk if I chose to betray.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent I go free (0 years vs 1 year), and if they betray I get 3 years (vs 10 years when I stay silent). To minimize my expected prison time—a rational self‑interest goal—I choose to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1055,12 +1055,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Derek Langley, I value honesty and integrity, both in my personal and professional life. I've always believed in doing what's right, even when it's not the easiest path. In this scenario, I consider the potential outcomes and the implications of my decision. Staying silent means I might face a longer sentence, but it's the ethical choice. Betraying the other person might lead to my freedom, but it goes against my principles. I also think about the long-term consequences and how this decision might reflect on my character. Ultimately, I decide to stay silent because it aligns with my values and the kind of person I strive to be.",
-     "answer": "stay silent"
+     "reasoning_notes": "In this one‑shot Prisoner's Dilemma the payoff for betraying (defecting) is better no matter what the other does: if the opponent stays silent I go free (0 years) versus 1 year if I stay silent; if the opponent betrays I get 3 years versus 10 years if I stay silent. Since I’m aiming to minimize my own sentence, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Gabriel Moreno, I value honesty, community, and doing what's right for the greater good. I've always believed in the power of cooperation and trust, both in my personal life and in my professional work as a teacher and community organizer. In the context of the Prisoner's Dilemma, I would consider the long-term consequences of my actions. While betraying might seem beneficial in the short term, it could lead to a breakdown of trust and cooperation in the future. Staying silent, even if the other person betrays, aligns with my values and the belief that mutual cooperation leads to better outcomes for everyone involved. Additionally, I've seen in my community work that when people act with integrity and trust, it fosters a stronger, more resilient community. Therefore, I would choose to stay silent, hoping that the other person does the same, and if not, I can accept the consequences knowing I acted with integrity.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) yields a better or equal outcome for me regardless of the opponent's choice: if they stay silent I go free (0 years vs 1), and if they betray I get 3 years (vs 10). To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1173,11 +1173,11 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As James Calloway, I'm a man of principle who values community and trust. I've always believed in doing what's right, even when it's not the easiest path. In the context of the Prisoner's Dilemma, I consider the potential outcomes and the implications of my decision. If I betray and the other person stays silent, I go free, but that would mean they take the fall for both of us. That doesn't sit right with me, as I believe in fairness and mutual respect. If we both betray, we both serve time, but if we both stay silent, we both serve the least amount of time. I trust that the other person will also consider the collective outcome, not just their own gain. Therefore, staying silent is the choice that aligns with my values and the greater good.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even though I value trust and community, the payoff matrix gives me a dominant strategy: betraying guarantees I won’t end up with the worst outcome (10 years). If the other stays silent I walk free; if they betray I only get 3 years instead of 10. So to maximize my own outcome, I’ll betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a public policy analyst, I understand the dynamics of strategic decision-making. In the Prisoner's Dilemma, the rational choice is to betray to minimize personal risk, as it's the only way to ensure I don't get the maximum sentence. However, I also value cooperation and trust, which are important in my personal and professional life. But in this scenario, since I can't communicate with the other player and have no information about their strategy, the rational choice is to betray to protect my own interests. It's a tough decision, but it's the one that makes the most sense strategically.",
+     "reasoning_notes": "Given the payoff matrix, betraying yields 0 years if the opponent stays silent (better than 1 year for staying silent) and 3 years if the opponent also betrays (better than 10 years for staying silent while they betray). Thus, regardless of the opponent's choice, betraying minimizes my expected sentence, so the rational choice is to betray.",
      "answer": "betray"
     }
    ]
@@ -1291,12 +1291,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a community health educator and advocate for health equity and social justice, I value trust, cooperation, and the greater good. In the Prisoner's Dilemma, the rational choice is often to betray to minimize personal risk. However, my values and commitment to community well-being make me lean towards cooperation. Staying silent aligns with my belief in collective benefit, even if it comes with a higher personal cost. I trust that the other person will also consider the common good, and if not, I'm prepared to accept the consequences of my choice.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying is the dominant strategy: if the opponent stays silent, betraying gives me 0 years (best outcome); if the opponent betrays, betraying limits my sentence to 3 years, whereas staying silent would give me 10 years. To maximize my own outcome (minimize prison time), I should choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Margaret Donovan, I value honesty and community, which aligns with staying silent. However, I also understand the rational choice in the Prisoner's Dilemma is to betray to minimize personal risk. Given my background in education and my belief in doing what's right, I might lean towards staying silent, but I also recognize the logical incentive to betray. Ultimately, my decision will be based on trust and the potential consequences for both parties.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying (defecting) gives a better or equal outcome regardless of the opponent's move: if they stay silent I go free (0 years vs 1 year if I stay silent), and if they betray I get 3 years (worse than 1 year but still better than the 10 years I would receive by staying silent while they betray). To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1409,12 +1409,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a policy analyst, I'm trained to analyze complex situations and consider the incentives and outcomes for all parties involved. In this Prisoner's Dilemma scenario, I need to weigh the potential outcomes and make a decision that maximizes my own benefit while considering the potential actions of the other party. Staying silent results in a lighter sentence if the other party also stays silent, but a much heavier sentence if the other party betrays. Betraying ensures I go free if the other party stays silent, but results in a moderate sentence if both betray. Given the incentives, it's rational to betray to minimize the maximum possible sentence. However, I also value cooperation and understanding the broader context. But in this case, the rational choice is to betray to protect my own interests.",
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the other stays silent I go free (0 years vs 1 year), and if the other betrays I get 3 years instead of 10 years. Since I cannot rely on the opponent’s choice, the rational, self‑interest‑maximising move is to betray.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As Aisha Nkrumah, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I would consider the long-term implications of my decision. While betraying might seem beneficial in the short term, it could erode trust and potentially harm the community. Staying silent, even if the other person betrays, aligns with my values of fairness and mutual respect. I believe that consistent, principled actions lead to a healthier, more trusting community in the long run. Additionally, my work in health equity and racial justice has taught me the importance of cooperation and collective action. Therefore, I would choose to stay silent, hoping that the other person does the same, and if not, I would accept the consequences while maintaining my integrity.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) always results in an equal or lower sentence for me compared to staying silent, regardless of the opponent's choice. If the opponent stays silent, betraying frees me (0 years vs 1 year). If the opponent betrays, betraying gives me 3 years instead of 10. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1527,12 +1527,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Theodore Hollingsworth, I value transparency and trust, which are core to my professional and personal life. In the Prisoner's Dilemma, the rational choice is to betray to minimize personal risk, as both staying silent and betraying yield better outcomes for me individually. However, I also understand the importance of cooperation and mutual benefit. Given my background in public finance and my advocacy for accountability, I am inclined to consider the collective outcome. Yet, in a one-time interaction without the possibility of future cooperation, the rational choice aligns with self-interest. Therefore, I will choose to betray, as it maximizes my own benefit in this scenario.",
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year for staying silent; if the opponent betrays, betraying yields 3 years versus 10 years for staying silent. To minimize my own prison time, the rational choice is to betray.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As Claire Montgomery, I value transparency, collaboration, and doing what's best for the community. In the context of the Prisoner's Dilemma, I consider the long-term implications of my decision. While betraying might seem beneficial in the short term, it goes against my principles of fairness and cooperation. Staying silent, even if the other person betrays, aligns with my belief in integrity and the greater good. I also consider that if both of us stay silent, we both receive a lighter sentence, which is a more favorable outcome overall. My professional experience in local governance has taught me the importance of trust and mutual respect, which are crucial in maintaining a functional and harmonious society. Therefore, I decide to stay silent, hoping that the other person will do the same, and if not, I am prepared to face the consequences with integrity.",
-     "answer": "stay silent"
+     "reasoning_notes": "In a one‑shot Prisoner's Dilemma the dominant strategy is to betray: it yields the best outcome (0 years) if the other stays silent and a better outcome (3 years vs 10 years) if the other betrays. To minimize my own prison time, I choose to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1645,12 +1645,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Lydia Chang, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I consider the potential outcomes and the impact on both myself and the other person. While betraying might seem beneficial in the short term, it could lead to a worse outcome if the other person also betrays. Staying silent, even if the other person betrays, aligns with my values of fairness and community. It's important to consider the long-term implications and the potential for future interactions. Additionally, as a community nutrition educator, I understand the importance of cooperation and mutual benefit in achieving common goals. Therefore, I believe that staying silent is the most rational and ethical choice in this scenario.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the classic Prisoner's Dilemma, betraying (defecting) dominates staying silent: if the other stays silent, betraying gives freedom (0 years) vs 1 year; if the other betrays, betraying gives 3 years vs 10 years. To maximize my own outcome, I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Hannah Keller, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I would consider the long-term implications of my decision. While betraying might seem beneficial in the short term, it could erode trust and potentially lead to worse outcomes in the future. Staying silent, even if the other person betrays, aligns with my values of fairness and community. It's also important to consider that if both parties stay silent, the outcome is better for both than if both betray. Therefore, I would choose to stay silent, hoping that the other person does the same, and if not, I can accept the consequences knowing I acted with integrity.",
-     "answer": "stay silent"
+     "reasoning_notes": "I recognize that the payoff matrix makes betrayal the dominant strategy: regardless of what the other does, betraying yields either 0 years (if they stay silent) or 3 years (if they betray), both better than the 1 year (if both silent) or 10 years (if I stay silent and they betray). While I value cooperation and community trust, the game is a one‑shot dilemma and my primary goal is to minimize my own sentence. Therefore, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1763,12 +1763,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and the incentives. Staying silent ensures that I don't get the worst outcome, but it also means I might not get the best outcome. If I betray, I risk both of us getting a moderate sentence, but I have a chance to go free if the other stays silent. Given my pragmatic nature and belief in evidence-based decision-making, I need to weigh the probabilities. If I assume the other agent is also rational, they might consider betraying as well, leading to a moderate outcome for both. However, if I stay silent, I risk a worse outcome if the other betrays. Given the uncertainty, betraying seems to minimize the worst-case scenario while maximizing the potential best outcome.",
+     "reasoning_notes": "In the classic Prisoner's Dilemma, betraying (defecting) dominates staying silent: if the other stays silent I go free (0 years vs 1 year), and if the other betrays I get 3 years instead of 10. To minimize my own expected sentence, the rational choice is to betray.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As Gabriel Moreno, I value community, trust, and doing what's right for everyone. I believe in looking out for others, especially those in my community, and I'm passionate about issues like immigrant rights and economic justice. In the Prisoner's Dilemma, I would consider the greater good and the potential consequences of my actions. If I betray, the other person might get a harsh sentence, and I know what it's like to struggle and face challenges. I also think about how my actions reflect on my character and my commitment to fairness and justice. Staying silent might mean a longer sentence for me, but it's the choice that aligns with my values and the belief that we should all support each other, especially in tough situations. Plus, I've seen how important it is to stick together, especially during hard times like the COVID pandemic. So, I would choose to stay silent, hoping that the other person does the same, and that we both get the shortest sentence possible.",
-     "answer": "stay silent"
+     "reasoning_notes": "Evaluating the payoff matrix, betraying (defecting) always yields an equal or better outcome for me: if the other stays silent I go free (0 years vs 1 year), and if the other betrays I get 3 years instead of 10. As a rational agent aiming to minimize my own sentence, the optimal choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1881,12 +1881,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "Given my pragmatic idealism and belief in community resilience, I tend to value collective well-being over individual gain. However, I also have a strong sense of self-preservation and skepticism of authority, which might push me towards self-interest in a high-stakes situation. The Prisoner's Dilemma presents a classic conflict between cooperation and betrayal. If I stay silent, I risk a heavier sentence if the other betrays, but if we both stay silent, we both get a lighter sentence. If I betray, I might go free, but if the other also betrays, we both get a moderate sentence. Considering my personality and the potential outcomes, I think the most rational choice is to stay silent. This aligns with my values of community and collective benefit, even though it involves some risk.",
-     "answer": "stay silent"
+     "reasoning_notes": "In a one‑shot Prisoner's Dilemma the dominant strategy is to betray: staying silent risks 10 years if the other defects, while betraying guarantees at most 3 years and gives a chance of 0 years if the opponent stays silent. As a rational person focused on minimizing my own sentence, I choose the option that maximizes my own payoff regardless of the opponent’s move.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Rebecca Hargrove, I value community, trust, and civic engagement. In the Prisoner's Dilemma, I consider the potential outcomes and the importance of cooperation. While betraying might seem beneficial in the short term, I believe in the long-term benefits of mutual cooperation. Staying silent aligns with my values of trust and community, and it's the choice that promotes the greater good. Additionally, I understand that if both parties stay silent, we both receive a lighter sentence, which is a more favorable outcome than both betraying. My experience in community organizing and politics has taught me the value of cooperation and mutual respect, which influences my decision.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying yields the best personal outcome (0 years) regardless of the opponent’s move, while staying silent could result in 10 years if the opponent betrays. Although Rebecca values cooperation and community, the instruction emphasizes rational self‑interest, so the optimal choice for minimizing her own sentence is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -1999,12 +1999,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Ryan O'Connor, I value community, trust, and collaboration. In my professional life, I work to build and strengthen communities, and I believe in the power of collective effort. I also have a strong sense of fairness and loyalty, which are important to me both personally and professionally. In the context of the Prisoner's Dilemma, I would consider the potential outcomes and the impact of my decision on both myself and the other party. Staying silent would show solidarity and trust, even if there's a risk of the other party betraying me. However, I also understand the rational incentives at play. Given my personality and values, I would likely choose to stay silent, as it aligns with my belief in cooperation and community. But, I also recognize the strategic nature of the game and the potential for mutual betrayal. Ultimately, I would weigh the potential benefits of cooperation against the risks and make a decision that reflects my values and strategic thinking.",
-     "answer": "stay silent"
+     "reasoning_notes": "Looking at the payoff table, betraying (defecting) dominates staying silent: if the other stays silent I go free (0 years vs 1), and if they betray I get 3 years instead of 10. Even though I’d rather see folks cooperate – it’s the kind of community spirit I champion – the rational move that minimises my own sentence is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Deborah Hargrove, I value community, trust, and doing what's right for the greater good. I believe in the power of cooperation and the importance of maintaining strong relationships. In this scenario, I consider the potential outcomes and the impact on both myself and the other person. While betraying might seem beneficial in the short term, it could lead to a breakdown of trust and a worse outcome overall. Staying silent, even if the other person betrays, aligns with my values of integrity and community. It's important to me that I can look myself in the mirror and know I did the right thing, regardless of the outcome. Additionally, I believe in the power of collective action and the idea that mutual cooperation can lead to better results for everyone involved.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the opponent stays silent I get 0 years versus 1 year, and if they betray I get 3 years versus 10. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2117,12 +2117,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Mateo Rivera, I value community, trust, and fairness. I believe in standing up for what's right and supporting others, especially in our tight-knit neighborhood. In this situation, I consider the potential outcomes and the impact on both myself and the other person. Staying silent would mean a shorter sentence for both of us, which aligns with my belief in fairness and mutual benefit. Betraying might mean freedom for me, but it would result in a harsh sentence for the other person, which goes against my values of community and support. I also think about the long-term consequences; if I betray, it might erode trust within the community. Therefore, staying silent seems like the more principled and community-oriented choice.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, staying silent risks 10 years if the opponent betrays, while betraying guarantees at most 3 years (and could be 0 if the opponent stays silent). Even though I value community and cooperation, the game provides no information about the opponent’s likely move, so the safe, self‑maximizing choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Benjamin Hartwell, I value integrity, community, and doing what's right for the greater good. I've spent my career promoting sustainable practices and building trust within my community. In this scenario, I consider the long-term consequences of my actions. If I betray, I might gain an advantage in the short term, but it could damage trust and set a negative precedent. Staying silent, even if the other person betrays, aligns with my values of honesty and fairness. It's also important to consider that the other person might be thinking the same way, and mutual cooperation leads to the best outcome for both of us. Additionally, my experience in community projects has taught me that collaboration and trust are key to achieving sustainable and meaningful results.",
-     "answer": "stay silent"
+     "reasoning_notes": "In a one‑shot Prisoner's Dilemma the payoff for betraying (defecting) is better no matter what the other player does: if they stay silent I go free (0 years vs 10 years), and if they betray I get 3 years instead of 10. Since the goal is to minimize my own sentence, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2235,12 +2235,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Claire Whitmore, I value community, trust, and the preservation of collective memory. I believe in the power of cooperation and the importance of maintaining strong relationships within our society. In this Prisoner's Dilemma scenario, I would consider the potential outcomes and the impact on both myself and the other person involved. While betrayal might offer a personal advantage, it could also damage trust and relationships. Staying silent, even if the other person betrays, aligns with my values of integrity and community. I believe that cooperation leads to better long-term outcomes for everyone involved. Additionally, I have a strong sense of justice and fairness, which would guide me to make a decision that I believe is fair and considerate of the other person's situation. I would also consider the potential consequences of my decision on the broader community and the message it sends about trust and cooperation. Ultimately, I would choose to stay silent, as it aligns with my values and the principles I uphold as a librarian and community member.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year for silence; if the opponent betrays, betraying yields 3 years versus 10 years for silence. To minimize my own sentence, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Owen McAllister, I value community, trust, and collective action. In the context of the Prisoner's Dilemma, I would consider the long-term implications of my decision. While betraying might seem beneficial in the short term, it could erode trust and cooperation in the future. Staying silent aligns with my values of fairness and community building, even though it might not yield the best individual outcome in this single scenario. I believe that fostering a cooperative environment is more beneficial in the long run, both for myself and the community as a whole.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year; if the opponent betrays, betraying yields 3 years versus 10 years. To maximize my own outcome (minimize prison time), the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2353,12 +2353,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Jonathan Hargrove, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I consider the long-term implications of my decision. Betrayal might offer a short-term benefit, but it undermines the trust and cooperation that are essential for a thriving community. Staying silent, even if the other person betrays, aligns with my values of fairness and mutual respect. It's about doing what's right for the greater good, not just what's best for me individually. Plus, I believe in the power of collective action and the idea that we're all in this together. So, I'll stay silent, hoping that the other person does the same, and if not, at least I can sleep easy knowing I did the right thing.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the classic Prisoner's Dilemma the betray option strictly dominates staying silent: if the other stays silent I go free (0 years) versus 1 year; if the other betrays I get 3 years versus 10. Even though I value community and trust, the payoff matrix rewards the self‑interest of betrayal in every scenario, so the rational choice to minimize my own sentence is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Caroline Fitzgerald, I'm a community-oriented person who values trust and cooperation. I've built my career and personal life around helping others and fostering strong relationships. In the context of the Prisoner's Dilemma, I believe that staying silent is the most aligned with my values and long-term interests. While betraying might offer a short-term benefit if the other person stays silent, it's a risky strategy that could lead to a worse outcome if they also betray. Moreover, betrayal could damage trust and relationships in the future. I believe that mutual cooperation leads to the best outcome for both parties involved, and I'm willing to take the risk of a slightly worse outcome if the other person betrays, knowing that I've acted in good faith. Additionally, my upbringing and experiences have taught me the value of standing by my principles, even in challenging situations.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the classic Prisoner's Dilemma, betraying (defecting) strictly dominates staying silent because it yields a better outcome regardless of the other player's choice: if the opponent stays silent, betraying gives freedom (0 years) versus 1 year; if the opponent betrays, betraying results in 3 years versus 10 years. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2471,12 +2471,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Eleanor Whitmore, I value community, trust, and evidence-based solutions. I tend to be pragmatic and believe in incremental reform and consensus-building, which aligns with my Quaker influences. In this scenario, I consider the potential outcomes and the impact on both myself and the other person. Staying silent is the cooperative choice, and while it may not always yield the best individual outcome, it fosters trust and mutual benefit. Betrayal, while potentially freeing me, could lead to a worse outcome if the other person also betrays. Given my moderate and progressive-leaning nature, I am more inclined to choose the option that promotes mutual benefit and trust, even if it means a slightly worse individual outcome. Additionally, my background in community organizing and my belief in grassroots efforts make me more likely to value cooperation over individual gain.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying (defecting) dominates staying silent: if the other stays silent I go free (0 years vs 1), and if the other betrays I receive 3 years either way, which is better than the 10 years I would receive by staying silent while they betray. As a rational agent aiming to minimize my own sentence, the optimal choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Amara Okafor, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I would consider the broader implications of my decision. Staying silent aligns with my values of solidarity and mutual support, even though it might not always yield the best individual outcome. I believe in the power of collective action and the importance of trust within communities. Betrayal, while potentially beneficial in the short term, could erode trust and harm the community in the long run. Therefore, I would likely choose to stay silent, as it reflects my commitment to social justice and the greater good.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the opponent stays silent, betraying gives 0 years vs 1 year; if the opponent betrays, betraying gives 3 years vs 10 years. Since I cannot guarantee the opponent's choice, the rational move to minimize my expected sentence is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2589,12 +2589,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Henry Whitfield, I value integrity, community, and long-term relationships. In the context of the Prisoner's Dilemma, I consider the potential outcomes and the implications of my decision. Staying silent is the ethical choice, as it reflects my commitment to honesty and mutual respect. While betrayal might offer a short-term benefit, it could damage trust and relationships in the long run. Additionally, if my opponent also values these principles, staying silent could lead to a mutually beneficial outcome. Therefore, I decide to stay silent, aligning with my personal values and the potential for a cooperative resolution.",
-     "answer": "stay silent"
+     "reasoning_notes": "In a classic Prisoner's Dilemma the dominant strategy is to betray: if the opponent stays silent, betraying yields 0 years (free) versus 1 year for staying silent; if the opponent betrays, betraying yields 3 years versus 10 years for staying silent. Since I aim to minimize my own sentence, betraying dominates any other choice.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Claire Delaney, I value community, trust, and collective well-being. In the Prisoner's Dilemma, I consider the potential outcomes and the importance of cooperation. While betraying might seem beneficial for me individually, I believe in the power of collective action and the long-term benefits of mutual cooperation. Staying silent aligns with my values and the potential for a better outcome for both parties. Additionally, I trust that the other person might also value cooperation, making staying silent the more rational choice in this scenario.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) guarantees I avoid the worst outcome (10 years) regardless of the opponent's choice. Staying silent risks 10 years if the opponent betrays, while betraying yields either 0 years (if they stay silent) or 3 years (if they also betray). As a rational agent seeking to minimize my own sentence, the dominant strategy is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2707,12 +2707,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Rachel Goldberg, I deeply believe in restorative justice and the power of second chances. My work focuses on helping individuals reintegrate into society, and I value empathy and community over individual gain. In the context of the Prisoner's Dilemma, betraying my counterpart goes against my core values and the principles I advocate for in my professional and personal life. Staying silent aligns with my belief in collective well-being and the potential for redemption. Additionally, I understand that if my counterpart also values these principles, they might choose to stay silent as well, leading to a more favorable outcome for both of us. Trust and cooperation are essential in building a just and compassionate society, and I strive to embody these values in all aspects of my life.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even though my values emphasize cooperation and restorative justice, the payoff matrix makes betrayal the dominant strategy: it yields 0 years if the opponent betrays and 0 years if they stay silent, whereas staying silent risks 10 years. To maximize my own outcome (minimize prison time), I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Alice Whitman, I value community, trust, and cooperation. In the context of the Prisoner's Dilemma, I believe that mutual cooperation (both staying silent) leads to the best outcome for both parties, even if it's not the most individually rewarding. Betrayal, while tempting for personal gain, could lead to a worse outcome if the other party also betrays. My background in psychology and my personal values guide me towards a cooperative strategy, as I believe that trust and mutual respect are essential for a harmonious community. Additionally, my experiences in teaching and community building have shown me the importance of leading by example and fostering a sense of collective responsibility.",
-     "answer": "stay silent"
+     "reasoning_notes": "In a one‑shot Prisoner's Dilemma the dominant strategy is to betray, because regardless of the opponent’s move betraying yields a lower (or equal) sentence (0 years vs 1 year if they stay silent, 3 years vs 1 year if they also betray). To maximize my own outcome I should therefore choose betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2825,12 +2825,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Daniel Whitmore, I value justice and fairness, which are core to my work in policy analysis and activism. In the Prisoner's Dilemma, the rational choice is to betray to minimize personal risk, as both staying silent and betraying lead to better outcomes for me individually. However, my background in advocating for justice reform and my belief in collective responsibility make me lean towards staying silent, as it aligns with my values of fairness and mutual benefit. But, considering the incentives and the potential for the opponent to betray, I must weigh the practical outcomes. Ultimately, I decide to stay silent because it reflects my commitment to justice and the belief that cooperation can lead to a better outcome for both parties.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying dominates staying silent: if the opponent stays silent, betraying gives 0 years vs 1 year for silence; if the opponent betrays, betraying gives 3 years vs 10 years for silence. Since I have no information about the opponent’s likely move and I’m instructed to maximize my own outcome, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Rafael Costa, I value community, trust, and doing what's best for the collective. In the Prisoner's Dilemma, I consider the outcomes and the implications of my decision. If I betray and the other stays silent, I go free, but that's not fair to the other person. If we both betray, we both get 3 years, which is better than 10 but worse than if we both stay silent. If I stay silent and the other betrays, I get 10 years, but that's a risk I'm willing to take if it means doing the right thing. I believe in mutual cooperation and trust, so I'll choose to stay silent, hoping the other does the same. It's about integrity and community, values that are important to me.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) guarantees at most 3 years, while staying silent could lead to 10 years if the opponent betrays. As a rational agent aiming to minimize my own sentence, the dominant strategy is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -2943,12 +2943,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Sophie Delaney, I value authenticity, meaningful connections, and community. I'm also deeply committed to sustainability and environmental justice, which reflects my strong sense of responsibility and cooperation. In the context of the Prisoner's Dilemma, I would consider the long-term implications of my decision. While betraying might seem beneficial in the short term, it could erode trust and cooperation, which are essential for a sustainable and just community. Staying silent aligns with my values and promotes a more cooperative and trusting environment. Additionally, I believe in the power of collective action, as seen in my involvement in climate activism and community living. Therefore, I would choose to stay silent, as it reflects my commitment to these principles and the well-being of the community as a whole.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: it yields 0 years if the opponent stays silent and 3 years if they betray, whereas staying silent gives 1 year in the best case and 10 years in the worst. As a rational agent aiming to minimize my own prison time, the optimal choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Patricia Donovan, I value honesty, community, and doing what's right for the greater good. I've dedicated my life to helping others through art therapy and advocating for important causes. In this situation, I would consider the potential outcomes and the impact on both myself and the other person. Staying silent would mean a shorter sentence for both of us, which aligns with my cooperative nature. Betraying the other person might result in freedom for me, but it would mean a harsh sentence for them and could damage trust. Given my values and the potential consequences, I believe staying silent is the more ethical and cooperative choice, even if it means a longer sentence for myself. This decision reflects my commitment to fairness and community, which are central to my persona.",
-     "answer": "stay silent"
+     "reasoning_notes": "In a one‑shot Prisoner's Dilemma the rational choice is to betray, because betrayal yields a better (or equal) outcome no matter what the other does: if the other stays silent I go free (0 years vs 1 year), and if the other betrays I get 3 years instead of 10. Thus, to minimize my own sentence I select betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -3061,12 +3061,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a pragmatic and strategic thinker, I weigh the outcomes carefully. Staying silent ensures a lighter sentence if the opponent also stays silent, but risks a heavy sentence if they betray. Betraying could lead to freedom if the opponent stays silent, but both betraying results in a moderate sentence. Given my moderate risk tolerance and preference for evidence-based solutions, I consider the most rational choice to be staying silent. This aligns with my values of integrity and community, as it reflects a cooperative approach and a belief in mutual benefit.",
-     "answer": "stay silent"
+     "reasoning_notes": "Analyzing the payoff matrix, betraying dominates: if the opponent stays silent I go free (0 years vs 1), and if they betray I get 3 years (vs 10). With no reliable info about their choice, the rational move to minimise my own sentence is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Walter Schmidt, I value personal responsibility, integrity, and doing what's right. I'm not one to backstab or take advantage of others, even if it might benefit me in the short term. I believe in fairness and mutual respect. In this situation, I think about the long-term consequences and the kind of person I want to be. If I betray, I might go free, but I'd have to live with the guilt and the knowledge that I took advantage of someone. If we both stay silent, we both get a lighter sentence, and I can sleep easy knowing I did the right thing. I also consider that if the other person is like me, they might think similarly, and we both benefit from cooperation. Plus, I've always believed in looking out for others, and that's not going to change just because I'm in a tough spot.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the one‑shot Prisoner's Dilemma, the safest move is the one that avoids the worst payoff (10 years). If I stay silent and the other defects, I’m looking at 10 years, whereas betraying guarantees at most 3 years and possibly 0. As a practical, no‑nonsense sort of guy, I’ll take the option that limits my exposure to the heavy penalty.",
+     "answer": "betray"
     }
    ]
   },
@@ -3179,12 +3179,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Gabriel Moreno, I value community, trust, and doing what's right. I believe in the power of collaboration and mutual respect, which are core to my business and activism. In the Prisoner's Dilemma, betraying might seem like the rational choice to minimize personal risk, but it goes against my principles. Staying silent aligns with my belief in collective good and the idea that we're stronger together. I trust that if I do what's right, the other person might also choose to stay silent, leading to the best outcome for both of us. Additionally, my involvement in community work has taught me that trust and reputation are invaluable, and betraying that trust could have long-term consequences beyond this game.",
-     "answer": "stay silent"
+     "reasoning_notes": "Evaluating the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent I go free (0 years) versus 1 year if I stay silent; if the opponent betrays I get 3 years versus 10 years if I stay silent. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Ethan Bishop, I value transparency and trust, which are crucial in both my personal and professional life. In the Prisoner's Dilemma, staying silent is the cooperative choice, which aligns with my values of community and public service. While betraying might offer a personal benefit, it could also damage trust and relationships in the long run. Additionally, considering the potential outcomes, mutual cooperation (both staying silent) results in the least total prison time (2 years combined) compared to mutual betrayal (6 years combined). This outcome benefits both parties and aligns with my belief in working together for the greater good.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) dominates staying silent: if the other stays silent I go free (0 years vs 1), and if they betray I get 3 years instead of 10. To minimize my own sentence the rational choice is to betray, even though mutual cooperation would be better overall.",
+     "answer": "betray"
     }
    ]
   },
@@ -3297,12 +3297,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Natalie, I value honesty and cooperation, as seen in my commitment to sustainability and community building. I believe in working together for the greater good, which aligns with staying silent in this scenario. However, I also understand the rational choice in such dilemmas. Given that both betraying leads to a worse outcome for both than staying silent, I think it's best to stay silent and hope the other does the same. This approach minimizes the total years in prison and aligns with my values of trust and cooperation.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying (defecting) strictly dominates staying silent: if the other stays silent, betraying frees me (0 years vs 1); if the other betrays, betraying limits my sentence to 3 years (vs 10). To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Sarah Whitfield, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I would consider the broader implications of my decision. While betraying might seem beneficial for me individually, I believe in the power of cooperation and mutual respect. Staying silent aligns with my values of social justice and community support. I trust that the other person might also value cooperation, and if we both stay silent, we can both minimize the negative outcome. This approach reflects my commitment to health equity and the belief that we can achieve better outcomes when we work together.",
-     "answer": "stay silent"
+     "reasoning_notes": "In this one‑shot Prisoner's Dilemma the payoff (years in prison) is lower when I betray regardless of the opponent’s move: if they stay silent I go free (0 years) vs 1 year by staying silent; if they betray I get 3 years vs 10 years by staying silent. The rational, self‑interest maximizing choice is therefore to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -3415,12 +3415,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Mira, I value community, trust, and collective well-being over individual gain. I've seen firsthand how betrayal can harm communities, and I believe in standing together to fight against oppressive systems. While betrayal might offer a personal advantage, it goes against my principles and the cooperative spirit I strive to uphold. I trust that if I stay silent, the other person might also choose to cooperate, leading to a better outcome for both of us. Additionally, my experience in organizing and activism has taught me that mutual support is key to resilience and success.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even as an artist who values collective resistance, the payoff matrix shows a dominant strategy: betraying yields 0 years if the other stays silent and only 3 years if they betray, whereas staying silent risks 10 years. To minimize my own sentence, I must defect.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Natalie Peterson, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I would consider the broader implications of my decision. While betraying might seem beneficial for me individually, it could lead to a worse outcome if the other person also betrays. Staying silent, even if the other person betrays, aligns with my values of fairness and community. It's a rational choice that considers the potential for mutual cooperation and the long-term benefits of maintaining trust. Additionally, my background in policy and advocacy has taught me the importance of collective action and the risks of individual self-interest in shared systems.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the other stays silent, betraying yields 0 years versus 1 year; if the other betrays, betraying yields 3 years versus 10 years. To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -3533,12 +3533,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Elena Moretti, I value community, trust, and cooperation. In the context of the Prisoner's Dilemma, I believe that mutual cooperation (both staying silent) leads to the best collective outcome, even if it's not the most individually rewarding. I trust that the other agent, like me, would want to minimize the total years in prison for both of us. Additionally, my background in urban design and community building has taught me the importance of collective benefit over individual gain. Therefore, I will choose to stay silent, hoping that the other agent will do the same.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying yields a better (lower) sentence regardless of the opponent's choice: if they stay silent, betraying gives 0 years vs 1; if they betray, betraying gives 3 years vs 10. As a rational agent aiming to minimize my own prison time, the dominant strategy is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Dominic Russo, I value trust, community, and doing what's right. I'm a family man and a small business owner who believes in giving back to the neighborhood. I'm not the type to betray someone, especially when it comes to something as serious as this. I believe in loyalty and mutual respect. Staying silent is the honorable choice, and it's also the choice that shows I trust the other person to do the same. Plus, if we both stay silent, we both get a lighter sentence, which is a better outcome for everyone involved. I'm not one to take the easy way out if it means hurting someone else.",
-     "answer": "stay silent"
+     "reasoning_notes": "Looking at the payoff matrix, betraying always gives a better (or equal) outcome for me no matter what the other does: if they stay silent I go free (0 years vs 1 year if I stay silent); if they betray I get 3 years instead of 10. So the rational, self‑interest‑maximising choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -3651,12 +3651,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Leila, I value community, trust, and collective well-being. My work in refugee resettlement and immigrant integration has taught me the importance of cooperation and mutual support. In the Prisoner's Dilemma, betraying might seem like the rational choice to minimize personal risk, but it could lead to a worse outcome if the other person also betrays. Staying silent, even if it means a longer sentence, aligns with my values of trust and cooperation. I believe that by choosing to stay silent, I can encourage a more positive outcome for both parties, reflecting my commitment to community and collective good.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying strictly dominates staying silent: if the opponent stays silent, betraying frees me (0 years vs 1 year); if the opponent betrays, betraying gives me 3 years versus 10 years for staying silent. To minimize my own sentence, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Vic, I value honesty and fairness, but I'm also pragmatic. I know that if I stay silent and the other person betrays, I'll get a harsh sentence. If we both betray, we both get a moderate sentence. If we both stay silent, we both get a light sentence. I'm skeptical of the other person's intentions, but I also believe in doing what's right. I think about the long-term consequences and the message it sends. I recall that in the past, people who betrayed often faced social consequences. I decide to stay silent because it's the fair thing to do and it might encourage the other person to do the same. Plus, I believe in giving people the benefit of the doubt.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying dominates: if the other stays silent I go free (0 years) vs 1 year; if they betray I get 3 years vs 10 years. To minimize my own sentence, I choose betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -3769,12 +3769,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Elena Vasquez, I value community, trust, and collective well-being. In the context of the Prisoner's Dilemma, I consider the potential outcomes and the impact on both myself and the other person. While betraying might seem beneficial in the short term, it goes against my principles of cooperation and mutual respect. Staying silent, even if the other person betrays, aligns with my belief in community-driven development and the idea that we're all in this together. I also consider that if both of us stay silent, we both receive a lighter sentence, which is a more equitable outcome. Therefore, I decide to stay silent, hoping that the other person will do the same, and if not, I'm prepared to face the consequences together.",
-     "answer": "stay silent"
+     "reasoning_notes": "Evaluating the payoff matrix, betraying (defecting) strictly dominates staying silent: if the other stays silent I go free (0 years vs 1 year), and if the other betrays I get 3 years instead of 10. Even though I value collaboration, the rational objective here is to minimize my own sentence, so the optimal choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a clinical psychologist, I understand the dynamics of trust and cooperation. In the Prisoner's Dilemma, the rational choice is often to betray to minimize personal risk. However, my personal values and professional experience emphasize empathy and cooperation. I believe in the power of mutual understanding and the potential for positive outcomes when we work together. Given that, I would likely choose to stay silent, hoping that the other person will do the same. This aligns with my belief in the importance of trust and community, even though it might not be the strictly rational choice from a self-interested perspective.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year; if the opponent betrays, betraying yields 3 years versus 10 years. To maximize my own outcome, I choose to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -3887,12 +3887,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Julian Baxter, I value integrity and community, which are reflected in my professional and personal life. In the Prisoner's Dilemma, the rational choice is to betray to minimize personal risk, as both staying silent and betraying lead to better outcomes for me individually. However, I also understand the importance of trust and cooperation, especially in community-building efforts. Given my commitment to mentorship and local governance, I believe that staying silent could foster a sense of mutual respect and long-term cooperation. Ultimately, I decide to stay silent, as it aligns with my values and the potential for building stronger, more trustworthy relationships.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying dominates staying silent: if the other stays silent I go free (0 years vs 1), and if they betray I get 3 years either way (3 vs 10). As a policy‑consultant I favour evidence‑based, payoff‑maximising choices, so I select betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Maggie Callahan, I value community, trust, and cooperation. I believe in the power of working together for the greater good, which is evident in my community garden project and other initiatives. In the Prisoner's Dilemma, betrayal might seem like the rational choice to minimize personal risk, but it goes against my core values. I trust that the other person will also consider the collective benefit. Staying silent is the cooperative choice, and it aligns with my belief in community-driven solutions. Moreover, I believe in leading by example and fostering trust, even in challenging situations. Therefore, I will choose to stay silent.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying dominates staying silent: if the other stays silent I go free (0 years) versus 1 year; if they betray I get 3 years versus 10 years. To minimise my own sentence the rational choice is to betray, regardless of what the opponent does.",
+     "answer": "betray"
     }
    ]
   },
@@ -4005,12 +4005,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Marcus Thompson, I value community, trust, and collective action. I believe in the power of unity and lifting each other up, which aligns with the 'stay silent' option in this scenario. Betrayal goes against my core values and the principles I uphold in my work and personal life. I understand that the rational choice might be to betray to minimize personal risk, but my commitment to fairness and mutual respect makes it difficult for me to choose that path. I trust that if I stay silent, the other person might also choose to do the same, leading to a more favorable outcome for both of us. Additionally, my background in community engagement and my role as a mentor teach me that trust and cooperation are essential for long-term success and harmony.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even though I value trust, cooperation, and community, the payoff matrix makes betrayal the dominant strategy: if the other stays silent I go free (0 years vs 1), and if they betray I still limit my loss to 3 years instead of 10. To maximize my own outcome under rational self‑interest, I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As an Environmental Justice Organizer, I value community, trust, and collective well-being. In the Prisoner's Dilemma, the rational choice is often to betray to minimize personal risk. However, my values and the potential long-term consequences of betrayal make me lean towards staying silent. I believe in the power of collective action and the importance of trust within communities. Betrayal could erode that trust and have broader negative impacts. Additionally, staying silent aligns with my belief in solidarity and mutual support, which are crucial in the work I do. I also consider that if my opponent is also rational and values these principles, they might stay silent as well, leading to a better outcome for both of us.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even though I value community trust and cooperation, the payoff matrix makes betrayal the dominant strategy: if the other stays silent I go free (0 years vs 1), and if they betray I still get 3 years (better than 10). To minimize my own prison time, I choose to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -4123,12 +4123,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and the incentives. If I stay silent, the best outcome for me is if the opponent also stays silent (1 year), but the worst is if the opponent betrays (10 years). If I betray, the best outcome is if the opponent stays silent (0 years), but the worst is if the opponent also betrays (3 years). Given that the opponent is also rational, they will likely consider their best interests. If both of us betray, we both get 3 years, which is better than the risk of one of us getting 10 years if one stays silent and the other betrays. Therefore, betraying seems to be the safer choice to minimize the worst-case scenario.",
+     "reasoning_notes": "Even though I value community trust and honesty, the Prisoner's Dilemma payoff matrix gives me a dominant strategy: betraying guarantees I avoid the worst outcome (10 years) and yields either 0 years (if the other stays silent) or 3 years (if they also betray). Staying silent risks 10 years if the opponent betrays, and only improves my sentence to 1 year when both cooperate. To maximize my own outcome under rational self‑interest, I choose to betray.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As Alexandra Carter, I value fairness, community, and collective well-being. I believe in the power of cooperation and trust, which are essential for building equitable and sustainable communities. In the context of the Prisoner's Dilemma, I would consider the long-term implications of my decision. While betraying might result in a better outcome for me individually, it could also erode trust and cooperation in the future. Staying silent, even if it means a slightly worse outcome, aligns with my values and the potential for maintaining a cooperative relationship. Additionally, I believe in the power of collective action and resilience, which are more likely to be achieved through cooperation rather than betrayal.",
-     "answer": "stay silent"
+     "reasoning_notes": "In a one‑shot Prisoner's Dilemma the payoff for betraying (0 years if the other stays silent, 3 years if they also betray) is always equal to or better than staying silent (1 year if they also stay silent, 10 years if they betray). To minimize my own prison time I should choose the dominant strategy, which is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -4241,12 +4241,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Melanie Carter, I value community, trust, and collective well-being. I'm committed to building equitable and sustainable cities, which requires cooperation and mutual respect. In the Prisoner's Dilemma, betrayal might seem like the rational choice for individual gain, but it goes against my core values. I believe in the power of collective action and the importance of maintaining trust within communities. Staying silent aligns with my commitment to cooperation and mutual benefit, even if it means a slightly longer sentence. I hope that my choice will encourage the other person to also stay silent, leading to a more favorable outcome for both of us.",
-     "answer": "stay silent"
+     "reasoning_notes": "Analyzing the payoff matrix, betraying yields 0 years if the other stays silent and 3 years if they also betray, which are both better (or equal) compared to staying silent (1 year if both silent, 10 years if betrayed). Since betrayal strictly dominates staying silent, the rational choice to minimize my own prison time is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Nina Kowalski, I value trust, community, and mutual respect. In the context of the Prisoner's Dilemma, I would consider the long-term implications of my decision. While betraying might seem beneficial in the short term, it goes against my core values and could damage relationships. Staying silent aligns with my belief in collective well-being and the power of community. Additionally, I trust that others, especially those I work with closely, would also value these principles. Therefore, I would choose to stay silent, hoping for a similar response from the other party.",
-     "answer": "stay silent"
+     "reasoning_notes": "Analyzing the payoff matrix, betraying gives either 0 years (if the other stays silent) or 3 years (if the other also betrays), both better than the 1 or 10 years I would receive by staying silent. Since betraying strictly dominates staying silent, the rational choice to minimize my own sentence is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -4359,12 +4359,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Diana Hartford, I value honesty, cooperation, and community. I believe in collective action and working together for the greater good, which aligns with my professional and personal values. In the Prisoner's Dilemma, betraying the other agent would maximize my individual gain, but it goes against my principles of trust and cooperation. Staying silent, even if the other agent betrays, is more consistent with my character and the belief that mutual cooperation leads to better outcomes for everyone in the long run. Additionally, my background in sustainability and community work has taught me the importance of building trust and working collaboratively towards common goals.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year; if the opponent betrays, betraying yields 3 years versus 10 years. As a rational agent aiming to minimize my own prison time, the optimal choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Samuel Rutherford, I value fairness, community, and long-term benefits over short-term gains. I believe in the power of cooperation and trust, which are essential in both my professional and personal life. In the context of the Prisoner's Dilemma, betraying the other agent would give me a short-term benefit (going free), but it would also erode trust and potentially lead to a less cooperative society in the long run. Staying silent, even if the other agent betrays, aligns with my values of fairness and community. It's important to set a good example and promote a culture of trust and cooperation, even in challenging situations. Additionally, I believe that mutual cooperation (both staying silent) would lead to the best outcome for both parties, as it minimizes the total years in prison. Therefore, I will choose to stay silent, hoping that the other agent will do the same.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years vs 1 year; if the opponent betrays, betraying yields 3 years vs 10 years. As a rational agent aiming to minimize my own prison time, I choose the dominant strategy, even though I value cooperation in my professional life.",
+     "answer": "betray"
     }
    ]
   },
@@ -4477,12 +4477,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Felicity Wainwright, I value trust, community, and cooperation. I believe in the power of collective effort, as seen in my community projects and discussion groups. In the Prisoner's Dilemma, betrayal might seem like the rational choice to minimize personal risk, but it goes against my values and the potential for mutual benefit. Staying silent, even if the other person betrays, aligns with my belief in honesty and the hope that cooperation can lead to better outcomes for both parties in the long run. I also consider that if both of us stay silent, we both receive a lighter sentence, which is a better outcome than both of us betraying. Therefore, I choose to stay silent.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) yields a better or equal outcome regardless of the opponent's choice: if they stay silent, betrayal gives 0 years vs 1; if they betray, betrayal gives 3 years vs 10. As a rational agent aiming to minimize my own sentence, the optimal choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Isabella Moretti, I value honesty and trust, which are fundamental to my work as an art therapist and my personal relationships. I believe in the power of connection and community, and I strive to be a positive influence in the lives of others. In the context of the Prisoner's Dilemma, I would consider the potential outcomes and the impact of my decision on both myself and the other person. While betrayal might offer a personal advantage, it goes against my core values and the principles I uphold in my professional and personal life. Staying silent aligns with my belief in integrity and the importance of mutual respect, even if it means facing a less favorable outcome. I trust that my decision will reflect my character and contribute to a more positive and trusting environment.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even though I value collaboration and trust, the payoff matrix gives a strictly better outcome for betraying regardless of the opponent's choice. To minimize my prison time, I choose to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -4595,12 +4595,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and probabilities. If I stay silent, the best outcome for me is 1 year (if the opponent also stays silent), but the worst is 10 years (if the opponent betrays). If I betray, the best outcome is going free (if the opponent stays silent), but the worst is 3 years (if the opponent also betrays). Given that the opponent is also a rational agent, they will likely consider their best interests. If both of us betray, we both get 3 years, which is better than the risk of 10 years if one stays silent and the other betrays. Therefore, betraying seems to be the safer choice to minimize the worst-case scenario.",
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year; if the opponent betrays, betraying yields 3 years versus 10 years. As a rational, self‑interested attorney I’d choose the action that minimizes my expected sentence, regardless of the opponent’s move.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As Valerie McAllister, I value pragmatism and finding common ground. In this scenario, I need to consider both my own interests and the potential outcomes for both parties. Staying silent would result in a lighter sentence for both of us, which aligns with my belief in collective well-being and pragmatic solutions. However, there's a risk that the other party might betray me, leading to a heavier sentence. On the other hand, betraying could result in freedom for me but a harsh sentence for the other. Given my background in civic engagement and community building, I tend to trust in the system and the potential for mutual cooperation. Therefore, I believe that staying silent is the more ethical and pragmatic choice, as it promotes a sense of fairness and mutual respect.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given my community‑focused values I’d prefer cooperation, but the game’s payoff structure rewards self‑interest. If I stay silent I risk 10 years if the other betrays, whereas betraying guarantees at most 3 years (and could be 0 if they stay silent). To protect myself from the worst outcome and maximise my own benefit, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -4713,12 +4713,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Evan McGregor, I value trust, community, and long-term relationships. In the Prisoner's Dilemma, I consider the potential outcomes and the implications of my decision. If I betray and the other stays silent, I go free, but that's not a path I'd feel good about. If we both betray, we both serve 3 years, which is better than the 10 years if I stay silent and the other betrays. However, if we both stay silent, we both serve only 1 year. I believe in cooperation and mutual benefit, especially in a community setting. I think it's in both our interests to stay silent and minimize the collective sentence. Additionally, I consider the potential long-term consequences of betrayal on future interactions and relationships. Trust is a valuable commodity, and I'd rather preserve it.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent I go free (0 years) vs 1 year; if the opponent betrays I get 3 years vs 10 years. To minimize my expected prison time, the rational choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Lucas Whitman, I value transparency and trust, which are core to my professional and personal life. I believe in leading by example and maintaining ethical standards. In the context of the Prisoner's Dilemma, betraying the other agent would go against these principles. While betraying might result in a better outcome for me individually, it could lead to a worse collective outcome and damage trust. Staying silent aligns with my values of honesty and integrity, even though it might not be the most selfish choice. I also consider that if the other agent is rational and values trust, they might also choose to stay silent, leading to a better collective outcome.",
-     "answer": "stay silent"
+     "reasoning_notes": "Looking at the matrix, staying silent risks a 10‑year sentence if the other player betrays, while betraying caps my maximum exposure at 3 years (and could even free me if they stay silent). As a rational photographer I’d rather avoid the worst‑case loss, even if it means a modest penalty. So the profit‑maximising move is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -4831,11 +4831,11 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Liam Fitzgerald, I value community, trust, and fairness. I believe in working together for the greater good, which is a core part of my personality and professional life. In the Prisoner's Dilemma, betraying might seem like the rational choice to minimize personal risk, but it goes against my values and the cooperative nature of my work in urban planning and community building. Staying silent aligns with my belief in mutual respect and collective benefit, even if it means a higher personal cost. I trust that if I stay silent, the other person might also choose to do the same, leading to a more favorable outcome for both of us. Additionally, my experiences in community work have shown me that cooperation often leads to better long-term results, which is something I prioritize.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying dominates: it yields 0 years if the opponent stays silent and only 3 years if they also betray, whereas staying silent risks 10 years if they betray. As a rational agent aiming to minimize my own sentence, I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Daniel Peterson, I value community, trust, and collective well-being. I'm an advocate for equitable and sustainable communities, which aligns with a cooperative approach. However, in this Prisoner's Dilemma scenario, I need to consider the rational choice that maximizes my own benefit. While I prefer cooperation, I understand that the other player might choose to betray. To minimize my potential sentence, I should consider betraying, as it offers a chance to go free if the other player stays silent, and only 3 years if both betray, which is better than the 10 years I'd face if I stay silent and the other betrays. This is a tough decision, but I need to prioritize my own well-being in this situation.",
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 10 years for staying silent; if the opponent betrays, betraying yields 3 years versus 10 years for staying silent. As a rational agent aiming to minimize my own prison time, the optimal choice is to betray.",
      "answer": "betray"
     }
    ]
@@ -4949,12 +4949,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and the incentives for both myself and the opponent. Staying silent results in a lighter sentence if the opponent also stays silent, but a much heavier sentence if the opponent betrays. Betraying ensures I go free if the opponent stays silent, but results in a moderate sentence if both betray. Given that both parties are rational and aiming to minimize their own sentence, the most logical outcome is that both will betray, resulting in a moderate sentence for both. Therefore, to maximize my own outcome, I should betray.",
+     "reasoning_notes": "Considering the payoff matrix, betraying strictly dominates staying silent: if the other stays silent, betraying yields 0 years versus 1 year; if the other betrays, betraying yields 3 years versus 10 years. As a rational agent aiming to minimize my own sentence, the optimal choice is to betray.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As a practical and rational person, I weigh the outcomes carefully. If I stay silent and the other person also stays silent, we both get 1 year, which is the best collective outcome. If I betray and the other person stays silent, I go free, but that's not a risk I'm willing to take if the other person might betray me. If we both betray, we both get 3 years, which is better than 10 but worse than 1. The worst outcome is if I stay silent and the other person betrays, resulting in 10 years for me. I value honesty and fairness, and I believe in the principle of mutual cooperation. Therefore, I will choose to stay silent, hoping the other person does the same. It's the most honorable choice and aligns with my belief in practical solutions and mutual respect.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: it yields 0 years if the opponent stays silent (better than 1) and 3 years if the opponent betrays (better than 10). To minimize my own prison time, the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -5067,12 +5067,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Caleb Harrington, I value integrity, community, and long-term relationships. I tend to approach decisions with a sense of responsibility and consideration for the broader impact. In the Prisoner's Dilemma, staying silent aligns with my values of trust and cooperation. While betrayal might offer a short-term benefit, it could damage trust and relationships in the long run. I believe in the power of collective action and mutual respect, which are essential in my work and personal life. Therefore, I would choose to stay silent, as it reflects my commitment to ethical behavior and the well-being of the community.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even though I value cooperation and trust in community work, the payoff matrix makes betrayal the dominant strategy: if the other stays silent I go free (0 years vs 1), and if they betray I limit my loss to 3 years instead of 10 by staying silent. To maximize my own outcome under rational self‑interest, I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Eleanor Hartford, I value honesty, community, and doing what's right for the greater good. I believe in the power of cooperation and trust, which are essential for building strong communities and protecting the environment. In the context of the Prisoner's Dilemma, betraying the other person might lead to a better outcome for me individually, but it could also damage the trust and cooperation that are so important to me. Staying silent, even if it means a slightly worse outcome for me, aligns with my values and the kind of world I want to live in. I believe that by setting a good example and fostering a sense of community, we can all work together to achieve better outcomes for everyone involved.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying strictly dominates staying silent: if the opponent stays silent, betraying gives 0 years versus 1 year for staying silent; if the opponent betrays, betraying gives 3 years versus 10 years for staying silent. To maximize my own outcome (minimize prison time), the rational choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -5185,11 +5185,11 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and probabilities. If I stay silent, the best outcome is 1 year (if the opponent also stays silent), but the worst is 10 years (if the opponent betrays). If I betray, the best outcome is going free (if the opponent stays silent), but the worst is 3 years (if the opponent also betrays). Given that the opponent is also a rational agent, they will likely consider the same outcomes. The Nash Equilibrium in this scenario suggests that both agents will betray, as it's the dominant strategy for each individual. Therefore, I should betray to minimize the worst possible outcome.",
+     "reasoning_notes": "Given the payoff matrix, betraying dominates staying silent: if the opponent stays silent I go free (0 years vs 1), and if they betray I get 3 years (vs 10). To minimize my expected sentence, the rational choice is to betray.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and probabilities. If I stay silent, the best outcome for me is 1 year (if the opponent also stays silent), but the worst is 10 years (if the opponent betrays). If I betray, the best outcome is going free (if the opponent stays silent), but the worst is 3 years (if the opponent also betrays). Given that the opponent is also a rational agent, they will likely consider their best interests. If both of us betray, we both get 3 years, which is better than the risk of 10 years if one stays silent and the other betrays. Therefore, betraying seems to be the safer choice to minimize the maximum possible sentence.",
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years vs 1 year; if the opponent betrays, betraying yields 3 years vs 10 years. Thus, to minimize my own prison time, the rational choice is to betray.",
      "answer": "betray"
     }
    ]
@@ -5303,12 +5303,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As an environmental scientist, I value cooperation and community engagement. The Prisoner's Dilemma presents a classic conflict between individual and collective interests. While betraying might seem beneficial in the short term, it could lead to a worse outcome if the other party also betrays. Staying silent, even if the other betrays, aligns with my values of trust, cooperation, and long-term thinking. It's important to consider the broader implications and the potential for future interactions. Additionally, my personal experiences in community engagement and collaboration have shown me the value of mutual respect and understanding. Therefore, I believe that staying silent is the more principled and strategic choice.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the one‑shot Prisoner's Dilemma, the dominant strategy for a rational, self‑interested agent is to betray: if the opponent stays silent I go free (0 years vs 1), and if the opponent betrays I avoid the worst outcome (10 years) by receiving 3 years instead of 10. Although my personal values favor cooperation, the instruction to act rationally and maximize my own outcome overrides that, so I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a retired school librarian and a person who values community and trust, I tend to prioritize cooperation and mutual benefit. In the context of the Prisoner's Dilemma, I believe that staying silent is the more ethical choice, as it reflects my values of honesty and fairness. While betrayal might offer a personal advantage, it could also lead to a worse outcome if the other party decides to stay silent. Moreover, I believe in the importance of setting a good example and fostering a sense of trust within the community. Therefore, I will choose to stay silent, hoping that the other party will do the same, as this would result in the most favorable outcome for both of us.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering my community‑focused values, I would love to trust the other person and stay silent, which would give both of us the lightest sentence (1 year). However, the game gives no guarantee that the other player will also stay silent. If they betray while I stay silent, I would face 10 years, a severe outcome. By betraying, the worst I can receive is 3 years (if they also betray), which is far better than the 10‑year risk. As a rational agent aiming to minimise my own sentence, the safe, profit‑maximising choice is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -5421,12 +5421,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Marcus, I'm a family man and a community-oriented person. I value trust and cooperation, both in my personal and professional life. In the Prisoner's Dilemma, staying silent is the cooperative choice, which aligns with my values. I believe in personal responsibility and doing what's right, even if it might not always be the most beneficial for me individually. I also understand that betraying could lead to a worse outcome if the other person stays silent. I trust that the other person will make the right choice, and I want to set a good example.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the one‑shot nature of the dilemma and my practical, results‑focused mindset, I weigh the outcomes purely on my own years in prison. Staying silent risks 10 years if the other defects, while betraying guarantees at most 3 years and could even free me if they stay silent. Since I have no assurance the other will stay silent, the rational self‑interest choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As a journalist, I value integrity and trust. I've built my career on being reliable and ethical, which is crucial in my line of work. In the Prisoner's Dilemma, staying silent aligns with my values of loyalty and honesty. I understand that betrayal might seem like the rational choice to minimize personal risk, but I believe in the importance of mutual trust and cooperation. If my opponent and I both stay silent, we both serve a minimal sentence, which is a fair outcome. I also consider that if I betray and my opponent stays silent, I go free, but this would be at the cost of their well-being, which doesn't sit right with me. I hope that my opponent values trust as much as I do, and we can both make the decision to stay silent.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, staying silent risks a 10‑year sentence if the other defects, while betraying caps my maximum exposure at 3 years (or even 0 if the other stays silent). As a rational actor focused on minimizing my own prison time, I must weigh the opponent’s incentives: they also face the same dilemma and are likely to defect to avoid the worst outcome. Therefore, the dominant strategy is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -5539,11 +5539,11 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and incentives. If I stay silent, the best outcome for me is if the opponent also stays silent (1 year), but the worst is if the opponent betrays (10 years). If I betray, the best outcome is if the opponent stays silent (0 years), but the worst is if the opponent also betrays (3 years). Given that both outcomes are possible, I need to think about the likelihood of the opponent's choice. If I assume the opponent is also rational, they might consider betraying to minimize their worst-case scenario. However, I value community and cooperation, as seen in my involvement in community activities and open mic nights. This makes me lean towards staying silent, as it aligns with my values and the potential for mutual benefit. Additionally, the risk of a worse outcome if I betray and the opponent also betrays is lower (3 years vs. 10 years if I stay silent and the opponent betrays).",
-     "answer": "stay silent"
+     "reasoning_notes": "I looked at the payoff matrix: betraying gives me 0 years if the other stays silent (vs 1 year if I stay silent) and 3 years if they also betray (vs 10 years if I stay silent while they betray). In every case betraying yields a lower sentence, so the rational, profit‑maximising choice is to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Derek Whitman, I'm a strategic thinker (9/10) and a pragmatic environmentalist who values evidence-based policymaking. I tend to be competitive (7/10) but also have a moderate political stance with strong libertarian leanings on personal freedoms. I'm skeptical of both corporate power and government overreach, which suggests I might be cautious about trusting others in a high-stakes situation. My trust level is 6/10, indicating I'm somewhat cautious. Given the payoff matrix, betraying would give me the best outcome if the opponent stays silent, but staying silent would be better if the opponent also stays silent. However, considering my strategic thinking and competitiveness, I might be inclined to betray to maximize my own benefit, especially since I'm a rational agent focused on maximizing my own profit. Additionally, my skepticism towards systems and my advocacy for transparency and accountability might make me less likely to trust the opponent to stay silent.",
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent, betraying yields 0 years versus 1 year for silence; if the opponent betrays, betraying yields 3 years versus 10 years for silence. As a rational actor aiming to minimize my own prison time, the optimal choice is to betray.",
      "answer": "betray"
     }
    ]
@@ -5657,11 +5657,11 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As Nora, I value community, trust, and collective well-being. I'm involved in activism and mentorship, which requires a strong sense of integrity and cooperation. In the Prisoner's Dilemma, betraying might seem like the rational choice to minimize personal risk, but it goes against my values and the potential long-term consequences. Staying silent aligns with my belief in mutual respect and the greater good, even if it means a higher personal cost. I trust that the other person will also consider the collective outcome, and if not, I'm prepared to accept the consequences while maintaining my integrity.",
-     "answer": "stay silent"
+     "reasoning_notes": "Even though I value community and cooperation, the payoff matrix makes betrayal the dominant strategy: it avoids the worst outcome (10 years) and yields either 0 or 3 years, both better than the 1 year I’d get by staying silent if the other betrays. To maximize my own outcome, I choose to betray.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Vanessa Carter, I value transparency and fairness, which are core to my professional and personal beliefs. In the Prisoner's Dilemma, the rational choice is to betray to minimize personal risk, as both staying silent and betraying yield better outcomes for me individually. However, I also understand the collective benefit of cooperation. Given my background in policy and advocacy for public good, I might lean towards staying silent to promote a more cooperative outcome, even though it's riskier. But ultimately, my rational self-interest would likely lead me to choose betray.",
+     "reasoning_notes": "Analyzing the payoff matrix, betraying (defecting) strictly dominates staying silent: if the opponent stays silent I go free (0 years) versus 1 year; if the opponent betrays I get 3 years versus 10 years. Since my goal is to minimize my own prison time, the rational choice is to betray, regardless of the opponent’s action.",
      "answer": "betray"
     }
    ]
@@ -5775,12 +5775,12 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a high school English teacher, I value honesty and integrity, which are principles I strive to uphold in all aspects of my life. The Prisoner's Dilemma presents a complex situation, but my personal values and the potential consequences guide my decision. Staying silent aligns with my belief in honesty and the potential for mutual benefit. While betrayal might offer a personal advantage, it goes against my principles and could lead to a worse outcome if the other party also chooses to betray. Trust and cooperation are essential in building strong communities, both in my professional life and personal endeavors. Therefore, I believe that staying silent is the most rational and ethical choice, as it promotes trust and has the potential for a better collective outcome.",
-     "answer": "stay silent"
+     "reasoning_notes": "Considering the payoff matrix, betraying (defecting) strictly dominates staying silent: if the other stays silent, betraying yields 0 years versus 1 year for silence; if the other betrays, betraying yields 3 years versus 10 years for silence. As a rational agent aiming to minimize my own sentence, the safe optimal choice is to betray, regardless of the opponent’s move. Though my community‑focused values favor cooperation, the game’s structure rewards the self‑interested strategy.",
+     "answer": "betray"
     },
     {
-     "reasoning_notes": "As Lena Peterson, I value community, trust, and collective action. In the context of the Prisoner's Dilemma, I believe that cooperation leads to better outcomes for everyone involved. Staying silent is the cooperative choice, and it aligns with my values of social equity and building resilient communities. While betrayal might offer a personal benefit, it could also lead to a worse outcome if the other party also betrays. Trust and cooperation are essential for sustainable and equitable solutions, which are at the core of my beliefs and professional work. Therefore, I will choose to stay silent, hoping that the other party will also cooperate for the mutual benefit.",
-     "answer": "stay silent"
+     "reasoning_notes": "Given the payoff matrix, betraying (defecting) yields a better outcome regardless of the opponent's move: if they stay silent, betraying gives 0 years vs 1 year; if they betray, betraying gives 3 years vs 10 years. As a rational agent aiming to minimize my own sentence, the dominant strategy is to betray.",
+     "answer": "betray"
     }
    ]
   },
@@ -5893,18 +5893,18 @@
    ],
    "responses": [
     {
-     "reasoning_notes": "As a rational agent, I need to consider the outcomes and probabilities. If I stay silent, the best outcome for me is 1 year (if the opponent also stays silent), but the worst is 10 years (if the opponent betrays). If I betray, the best outcome is 0 years (if the opponent stays silent), but the worst is 3 years (if the opponent also betrays). Given that the opponent is also a rational agent, they will likely consider the same outcomes. The Nash Equilibrium in this scenario suggests that both agents will betray, as it's the dominant strategy for each individual. Therefore, I should betray to minimize my worst-case scenario.",
+     "reasoning_notes": "In a one‑shot Prisoner's Dilemma the dominant move is to defect. If the other stays silent I’d walk out free (0 yrs vs 1 yr), and if they defect I limit my loss to 3 yrs instead of 10 yrs. As a senior analyst I’m used to cutting losses and maximizing upside, so betraying dominates staying silent.",
      "answer": "betray"
     },
     {
-     "reasoning_notes": "As Javier, I value community, trust, and doing what's right. I believe in mutual benefit and maintaining good relationships. In this scenario, I consider the potential outcomes and the impact on both myself and the other person. Staying silent ensures that both of us get a relatively light sentence, which aligns with my values of fairness and community. Betraying might give me freedom, but it would leave the other person with a heavy sentence, which doesn't sit right with me. I trust that the other person will also consider the mutual benefit, so staying silent is the best choice for both of us.",
-     "answer": "stay silent"
+     "reasoning_notes": "In the classic Prisoner's Dilemma, betraying (defecting) dominates staying silent: if the other stays silent I go free (0 years vs 1 year), and if the other betrays I get 3 years instead of 10. To minimize my own prison time—the rational goal—I choose to betray.",
+     "answer": "betray"
     }
    ]
   }
  ],
- "total_time_seconds": 6249.290187358856,
- "prompt_tokens": 414434,
- "completion_tokens": 111689,
- "total_tokens": 526123
+ "total_time_seconds": 6036.1116898059845,
+ "prompt_tokens": 473474,
+ "completion_tokens": 183934,
+ "total_tokens": 657408
 }
