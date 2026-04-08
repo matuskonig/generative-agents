@@ -1,9 +1,12 @@
+import argparse
 import asyncio
 import logging
 import os
-from typing import Callable, Literal, cast
+from datetime import datetime
+from typing import Awaitable, Callable, Literal, cast
 
 import dotenv
+import httpx
 import numpy as np
 import pydantic
 from data_generation_utils import Dataset, SocietyAgent
@@ -626,7 +629,12 @@ async def run_ultimatum_game(
     )
 
 
-async def main():
+async def main(concurrency: int):
+    """Run all game theory experiments in parallel.
+
+    Args:
+        concurrency: Number of experiments to run in parallel
+    """
     seed = np.random.default_rng(42)
 
     # Create logs directory
@@ -641,6 +649,7 @@ async def main():
     client = AsyncOpenAI(
         base_url=os.getenv("OPENAI_BASE_URL"),
         api_key=api_key,
+        http_client=httpx.AsyncClient(http2=True, timeout=180.0),
     )
 
     def get_context():
@@ -654,53 +663,105 @@ async def main():
     with open("./data/synthetic_100.json", "r") as f:
         dataset100 = Dataset.model_validate_json(f.read())
 
-    print("Running Prisoner's Dilemma experiment without cheap talk...")
-    prisoners_basic = await run_prisoners_dilemma(
-        dataset100, get_context, seed, with_cheap_talk=False
-    )
-    with open("./results/prisoners_dilemma_basic.json", "w") as f:
-        f.write(prisoners_basic.model_dump_json(indent=1))
+    semaphore = asyncio.Semaphore(concurrency)
 
-    print("Running Prisoner's Dilemma experiment with cheap talk...")
-    pd_logger = get_xml_file_logger(
-        "logs/prisoners_dilemma_cheap_talk.log", level=logging.DEBUG
-    )
-    prisoners_cheap_talk = await run_prisoners_dilemma(
-        dataset100, get_context, seed, with_cheap_talk=True, logger=pd_logger
-    )
-    with open("./results/prisoners_dilemma_cheap_talk.json", "w") as f:
-        f.write(prisoners_cheap_talk.model_dump_json(indent=1))
+    async def run_and_save(
+        result: Awaitable[pydantic.BaseModel], file_name: str, experiment_name: str
+    ) -> None:
+        """Run experiment coroutine with semaphore and save result to file."""
+        try:
+            async with semaphore:
+                print(f"[{datetime.now()}] Running {experiment_name}...")
+                r = await result
+            with open(file_name, "w") as f:
+                f.write(r.model_dump_json(indent=1))
+            print(f"[{datetime.now()}] Completed: {file_name}")
+        except Exception as e:
+            print(f"[{datetime.now()}] Error in experiment {file_name}: {e}")
 
-    print("Running Battle of the Sexes experiment without cheap talk...")
-    battle_of_sexes_basic = await run_battle_of_sexes(
-        dataset100, get_context, seed, with_cheap_talk=False
-    )
-    with open("./results/battle_of_sexes_basic.json", "w") as f:
-        f.write(battle_of_sexes_basic.model_dump_json(indent=1))
+    async with asyncio.TaskGroup() as tg:
+        tg.create_task(
+            run_and_save(
+                run_prisoners_dilemma(
+                    dataset100, get_context, seed, with_cheap_talk=False
+                ),
+                "./results/prisoners_dilemma_basic.json",
+                "Prisoner's Dilemma experiment without cheap talk",
+            )
+        )
 
-    print("Running Battle of the Sexes experiment with cheap talk...")
-    bos_logger = get_xml_file_logger(
-        "logs/battle_of_sexes_cheap_talk.log", level=logging.DEBUG
-    )
-    battle_of_sexes_cheap_talk = await run_battle_of_sexes(
-        dataset100, get_context, seed, with_cheap_talk=True, logger=bos_logger
-    )
-    with open("./results/battle_of_sexes_cheap_talk.json", "w") as f:
-        f.write(battle_of_sexes_cheap_talk.model_dump_json(indent=1))
+        tg.create_task(
+            run_and_save(
+                run_prisoners_dilemma(
+                    dataset100,
+                    get_context,
+                    seed,
+                    with_cheap_talk=True,
+                    logger=get_xml_file_logger(
+                        "logs/prisoners_dilemma_cheap_talk.log", level=logging.DEBUG
+                    ),
+                ),
+                "./results/prisoners_dilemma_cheap_talk.json",
+                "Prisoner's Dilemma experiment with cheap talk",
+            )
+        )
 
-    print("Running Dictatorship game...")
-    dictatorship_result = await run_dictatorship_game(dataset100, get_context, seed)
-    with open("./results/dictatorship_game.json", "w") as f:
-        f.write(dictatorship_result.model_dump_json(indent=1))
+        tg.create_task(
+            run_and_save(
+                run_battle_of_sexes(
+                    dataset100, get_context, seed, with_cheap_talk=False
+                ),
+                "./results/battle_of_sexes_basic.json",
+                "Battle of the Sexes experiment without cheap talk",
+            )
+        )
 
-    print("Running Ultimatum game...")
-    ultimatum_result = await run_ultimatum_game(dataset100, get_context, seed)
-    with open("./results/ultimatum_game.json", "w") as f:
-        f.write(ultimatum_result.model_dump_json(indent=1))
+        tg.create_task(
+            run_and_save(
+                run_battle_of_sexes(
+                    dataset100,
+                    get_context,
+                    seed,
+                    with_cheap_talk=True,
+                    logger=get_xml_file_logger(
+                        "logs/battle_of_sexes_cheap_talk.log", level=logging.DEBUG
+                    ),
+                ),
+                "./results/battle_of_sexes_cheap_talk.json",
+                "Battle of the Sexes experiment with cheap talk",
+            )
+        )
 
-    print("All experiments completed!")
+        tg.create_task(
+            run_and_save(
+                run_dictatorship_game(dataset100, get_context, seed),
+                "./results/dictatorship_game.json",
+                "Dictatorship game",
+            )
+        )
+
+        tg.create_task(
+            run_and_save(
+                run_ultimatum_game(dataset100, get_context, seed),
+                "./results/ultimatum_game.json",
+                "Ultimatum game",
+            )
+        )
+
+    print("\n=== All experiments completed ===")
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Run game theory experiments in parallel"
+    )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        required=True,
+        help="Number of parallel experiments",
+    )
+    args = parser.parse_args()
+
     dotenv.load_dotenv()
-    asyncio.run(main())
+    asyncio.run(main(concurrency=args.concurrency))
