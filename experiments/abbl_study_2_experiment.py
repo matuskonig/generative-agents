@@ -34,7 +34,7 @@ from generative_agents import (
 
 EXPERIMENT_MAX_UTTERANCES = 10
 EXPERIMENT_EPOCHS = 10
-NUM_TRIALS = 5
+NUM_TRIALS = 10
 BASE_SEED = 42
 
 # Experiment names
