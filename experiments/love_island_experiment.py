@@ -224,7 +224,9 @@ async def update_preferences(
     )
 
     partner_preferences_line = (
-        f"\nYour stated ideal partner: {agent.data.partner_preferences}" if agent.data.partner_preferences else ""
+        f"\nYour stated ideal partner: {agent.data.partner_preferences}"
+        if agent.data.partner_preferences
+        else ""
     )
 
     response = await agent.ask_agent_structured(
@@ -274,7 +276,9 @@ async def update_partner(
             {a.data.id: a.data.id for a in possible_partners},
         )  # type: ignore Dynamic enum creation is not valid for type checkers, but works great at runtime
 
-    current_partner = agent.memory_manager.get_behavior(LoveIslandBehavior.Impl).current_partner
+    current_partner = agent.memory_manager.get_behavior(
+        LoveIslandBehavior.Impl
+    ).current_partner
 
     response = await agent.ask_agent_structured(
         f"""It's time for the recoupling ceremony. The atmosphere is tense and everyone is watching.
