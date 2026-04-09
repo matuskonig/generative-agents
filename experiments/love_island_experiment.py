@@ -18,11 +18,11 @@ import generative_agents
 from generative_agents.llm_backend import LLMBackendBase
 from generative_agents.types import LLMAgentBase
 
-RECOUPLING_COUNT = 4
-UTTERANCES_COUNT_SMALLTALK = 5
+RECOUPLING_COUNT = 6
+UTTERANCES_COUNT_SMALLTALK = 10
 UTTERANCES_COUNT_NORMAL = 10
-NUMBER_OF_CONVERSATIONS_BETWEEN_RECOUPLINGS = 4
-PARTNER_SELECTION_BONUS = 0.2
+NUMBER_OF_CONVERSATIONS_BETWEEN_RECOUPLINGS = 6
+PARTNER_SELECTION_BONUS = 0.1
 
 
 class ExperimentMetrics(pydantic.BaseModel):
@@ -80,13 +80,24 @@ def get_agent(
                 generative_agents.ConstantContextBehavior(
                     f"You are {data.full_name}, a contestant on Love Island. "
                     f"You are a {data.age}-year-old {data.job} looking for a genuine romantic connection - your true love. "
-                    f"Your goal is to find someone special and build a real relationship with them. "
                     f"You are currently in the Love Island villa with other contestants. "
-                    f"Be open and honest about yourself - share your hobbies, interests, and personality with others. "
-                    f"Get to know the other contestants by having genuine conversations. "
-                    f"Be yourself and don't pretend to be someone you're not."
+                    f"Be open and honest about yourself - share your hobbies, interests, values and personality. "
+                    f"Get to know the other contestants through genuine, personal conversations. "
+                    f"Be yourself and don't pretend to be someone you're not. "
                     f"Use English in conversations regardless of the language in which you were introduced to the experiment. "
-                    f"You can be critical of other contestants, you dont have to be always positive. "
+                    f"You can be critical of other contestants, you don't have to be always positive. "
+                    + (
+                        f"What you are looking for in a partner: {data.partner_preferences}. "
+                        if data.partner_preferences
+                        else ""
+                    )
+                    + f"\n\n"
+                    f"IMPORTANT GUIDANCE FOR CONVERSATIONS: "
+                    f"Your conversations should focus on getting to know each other as people - "
+                    f"explore their personality, values, life goals, sense of humor, and how they make you feel. "
+                    f"Avoid turning conversations into planning sessions for events, business collaborations, or social media projects. "
+                    f"You are here to find love, not to network. "
+                    f"Ask personal questions. Share personal stories. React honestly to what you learn about people."
                 ),
                 LoveIslandBehavior(opposite_sex_ids),
             ],
@@ -212,9 +223,14 @@ async def update_preferences(
         "PreferenceModel", preference_reasoning=str, **fields  # type: ignore Dynamic model creation in this is not supported by type checker
     )
 
+    partner_preferences_line = (
+        f"\nYour stated ideal partner: {agent.data.partner_preferences}" if agent.data.partner_preferences else ""
+    )
+
     response = await agent.ask_agent_structured(
         f"""You are currently in the Love Island villa and have been talking to the other contestants.
 Based on your conversations and interactions so far, rate how much you like each person as a potential romantic partner.
+{partner_preferences_line}
 
 Possible choices: {', '.join(possible_choices)}
 For each person, give a score from 0-100:
@@ -224,12 +240,15 @@ For each person, give a score from 0-100:
 - 81-100: Very strong connection, could be 'the one'
 
 Think about:
-- Their personality and values
-- Your conversations with them
-- Physical attraction (if applicable)
-- Compatibility and shared interests
-- Think about long-term compatibility vs. just physical attraction, consider their hobbies, occupation and location as well
-- Base your decision on the current preferences
+- How well do they match what YOU are personally looking for in a partner?
+- Their personality, values, and character - who are they as a person?
+- The emotional connection and chemistry you feel with them
+- Long-term compatibility: life goals, location, lifestyle
+- How they make you feel when you talk to them
+
+WARNING: Do not overweight shared activities or events you may have planned together.
+Focus on who this person genuinely IS - their character, values, and how they make you feel -
+not on what you happen to have organised together in the villa.
 
 Provide your reasoning for your preferences.""",
         PreferenceModel,
@@ -255,21 +274,29 @@ async def update_partner(
             {a.data.id: a.data.id for a in possible_partners},
         )  # type: ignore Dynamic enum creation is not valid for type checkers, but works great at runtime
 
+    current_partner = agent.memory_manager.get_behavior(LoveIslandBehavior.Impl).current_partner
+
     response = await agent.ask_agent_structured(
-        f"""It's time to choose who you want to couple up with! This means you'll spend more time with this person in the coming days.
+        f"""It's time for the recoupling ceremony. The atmosphere is tense and everyone is watching.
 
 Current possible partners: {', '.join([p.data.id for p in possible_partners])}
+{"Your current partner: " + current_partner if current_partner else "You are currently SINGLE."}
 
-Think carefully about your choice:
-- Have you found someone you're really sure about? If yes, this is the time to commit!
-- If you're not sure yet, you might want to keep your options open
-- Consider who you've connected with the most
-- Think about long-term compatibility vs. just physical attraction, consider their hobbies, occupation and location as well
-- Base your decision on the current preferences
+{"Since you don't have a partner yet, now is your chance to step forward and pursue someone. Don't hold back - be bold and choose the person you genuinely feel the most drawn to. You need to give this a real shot." if not current_partner else "You already have a partner. Ask yourself honestly: is this the person you truly want to be with, or are you just comfortable? Switching is a risk - you could lose what you have - but staying when your heart isn't in it is worse. Only stay if you genuinely feel this is right."}
 
-Are you ready to settle down with one person, or do you want to explore more connections?
+As you stand there, think about:
+- Who makes you feel most alive?
+- Who do you think about when they're not around?
+- Who would you regret not choosing?
+- Whose personality and values align with what you truly want in a partner?
 
-Be honest - if you've found 'the one', show them! If not, that's okay too.""",
+Think carefully:
+- Consider who you've genuinely connected with the most on a personal level
+- Think about long-term compatibility - personality, values, lifestyle, location
+- Base your decision on your honest feelings and your current preference scores
+- Don't let convenience or comfort drive your choice
+
+Be honest with yourself. Make it count.""",
         PartnerSelectionModel,
         use_full_memory=False,
     )
