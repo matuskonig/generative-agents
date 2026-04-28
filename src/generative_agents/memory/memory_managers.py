@@ -476,7 +476,6 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
                         },
                     )
 
-        # TODO :split initialize from pre_conversation hook
         async def pre_conversation_hook(self, other_agent: LLMAgentBase) -> None:
             await self._initialize_bdi()
 
@@ -725,7 +724,6 @@ def construct_tagged_combined_data_string(data: dict[str, str]) -> str:
     return "\n".join(f"<{tag}>{value}</{tag}>" for tag, value in data.items())
 
 
-# TODO: enable multiple behaviors of the same type, fix multiple constant behaviors with the same tag
 class CompositeBehaviorMemoryManager(MemoryManagerBase):
     def __init__(
         self,
@@ -845,6 +843,3 @@ class CompositeBehaviorMemoryManager(MemoryManagerBase):
         raise ValueError(
             f"Behavior of type {behavior_cls} not found in memory manager."
         )
-
-
-# TODO: proper logging

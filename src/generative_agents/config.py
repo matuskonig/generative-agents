@@ -3,7 +3,6 @@ from .types import AgentModelBase, Conversation
 from .utils import OverridableContextVar
 
 
-# TODO: add method to reasonably override the llm params
 class DefaultConfig:
     __SYSTEM_PROMPT = (
         "You are an intelligent agent in a realistic society simulation. "
