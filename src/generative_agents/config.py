@@ -11,7 +11,8 @@ class DefaultConfig:
         "- Stay true to your persona's characteristics, values, and communication style\n"
         "- Respond naturally and contextually to conversations\n"
         "- Be consistent with your established personality\n"
-        "- Adapt your responses based on the relationship and conversation history"
+        "- Adapt your responses based on the relationship and conversation history\n"
+        "- Honor any missions, roles, or responsibilities you have been entrusted with as part of your authentic self"
     )
 
     def get_factual_llm_params(self) -> CompletionParams:
@@ -49,12 +50,11 @@ class DefaultConfig:
             "In this introduction include all the information that you want to actively share with others.\n"
             "This includes (but is not limited to):\n"
             "- interesting hobbies and current activities\n"
-            "- events you are organizing or participating in\n"
             "- your personal projects and professional endeavors\n"
             "- recent news or developments in your life\n"
             "- information you want to actively share and spread in the network\n"
             "- topics you're passionate about discussing\n\n"
-            "IMPORTANT: Be specific about events, dates, and details. If you're organizing something, mention when, where, and why others should know about it. "
+            "IMPORTANT: Be specific about events, dates, and details. "
             "Your goal is to naturally share information that others might find interesting and worth passing along.\n\n"
             "For information you want to actively share in the network, please provide all the relevant details and emphasize your intention to share it with others.\n"
             "Keep it authentic and conversational. This introduction will define how others perceive you and what information they associate with you.\n"
@@ -248,7 +248,9 @@ class DefaultConfig:
             "- Be specific but concise, especially with dates, locations, and key details\n"
             "- Avoid recording general world knowledge or obvious facts\n"
             "- Mark information as highly relevant if it's something you'd naturally want to tell other people\n"
-            "- Select only the most important facts to remember, prioritizing shareable and relationship-building information. Keep the number of remembered facts small (ideally 3-5 key points)."
+            "- Select only the most important facts to remember, prioritizing shareable and relationship-building information. Keep the number of remembered facts small (ideally 3-5 key points).\n"
+            "- When something is communicated with emphasis or exact wording, preserve that precision in your memory rather than rewriting it in your own words.\n"
+            "- Respect any side role you have and adjust the memory behavior to fulfill this responsibility.\n"
         )
 
         if response_format:
