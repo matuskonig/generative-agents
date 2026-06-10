@@ -69,17 +69,97 @@ Sample experiments are located in the `experiments` directory.
 You can override the default provided prompts from the model by subclassing the `DefaultPromptBuilder`, replacing the methods and overriding the config by provided decorator.
 
 ```python
-@default_builder.override(DefaultPromptBuilder())
+from generative_agents import DefaultPromptBuilder, default_builder
+
+class CustomPromptBuilder(DefaultPromptBuilder):
+    ...
+
+@default_builder.override(CustomPromptBuilder())
 async def main():
     ...
 
-with default_builder.override(DefaultPromptBuilder()):
+with default_builder.override(CustomPromptBuilder()):
     ...
+```
+
+### Configuring LLM Parameters
+
+The framework provides three parameter sets out of the box:
+
+- `factual_llm_params` - lower temperature (0.3) for deterministic, factual responses
+- `neutral_default_llm_params` - balanced temperature (0.6) for general use
+- `creative_llm_params` - higher temperature (1.0) for creative generation
+
+You can customize them in several ways, from most to least convenient:
+
+#### 1. Constructor Parameters (Recommended)
+
+Pass custom params when constructing `DefaultConfig` (or its subclass):
+
+```python
+from generative_agents import DefaultConfig, create_completion_params
+
+config = DefaultConfig(
+    creative_llm_params=create_completion_params(temperature=0.8, top_p=0.95),
+    factual_llm_params=create_completion_params(temperature=0.4),
+)
+```
+
+#### 2. Via OverridableContextVar
+
+Override the global config for a scoped block:
+
+```python
+from generative_agents import default_config, DefaultConfig, create_completion_params
+
+custom_config = DefaultConfig(
+    creative_llm_params=create_completion_params(temperature=0.9)
+)
+
+with default_config.override(custom_config):
+    # All agents created here use the overridden params
+    agent = LLMConversationAgent(...)
+```
+
+#### 3. Subclassing
+
+Create a subclass to set custom defaults:
+
+```python
+from generative_agents import DefaultConfig, create_completion_params
+
+class WarmCreativeConfig(DefaultConfig):
+    def __init__(self):
+        super().__init__(
+            creative_llm_params=create_completion_params(
+                temperature=0.9, top_p=1.0, frequency_penalty=0.5
+            ),
+        )
+```
+
+Then override using `OverridableContextVar`.
+
+#### 4. Direct Property Access
+
+Modify parameters on an existing instance:
+
+```python
+from generative_agents import default_config, create_completion_params
+
+# Access current parameters
+current_creative = default_config().creative_llm_params
+current_factual = default_config().factual_llm_params
+
+# Modify parameters directly
+default_config().creative_llm_params = create_completion_params(
+    temperature=0.5, top_p=1.0
+)
 ```
 
 ## Example Experiment: Valentine Party
 
 The `valentine_party.py` experiment demonstrates how information spreads through a social network of generative agents. Below is a simplified walkthrough of the key concepts.
+Other experiments are defined in `experiments/` folder.
 
 ### 1. Define Your Agent Model
 
