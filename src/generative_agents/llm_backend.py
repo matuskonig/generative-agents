@@ -310,10 +310,15 @@ class LLMBackend(LLMBackendBase):
         self.prompt_tokens += response.usage.prompt_tokens if response.usage else 0
         self.total_requests += 1
 
-        message = response.choices[0].message
+        choice = response.choices[0]
+        message = choice.message
 
         if not message.parsed:
-            raise ValueError("Model refused to parse the response")
+            raise ValueError(
+                "Model refused to parse the response",
+                choice.finish_reason,
+                message.content,
+            )
         return message.parsed
 
     @overload
