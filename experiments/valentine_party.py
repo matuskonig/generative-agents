@@ -92,8 +92,11 @@ async def main():
         model=os.getenv("OPENAI_COMPLETIONS_MODEL"),  # type: ignore
         RPS=int(os.getenv("MAX_REQUESTS_PER_SECOND")),  # type: ignore
         embedding_provider=OpenAIEmbeddingProvider(
-            client=client,
-            model=os.getenv("OPENAI_EMBEDDINGS_MODEL"),  # type: ignore
+            client=AsyncOpenAI(
+                base_url=os.getenv("EMBEDDING_BASE_URL"),
+                api_key=os.getenv("EMBEDDING_API_KEY"),
+            ),
+            model=os.getenv("OPENAI_EMBEDDINGS_MODEL") or "",
         ),
     )
 
@@ -160,7 +163,7 @@ async def main():
         await manager.run_simulation_epoch()
 
     # Query all agents about the party
-    question = "When is the party happening ? Did you hear about the party ?"
+    question = "When is the party happening ? Did you hear about the Valentine party ?"
     results = asyncio.gather(*[agent.ask_agent(question) for agent in agents])
     for agent, answer in zip(agents, await results):
         print(f"{agent.data.full_name}: {answer}")
