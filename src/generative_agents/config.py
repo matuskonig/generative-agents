@@ -15,14 +15,19 @@ class DefaultConfig:
         "- Honor any missions, roles, or responsibilities you have been entrusted with as part of your authentic self"
     )
 
-    def __init__(self) -> None:
-        self._factual_llm_params = create_completion_params(
+    def __init__(
+        self,
+        factual_llm_params: CompletionParams | None = None,
+        neutral_default_llm_params: CompletionParams | None = None,
+        creative_llm_params: CompletionParams | None = None,
+    ) -> None:
+        self._factual_llm_params = factual_llm_params or create_completion_params(
             temperature=0.3, top_p=0.95, reasoning_effort="medium"
         )
-        self._neutral_default_llm_params = create_completion_params(
+        self._neutral_default_llm_params = neutral_default_llm_params or create_completion_params(
             temperature=0.6, top_p=0.95, reasoning_effort="low"
         )
-        self._creative_llm_params = create_completion_params(
+        self._creative_llm_params = creative_llm_params or create_completion_params(
             temperature=1,
             top_p=1.0,
             frequency_penalty=0.8,
