@@ -15,25 +15,44 @@ class DefaultConfig:
         "- Honor any missions, roles, or responsibilities you have been entrusted with as part of your authentic self"
     )
 
-    def get_factual_llm_params(self) -> CompletionParams:
-        return create_completion_params(
+    def __init__(self) -> None:
+        self._factual_llm_params = create_completion_params(
             temperature=0.3, top_p=0.95, reasoning_effort="medium"
         )
-
-    def get_neutral_default_llm_params(self) -> CompletionParams:
-        return create_completion_params(
+        self._neutral_default_llm_params = create_completion_params(
             temperature=0.6, top_p=0.95, reasoning_effort="low"
         )
-
-    def get_creative_llm_params(self) -> CompletionParams:
-        # Creative mode - aligned with gpt-oss-120b recommended settings (temp=1.0, top_p=1)
-        return create_completion_params(
-            temperature=1.0,
+        self._creative_llm_params = create_completion_params(
+            temperature=1,
             top_p=1.0,
             frequency_penalty=0.8,
             presence_penalty=0.2,
             reasoning_effort="low",
         )
+
+    @property
+    def factual_llm_params(self) -> CompletionParams:
+        return self._factual_llm_params
+
+    @factual_llm_params.setter
+    def factual_llm_params(self, value: CompletionParams) -> None:
+        self._factual_llm_params = value
+
+    @property
+    def neutral_default_llm_params(self) -> CompletionParams:
+        return self._neutral_default_llm_params
+
+    @neutral_default_llm_params.setter
+    def neutral_default_llm_params(self, value: CompletionParams) -> None:
+        self._neutral_default_llm_params = value
+
+    @property
+    def creative_llm_params(self) -> CompletionParams:
+        return self._creative_llm_params
+
+    @creative_llm_params.setter
+    def creative_llm_params(self, value: CompletionParams) -> None:
+        self._creative_llm_params = value
 
     def get_system_prompt(self) -> str:
         return self.__SYSTEM_PROMPT

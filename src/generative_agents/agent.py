@@ -40,7 +40,7 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
         prompt = default_config().get_introduction_prompt(self.data)
         response = (
             await self.context.get_text_response(
-                prompt, params=default_config().get_creative_llm_params()
+                prompt, params=default_config().creative_llm_params
             )
             or ""
         )
@@ -56,7 +56,7 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
             second_agent.data.full_name,
         )
         response = await self.context.get_text_response(
-            prompt, params=default_config().get_creative_llm_params()
+            prompt, params=default_config().creative_llm_params
         )
         return response
 
@@ -77,7 +77,7 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
         result = await self.context.get_structured_response(
             prompt,
             response_format=Utterance,
-            params=default_config().get_creative_llm_params(),
+            params=default_config().creative_llm_params,
         )
         return result
 
@@ -94,7 +94,7 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
             question,
         )
         return await self.context.get_text_response(
-            prompt, params=default_config().get_factual_llm_params()
+            prompt, params=default_config().factual_llm_params
         )
 
     async def ask_agent_structured(
@@ -119,7 +119,7 @@ class LLMConversationAgent(LLMAgentBase, Generic[TAgent, TMemoryManager]):
         return await self.context.get_structured_response(
             prompt,
             response_format=response_format,
-            params=default_config().get_factual_llm_params(),
+            params=default_config().factual_llm_params,
         )
 
     async def post_conversation_hook(

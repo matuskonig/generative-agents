@@ -174,7 +174,7 @@ class ConversationMemoryUpdatingBehavior(CompositeBehaviorFactoryBase):
             result = await self._context.get_structured_response(
                 prompt,
                 response_format=FactResponse,
-                params=default_config().get_factual_llm_params(),
+                params=default_config().factual_llm_params,
             )
             await self.memory.store_facts(
                 result.facts,
@@ -306,7 +306,7 @@ class UnitaryAgentNoteUpdatingBehavior(CompositeBehaviorFactoryBase):
             )
             result = await self._context.get_text_response(
                 prompt,
-                params=default_config().get_factual_llm_params(),
+                params=default_config().factual_llm_params,
             )
 
             if self._logger:
@@ -393,7 +393,7 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
             result = await self._context.get_structured_response(
                 prompt,
                 BDIData,
-                params=default_config().get_neutral_default_llm_params(),
+                params=default_config().neutral_default_llm_params,
             )
             self.__bdi_data = result
 
@@ -437,7 +437,7 @@ class BDIPlanningBehavior(CompositeBehaviorFactoryBase):
             result = await self._context.get_structured_response(
                 prompt,
                 response_format=BDIResponse,
-                params=default_config().get_neutral_default_llm_params(),
+                params=default_config().neutral_default_llm_params,
             )
 
             if isinstance(result.data, BDINoChanges):
@@ -631,7 +631,7 @@ class ConversationMemoryForgettingBehavior(CompositeBehaviorFactoryBase):
             result = await self._context.get_structured_response(
                 prompt,
                 PruneFactsResponse,
-                params=default_config().get_neutral_default_llm_params(),
+                params=default_config().neutral_default_llm_params,
             )
             validated_timestamps = {
                 timestamp
