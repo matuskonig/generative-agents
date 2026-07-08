@@ -1,5 +1,7 @@
 # Generative Agents for Social Behavior Simulation
 
+This code marks the implementation part of the master thesis **["Generative agents for simulation of social behaviour"](https://dspace.cuni.cz/handle/20.500.11956/209608)**.
+
 This library provides tools and frameworks for using generative agents to simulate social behavior. It is designed to enhance traditional rule-based agent paradigms with large language models, enabling the creation of agents with memory, action selection mechanisms, and reasoning capabilities.
 
 ## Features
