@@ -107,7 +107,7 @@ class GeneralParallelSelectorBase(ConversationSelectorABC, abc.ABC):
             )
             if len(neighbor_agents) == 0:
                 continue
-            agent2: LLMConversationAgent = self.__seed.choice(neighbor_agents)  # type: ignore[arg-type]
+            agent2: LLMConversationAgent = self.__seed.choice(neighbor_agents)  # type: ignore[assignment, arg-type]
 
             conversation_pairs.append((agent1, agent2))
             structure.remove_node(agent1)
