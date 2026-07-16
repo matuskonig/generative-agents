@@ -2,13 +2,19 @@
 
 This code marks the implementation part of the master thesis **["Generative agents for simulation of social behaviour"](https://dspace.cuni.cz/handle/20.500.11956/209608)**.
 
-This library provides tools and frameworks for using generative agents to simulate social behavior. It is designed to enhance traditional rule-based agent paradigms with large language models, enabling the creation of agents with memory, action selection mechanisms, and reasoning capabilities.
+This library provides framework for using generative agents to simulate social behavior of groups and individuals.
+It is designed to enhance traditional rule-based agent paradigms with large language models, enabling the creation of agents with memory, implicit action selection mechanisms and reasoning capabilities.
 
 ## Features
 
 - **Generative Agents**: Create agents with memory and reasoning capabilities.
-- **Social Behavior Simulation**: Simulate communication and interactions in small groups.
+- **Social Behavior Simulation**: Simulate communication in small groups.
+- **Individual Behavior Prediction**: Simulate decision processes and predict agent behavior for economic experiments and other scenarios.
 - **Experimentation**: Run experiments with real-world data based on sociological surveys.
+
+## Architecture Overview
+
+![Architecture Overview](./assets/architecture_overview.png)
 
 ## Installation
 
